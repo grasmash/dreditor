@@ -1,0 +1,403 @@
+.dreditor-reset {
+  box-sizing: border-box;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dreditor-reset *, .dreditor-reset *::before, .dreditor-reset *::after {
+  box-sizing: inherit;
+}
+
+.dreditor-reset aside, .dreditor-reset footer, .dreditor-reset header, .dreditor-reset main, .dreditor-reset menu, .dreditor-reset nav, .dreditor-reset section, .dreditor-reset summary {
+  display: block;
+}
+
+.dreditor-reset h1, .dreditor-reset h2, .dreditor-reset h3, .dreditor-reset h4, .dreditor-reset h5, .dreditor-reset h6 {
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.dreditor-reset p {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.dreditor-reset ol, .dreditor-reset ul {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.dreditor-reset ol ol, .dreditor-reset ul ul, .dreditor-reset ol ul, .dreditor-reset ul ol {
+  margin-bottom: 0;
+}
+
+.dreditor-reset a {
+  background-color: transparent;
+  color: #0678be;
+  text-decoration: none;
+}
+
+.dreditor-reset a:focus {
+  color: #044974;
+  text-decoration: underline;
+}
+
+.dreditor-reset a:hover {
+  color: #044974;
+  text-decoration: underline;
+}
+
+.dreditor-reset a:active, .dreditor-reset a:hover {
+  outline-width: 0;
+}
+
+.dreditor-reset a:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.dreditor-reset a:not([href]):not([tabindex]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dreditor-reset a:not([href]):not([tabindex]):focus {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dreditor-reset a:not([href]):not([tabindex]):hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dreditor-reset a:not([href]):not([tabindex]):focus {
+  outline: none;
+}
+
+.dreditor-reset small {
+  font-size: 80%;
+}
+
+.dreditor-reset sub,
+.dreditor-reset sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.dreditor-reset sub {
+  bottom: -0.25em;
+}
+
+.dreditor-reset sup {
+  top: -0.5em;
+}
+
+.dreditor-reset pre {
+  margin-top: 0;
+  margin-bottom: 15px;
+  overflow: auto;
+}
+
+.dreditor-reset img {
+  border-style: none;
+  vertical-align: middle;
+}
+
+.dreditor-reset a, .dreditor-reset area, .dreditor-reset button, .dreditor-reset [role="button"], .dreditor-reset input, .dreditor-reset label, .dreditor-reset select, .dreditor-reset summary, .dreditor-reset textarea {
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+}
+
+.dreditor-reset table {
+  border: 0;
+  border-collapse: collapse;
+  background-color: transparent;
+}
+
+.dreditor-reset th {
+  text-align: left;
+}
+
+.dreditor-reset [hidden] {
+  display: none !important;
+}
+
+.dreditor-wrapper {
+  padding: 30px;
+}
+
+.dreditor-wrapper .dreditor-file {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.dreditor-wrapper .dreditor-file-header {
+  background: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+  padding: 5px 15px;
+}
+
+.dreditor-wrapper .dreditor-file-header .dreditor-file-info {
+  line-height: 30px;
+}
+
+.dreditor-wrapper .dreditor-file-header .dreditor-stat {
+  float: right;
+  line-height: 20px;
+  margin: 5px 0;
+}
+
+.dreditor-wrapper .dreditor-filename {
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.dreditor-wrapper .dreditor-file-status {
+  background: #aaa;
+  border-radius: 4px;
+  box-sizing: content-box;
+  color: #fff;
+  cursor: default;
+  display: inline-block;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 10px;
+  height: 1em;
+  line-height: 1;
+  margin-right: .25em;
+  padding: 3px 3px 2px;
+  text-align: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  vertical-align: middle;
+  width: 1em;
+}
+
+.dreditor-wrapper .dreditor-file-status.dreditor-file-status--added {
+  background: #7cbc48;
+}
+
+.dreditor-wrapper .dreditor-file-status.dreditor-file-status--deleted {
+  background: #fd615d;
+}
+
+.dreditor-wrapper .dreditor-file-status.dreditor-file-status--modified {
+  background: #53B0EB;
+}
+
+.dreditor-wrapper .dreditor-file-status.dreditor-file-status--renamed {
+  background: #e4ab2b;
+}
+
+.dreditor-wrapper .dreditor-file-table-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.dreditor-wrapper .dreditor-file-table {
+  border-collapse: collapse;
+  margin: 0;
+  min-width: 100%;
+  table-layout: fixed;
+}
+
+.dreditor-wrapper .dreditor-file-table, .dreditor-wrapper .dreditor-file-table tbody, .dreditor-wrapper .dreditor-file-table tr, .dreditor-wrapper .dreditor-file-table td {
+  border: 0;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.dreditor-wrapper .dreditor-line td {
+  border-left: 1px solid #ddd;
+  line-height: 20px;
+  padding: 0 10px;
+  position: relative;
+  vertical-align: middle;
+}
+
+.dreditor-wrapper .dreditor-line td:first-child {
+  border-left: 0;
+}
+
+.dreditor-wrapper .dreditor-line td.dreditor-line-number {
+  color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  min-width: 60px;
+  text-align: right;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  width: 1%;
+}
+
+.dreditor-wrapper .dreditor-line td.dreditor-line-number:hover {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.dreditor-wrapper .dreditor-line td.dreditor-line-number::before {
+  content: attr(data-line-number);
+}
+
+.dreditor-wrapper .dreditor-line td.dreditor-line-code {
+  vertical-align: top;
+}
+
+.dreditor-wrapper .dreditor-line td .dreditor-line-code-inner {
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.dreditor-wrapper .dreditor-line td .dreditor-line-code-inner::before {
+  content: '';
+}
+
+.dreditor-wrapper .dreditor-line.dreditor-line--hunk td {
+  background: #f4f7fb;
+  border-color: #d2dff0;
+  color: rgba(0, 0, 0, 0.4);
+  padding-bottom: 3px;
+  padding-top: 3px;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.dreditor-wrapper .dreditor-line.dreditor-line--hunk td.dreditor-line-number {
+  cursor: default;
+  text-align: center;
+}
+
+.dreditor-wrapper .dreditor-line.dreditor-line--hunk td.dreditor-line-number:hover {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.dreditor-wrapper .dreditor-line.dreditor-line--added td {
+  background: #eaffea;
+}
+
+.dreditor-wrapper .dreditor-line.dreditor-line--deleted td {
+  background: #ffecec;
+}
+
+.dreditor-wrapper .dreditor-patch-menu {
+  margin: 15px 0 15px 15px;
+  float: right;
+}
+
+.dreditor-wrapper .dreditor-patch-menu, .dreditor-wrapper .dreditor-patch-menu li, .dreditor-wrapper .dreditor-patch-menu a {
+  display: inline-block;
+}
+
+.dreditor-wrapper .dreditor-patch-menu li:first-child {
+  padding: 5px 15px;
+}
+
+.dreditor-wrapper .dreditor-patch-menu li:nth-child(2) a {
+  border-radius: 4px 0 0 4px;
+}
+
+.dreditor-wrapper .dreditor-patch-menu li:last-child a {
+  border-radius: 0 4px 4px 0;
+}
+
+.dreditor-wrapper .dreditor-patch-menu a {
+  border: 1px solid #ddd;
+  color: #666;
+  margin-left: -1px;
+  padding: 5px 10px;
+}
+
+.dreditor-wrapper .dreditor-patch-menu a:hover {
+  background: #f7f7f7;
+  text-decoration: none;
+}
+
+.dreditor-wrapper .dreditor-patch-menu a.active, .dreditor-wrapper .dreditor-patch-menu a.active:hover {
+  background: #0678be;
+  border: 0;
+  color: #fff;
+  padding-bottom: 6px;
+  padding-top: 6px;
+  position: relative;
+}
+
+.dreditor-wrapper .dreditor-patch {
+  clear: both;
+}
+
+.dreditor-wrapper .dreditor-patch-meta {
+  background: #f7f7f7;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  display: inline-block;
+  padding: 5px 15px;
+  position: relative;
+  width: 100%;
+}
+
+.dreditor-wrapper .dreditor-patch-meta table, .dreditor-wrapper .dreditor-patch-meta tbody, .dreditor-wrapper .dreditor-patch-meta tr, .dreditor-wrapper .dreditor-patch-meta td {
+  border: 0;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.dreditor-wrapper .dreditor-patch-meta td {
+  padding: 3px 10px;
+  vertical-align: middle;
+}
+
+.dreditor-wrapper .dreditor-patch-meta td:first-child {
+  background: #eee;
+  font-weight: 700;
+  min-width: 50px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.dreditor-wrapper .dreditor-patch-meta table {
+  border-collapse: collapse;
+  margin: -5px -15px;
+}
+
+.dreditor-wrapper .dreditor-patch-meta tr:first-child td {
+  padding-top: 8px;
+}
+
+.dreditor-wrapper .dreditor-patch-meta tr:last-child td {
+  padding-bottom: 8px;
+}
+
+.dreditor-wrapper .dreditor-stat {
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.dreditor-wrapper .dreditor-stat-additions {
+  color: #7cbc48;
+  background: #eaffea;
+  border-right: 1px solid #d0d0d0;
+  padding: 3px 6px;
+}
+
+.dreditor-wrapper .dreditor-stat-deletions {
+  color: #fd615d;
+  background: #ffecec;
+  padding: 3px 6px;
+}

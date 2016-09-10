@@ -1,0 +1,41 @@
+import Dreditor from './Dreditor';
+import DreditorAttributes from './DreditorAttributes';
+import DreditorBase from './DreditorBase';
+import DreditorDiff from './DreditorDiff';
+import DreditorElement from './DreditorElement';
+import DreditorEmitter from './DreditorEmitter';
+import DreditorEvent from './DreditorEvent';
+import DreditorFile from './DreditorFile';
+import DreditorHunk from './DreditorHunk';
+import DreditorLine from './DreditorLine';
+import DreditorLocaleBase from './DreditorLocaleBase';
+import DreditorParser from './DreditorParser';
+import DreditorPatch from './DreditorPatch';
+import DreditorProxy from './DreditorProxy';
+import DreditorRenderable from './DreditorRenderable';
+import DreditorUrl from './DreditorUrl';
+import DreditorUtility from './DreditorUtility';
+
+module.exports = function (options) {
+  return new Dreditor(options);
+};
+
+module.exports.__version__ = Dreditor.__version__;
+module.exports.__defaultOptions__ = Dreditor.__defaultOptions__;
+module.exports.Dreditor = Dreditor;
+module.exports.DreditorAttributes = DreditorAttributes;
+module.exports.DreditorBase = DreditorBase;
+module.exports.DreditorDiff = DreditorDiff;
+module.exports.DreditorElement = DreditorElement;
+module.exports.DreditorEmitter = DreditorEmitter;
+module.exports.DreditorEvent = DreditorEvent;
+module.exports.DreditorFile = DreditorFile;
+module.exports.DreditorHunk = DreditorHunk;
+module.exports.DreditorLine = DreditorLine;
+module.exports.DreditorLocaleBase = DreditorLocaleBase;
+module.exports.DreditorParser = DreditorParser;
+module.exports.DreditorPatch = DreditorPatch;
+module.exports.DreditorProxy = DreditorProxy;
+module.exports.DreditorRenderable = DreditorRenderable;
+module.exports.DreditorUrl = DreditorUrl;
+module.exports.DreditorUtility = DreditorUtility;

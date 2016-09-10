@@ -1,0 +1,84 @@
+// File table.
+.dreditor-file-table-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.dreditor-file-table {
+  border-collapse: collapse;
+  margin: 0;
+  min-width: 100%;
+  table-layout: fixed;
+  // Reset any existing styles.
+  &, tbody, tr, td {
+    border: 0;
+    font-family: $font-family-monospace;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+  }
+}
+.dreditor-line {
+  td {
+    border-left: 1px solid $border-color;
+    line-height: 20px;
+    padding: 0 10px;
+    position: relative;
+    vertical-align: middle;
+    &:first-child {
+      border-left: 0;
+    }
+    &.dreditor-line-number {
+      color: rgba(0,0,0,0.4);
+      cursor: pointer;
+      min-width: 60px;
+      text-align: right;
+      user-select: none;
+      width: 1%;
+      &:hover {
+        color: rgba(0,0,0,0.7);
+      }
+      &::before {
+        content: attr(data-line-number);
+      }
+    }
+    &.dreditor-line-code {
+      vertical-align: top;
+    }
+    .dreditor-line-code-inner {
+      &::before {
+        content: '';
+      }
+      white-space: pre;
+      word-wrap: normal;
+    }
+  }
+  &.dreditor-line--hunk {
+    td {
+      background: #f4f7fb;
+      border-color: #d2dff0;
+      color: rgba(0,0,0,0.4);
+      padding-bottom: 3px;
+      padding-top: 3px;
+      white-space: pre;
+      word-wrap: normal;
+      &.dreditor-line-number {
+        cursor: default;
+        text-align: center;
+        &:hover {
+          color: rgba(0,0,0,0.4);
+        }
+      }
+    }
+  }
+  &.dreditor-line--added {
+    td {
+      background: $additions;
+    }
+  }
+
+  &.dreditor-line--deleted {
+    td {
+      background: $deletions;
+    }
+  }
+}
