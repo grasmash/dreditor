@@ -133,34 +133,33 @@
   padding: 30px;
 }
 
-.dreditor-wrapper .dreditor-file {
+.dreditor-file {
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin: 15px 0;
-  overflow: hidden;
+  margin: 0 0 15px;
 }
 
-.dreditor-wrapper .dreditor-file-header {
+.dreditor-file-header {
   background: #f7f7f7;
   border-bottom: 1px solid #ddd;
   padding: 5px 15px;
 }
 
-.dreditor-wrapper .dreditor-file-header .dreditor-file-info {
+.dreditor-file-header .dreditor-file-info {
   line-height: 30px;
 }
 
-.dreditor-wrapper .dreditor-file-header .dreditor-stat {
+.dreditor-file-header .dreditor-stat {
   float: right;
   line-height: 20px;
   margin: 5px 0;
 }
 
-.dreditor-wrapper .dreditor-filename {
+.dreditor-filename {
   font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-.dreditor-wrapper .dreditor-file-status {
+.dreditor-file-status {
   background: #aaa;
   border-radius: 4px;
   box-sizing: content-box;
@@ -171,7 +170,7 @@
   font-size: 10px;
   height: 1em;
   line-height: 1;
-  margin-right: .25em;
+  margin-right: 5px;
   padding: 3px 3px 2px;
   text-align: center;
   -webkit-user-select: none;
@@ -182,35 +181,62 @@
   width: 1em;
 }
 
-.dreditor-wrapper .dreditor-file-status.dreditor-file-status--added {
+.dreditor-file-status.dreditor-file-status--added {
   background: #7cbc48;
 }
 
-.dreditor-wrapper .dreditor-file-status.dreditor-file-status--deleted {
+.dreditor-file-status.dreditor-file-status--deleted {
   background: #fd615d;
 }
 
-.dreditor-wrapper .dreditor-file-status.dreditor-file-status--modified {
+.dreditor-file-status.dreditor-file-status--modified {
   background: #53B0EB;
 }
 
-.dreditor-wrapper .dreditor-file-status.dreditor-file-status--renamed {
+.dreditor-file-status.dreditor-file-status--renamed {
   background: #e4ab2b;
 }
 
-.dreditor-wrapper .dreditor-file-table-wrapper {
+.dreditor-tab {
+  background: #fd615d;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  line-height: 1;
+  margin: .1em;
+  text-align: center;
+  width: 1em;
+}
+
+.dreditor-tab:before {
+  content: 'T';
+  display: inline;
+  font-size: 80%;
+}
+
+.dreditor-trailing-space {
+  background: #ffecec;
+  border: 1px solid #fd615d;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+}
+
+.dreditor-file-table-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
 }
 
-.dreditor-wrapper .dreditor-file-table {
+.dreditor-file-table {
   border-collapse: collapse;
   margin: 0;
   min-width: 100%;
   table-layout: fixed;
 }
 
-.dreditor-wrapper .dreditor-file-table, .dreditor-wrapper .dreditor-file-table tbody, .dreditor-wrapper .dreditor-file-table tr, .dreditor-wrapper .dreditor-file-table td {
+.dreditor-file-table, .dreditor-file-table tbody, .dreditor-file-table tr, .dreditor-file-table td {
   border: 0;
   font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   line-height: 1;
@@ -218,19 +244,19 @@
   padding: 0;
 }
 
-.dreditor-wrapper .dreditor-line td {
-  border-left: 1px solid #ddd;
+.dreditor-line td {
+  border-right: 1px solid #ddd;
   line-height: 20px;
   padding: 0 10px;
   position: relative;
   vertical-align: middle;
 }
 
-.dreditor-wrapper .dreditor-line td:first-child {
-  border-left: 0;
+.dreditor-line td:last-child {
+  border-right: 0;
 }
 
-.dreditor-wrapper .dreditor-line td.dreditor-line-number {
+.dreditor-line td.dreditor-line-number {
   color: rgba(0, 0, 0, 0.4);
   cursor: pointer;
   min-width: 60px;
@@ -242,28 +268,28 @@
   width: 1%;
 }
 
-.dreditor-wrapper .dreditor-line td.dreditor-line-number:hover {
+.dreditor-line td.dreditor-line-number:hover {
   color: rgba(0, 0, 0, 0.7);
 }
 
-.dreditor-wrapper .dreditor-line td.dreditor-line-number::before {
+.dreditor-line td.dreditor-line-number::before {
   content: attr(data-line-number);
 }
 
-.dreditor-wrapper .dreditor-line td.dreditor-line-code {
+.dreditor-line td.dreditor-line-code {
   vertical-align: top;
 }
 
-.dreditor-wrapper .dreditor-line td .dreditor-line-code-inner {
+.dreditor-line td .dreditor-line-code-inner {
   white-space: pre;
   word-wrap: normal;
 }
 
-.dreditor-wrapper .dreditor-line td .dreditor-line-code-inner::before {
-  content: '';
+.dreditor-line td .dreditor-line-code-inner::before {
+  content: attr(data-symbol);
 }
 
-.dreditor-wrapper .dreditor-line.dreditor-line--hunk td {
+.dreditor-line.dreditor-line--hunk td {
   background: #f4f7fb;
   border-color: #d2dff0;
   color: rgba(0, 0, 0, 0.4);
@@ -273,70 +299,105 @@
   word-wrap: normal;
 }
 
-.dreditor-wrapper .dreditor-line.dreditor-line--hunk td.dreditor-line-number {
+.dreditor-line.dreditor-line--hunk td.dreditor-line-number {
   cursor: default;
   text-align: center;
 }
 
-.dreditor-wrapper .dreditor-line.dreditor-line--hunk td.dreditor-line-number:hover {
+.dreditor-line.dreditor-line--hunk td.dreditor-line-number:hover {
   color: rgba(0, 0, 0, 0.4);
 }
 
-.dreditor-wrapper .dreditor-line.dreditor-line--added td {
+.dreditor-line.dreditor-line--hunk td.dreditor-hunk-meta::before {
+  content: attr(data-hunk-meta);
+}
+
+.dreditor-line.dreditor-line--added td {
   background: #eaffea;
 }
 
-.dreditor-wrapper .dreditor-line.dreditor-line--deleted td {
+.dreditor-line.dreditor-line--added td.dreditor-line-number {
+  background: #dbffdb;
+  border-color: #c9e2c9;
+}
+
+.dreditor-line.dreditor-line--deleted td {
   background: #ffecec;
 }
 
-.dreditor-wrapper .dreditor-patch-menu {
-  margin: 15px 0 15px 15px;
-  float: right;
+.dreditor-line.dreditor-line--deleted td.dreditor-line-number {
+  background: #ffdddd;
+  border-color: #e2cbcb;
 }
 
-.dreditor-wrapper .dreditor-patch-menu, .dreditor-wrapper .dreditor-patch-menu li, .dreditor-wrapper .dreditor-patch-menu a {
+.dreditor-line.dreditor-line--no-new-line td {
+  background: #fd615d;
+  color: #fff;
+}
+
+.dreditor-patch-menu {
+  margin: 0;
+}
+
+.dreditor-patch-menu, .dreditor-patch-menu li, .dreditor-patch-menu a {
   display: inline-block;
+  float: left;
 }
 
-.dreditor-wrapper .dreditor-patch-menu li:first-child {
-  padding: 5px 15px;
+.dreditor-patch-menu li:first-child {
+  padding: 5px 15px 5px 0;
 }
 
-.dreditor-wrapper .dreditor-patch-menu li:nth-child(2) a {
+.dreditor-patch-menu li:nth-child(2) a {
   border-radius: 4px 0 0 4px;
 }
 
-.dreditor-wrapper .dreditor-patch-menu li:last-child a {
+.dreditor-patch-menu li:last-child a {
   border-radius: 0 4px 4px 0;
 }
 
-.dreditor-wrapper .dreditor-patch-menu a {
+.dreditor-patch-menu a {
+  background: #fff;
   border: 1px solid #ddd;
   color: #666;
   margin-left: -1px;
   padding: 5px 10px;
-}
-
-.dreditor-wrapper .dreditor-patch-menu a:hover {
-  background: #f7f7f7;
   text-decoration: none;
 }
 
-.dreditor-wrapper .dreditor-patch-menu a.active, .dreditor-wrapper .dreditor-patch-menu a.active:hover {
-  background: #0678be;
-  border: 0;
-  color: #fff;
-  padding-bottom: 6px;
-  padding-top: 6px;
-  position: relative;
+.dreditor-patch-menu a:focus, .dreditor-patch-menu a:active {
+  background: #f7f7f7;
+  color: #0678be;
+  text-decoration: none;
 }
 
-.dreditor-wrapper .dreditor-patch {
+.dreditor-patch-menu a:hover {
+  background: #f7f7f7;
+  color: #0678be;
+  text-decoration: none;
+}
+
+.dreditor-patch-menu a.active {
+  background: #0678be;
+  border-color: #0678be;
+  color: #fff;
+  position: relative;
+  text-decoration: none;
+}
+
+.dreditor-patch-menu a.active:focus, .dreditor-patch-menu a.active:active {
+  text-decoration: none;
+}
+
+.dreditor-patch-menu a.active:hover {
+  text-decoration: none;
+}
+
+.dreditor-patch {
   clear: both;
 }
 
-.dreditor-wrapper .dreditor-patch-meta {
+.dreditor-patch-meta {
   background: #f7f7f7;
   border-radius: 4px;
   border: 1px solid #ddd;
@@ -346,19 +407,19 @@
   width: 100%;
 }
 
-.dreditor-wrapper .dreditor-patch-meta table, .dreditor-wrapper .dreditor-patch-meta tbody, .dreditor-wrapper .dreditor-patch-meta tr, .dreditor-wrapper .dreditor-patch-meta td {
+.dreditor-patch-meta table, .dreditor-patch-meta tbody, .dreditor-patch-meta tr, .dreditor-patch-meta td {
   border: 0;
   line-height: 1;
   margin: 0;
   padding: 0;
 }
 
-.dreditor-wrapper .dreditor-patch-meta td {
+.dreditor-patch-meta td {
   padding: 3px 10px;
   vertical-align: middle;
 }
 
-.dreditor-wrapper .dreditor-patch-meta td:first-child {
+.dreditor-patch-meta td:first-child {
   background: #eee;
   font-weight: 700;
   min-width: 50px;
@@ -368,20 +429,20 @@
           user-select: none;
 }
 
-.dreditor-wrapper .dreditor-patch-meta table {
+.dreditor-patch-meta table {
   border-collapse: collapse;
   margin: -5px -15px;
 }
 
-.dreditor-wrapper .dreditor-patch-meta tr:first-child td {
+.dreditor-patch-meta tr:first-child td {
   padding-top: 8px;
 }
 
-.dreditor-wrapper .dreditor-patch-meta tr:last-child td {
+.dreditor-patch-meta tr:last-child td {
   padding-bottom: 8px;
 }
 
-.dreditor-wrapper .dreditor-stat {
+.dreditor-stat {
   border: 1px solid #d0d0d0;
   border-radius: 4px;
   font-size: 10px;
@@ -389,14 +450,14 @@
   overflow: hidden;
 }
 
-.dreditor-wrapper .dreditor-stat-additions {
+.dreditor-stat-additions {
   color: #7cbc48;
   background: #eaffea;
   border-right: 1px solid #d0d0d0;
   padding: 3px 6px;
 }
 
-.dreditor-wrapper .dreditor-stat-deletions {
+.dreditor-stat-deletions {
   color: #fd615d;
   background: #ffecec;
   padding: 3px 6px;

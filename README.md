@@ -12,11 +12,10 @@ var dreditor = require('dreditor')();
 dreditor
   // Parse the data.
   .parse(string)
-  .then(function (/** @type {DreditorParser} */ parser) {
-    // Do stuff with the DreditorParser instance before rendering it.
-    return parser.render();
+  .then(function (/** @type {Parser} */ parser) {
+    // Do stParserer.render();
   })
-  .then(function (/** @type {DreditorElement} */ output) {
+  .then(function (/** @type {Element} */ output) {
     output.addClass('my-custom-class');
     console.log(output.toString());
   });

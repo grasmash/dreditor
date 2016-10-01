@@ -15,6 +15,11 @@ module.exports = function (grunt) {
         src: ['dist/css/<%= pkg.name %>.css']
       }
     },
+    babelHelpers: {
+      dist: {
+        src: 'dist/js/<%= pkg.name %>.js'
+      }
+    },
     browserify: {
       options: {
         banner: '<%= banner %>',
@@ -85,7 +90,8 @@ module.exports = function (grunt) {
             comment.value = comment.value.replace(/(\n|\r|\r\n)/gm, '');
           }
           return special;
-        }
+        },
+        report: 'gzip'
       },
       min: {
         src: 'dist/js/<%= pkg.name %>.js',
@@ -108,7 +114,7 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.registerTask('css', ['clean:css', 'sass', 'autoprefixer', 'cssmin']);
-  grunt.registerTask('js', ['eslint', 'clean:js', 'browserify', 'uglify', 'remove_usestrict']);
+  grunt.registerTask('js', ['eslint', 'clean:js', 'browserify', 'babelHelpers', 'uglify', 'remove_usestrict']);
 
   // Default task(s).
   grunt.registerTask('default', ['css', 'js']);

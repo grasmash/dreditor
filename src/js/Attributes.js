@@ -1,11 +1,11 @@
-import util from './DreditorUtility';
+import _ from './Utility';
 
-export default class DreditorAttributes {
+export default class Attributes {
 
   /**
-   * @class DreditorAttributes
+   * @class Attributes
    *
-   * @param {DreditorAttributes|Object} [attributes]
+   * @param {Attributes|Object} [attributes]
    *   An Attributes object with existing data or a plain object where the key
    *   is the attribute name and the value is the attribute value.
    *
@@ -42,10 +42,10 @@ export default class DreditorAttributes {
         continue;
       }
       value = this.data[name];
-      if (util.isFunction(value)) {
+      if (_.isFunction(value)) {
         value = value.call(this);
       }
-      if (util.isObject(value)) {
+      if (_.isObject(value)) {
         var values = [];
         for (var i in value) {
           if (value.hasOwnProperty(i)) {
@@ -54,14 +54,14 @@ export default class DreditorAttributes {
         }
         value = values;
       }
-      if (util.isArray(value)) {
+      if (_.isArray(value)) {
         value = value.join(' ');
       }
       // Don't add an empty class array.
       if (name === 'class' && !value) {
         continue;
       }
-      output += ` ${util.encodeHtmlEntities(name)}="${util.encodeHtmlEntities(value)}"`;
+      output += ` ${_.encodeHtmlEntities(name)}="${_.encodeHtmlEntities(value)}"`;
     }
     return output;
   }
@@ -72,7 +72,7 @@ export default class DreditorAttributes {
    * @param {...String|Array} value
    *   An individual class or an array of classes to add.
    *
-   * @return {DreditorAttributes}
+   * @return {Attributes}
    *   The Attributes instance.
    *
    * @chainable
@@ -81,9 +81,9 @@ export default class DreditorAttributes {
     var args = Array.prototype.slice.call(arguments);
     var classes = [];
     for (var i = 0, l = args.length; i < l; i++) {
-      classes = classes.concat(this.sanitizeClass(args[i]));
+      classes = classes.concat(_.sanitizeClasses(args[i]));
     }
-    this.data['class'] = util.arrayUniq(this.data['class'].concat(classes));
+    this.data['class'] = _.arrayUniq(this.data['class'].concat(classes));
     return this;
   }
 
@@ -97,7 +97,7 @@ export default class DreditorAttributes {
    *   True or false.
    */
   exists(name) {
-    return this.data[name] !== void 0 && this.data[name] !== null;
+    return !_.isUndefined(this.data[name]) && this.data[name] !== null;
   }
 
   /**
@@ -113,7 +113,7 @@ export default class DreditorAttributes {
    */
   get(name, defaultValue) {
     if (!this.exists(name)) {
-      this.data[name] = defaultValue !== void 0 ? defaultValue : null;
+      this.data[name] = !_.isUndefined(defaultValue) ? defaultValue : null;
     }
     return this.data[name];
   }
@@ -125,7 +125,7 @@ export default class DreditorAttributes {
    *   The cloned copy of the attribute data.
    */
   getData() {
-    return util.extend({}, this.data);
+    return _.extend({}, this.data);
   }
 
   /**
@@ -148,11 +148,11 @@ export default class DreditorAttributes {
    *   True or false.
    */
   hasClass(className) {
-    className = this.sanitizeClass(className);
+    className = _.sanitizeClasses(className);
     var classes = this.getClasses();
     for (var i = 0, l = className.length; i < l; i++) {
       // If one of the classes fails, immediately return false.
-      if (util.indexOf(classes, className[i]) === -1) {
+      if (_.indexOf(classes, className[i]) === -1) {
         return false;
       }
     }
@@ -162,34 +162,34 @@ export default class DreditorAttributes {
   /**
    * Merges multiple values into the Attributes object.
    *
-   * @param {DreditorAttributes|Object|String} attributes
+   * @param {Attributes|Object|String} attributes
    *   An Attributes object with existing data or a plain object where the key
    *   is the attribute name and the value is the attribute value.
    * @param {Boolean} [recursive]
    *   Flag determining whether or not to recursively merge key/value pairs.
    *
-   * @return {DreditorAttributes}
+   * @return {Attributes}
    *   The Attributes instance.
    *
    * @chainable
    */
   merge(attributes, recursive) {
-    attributes = attributes instanceof DreditorAttributes ? attributes.getData() : attributes;
+    attributes = attributes instanceof Attributes ? attributes.getData() : attributes;
 
     // Ensure any passed are sanitized.
-    if (attributes && attributes['class'] !== void 0) {
-      attributes['class'] = this.sanitizeClass(attributes['class']);
+    if (attributes && !_.isUndefined(attributes['class'])) {
+      attributes['class'] = _.sanitizeClasses(attributes['class']);
     }
 
-    if (recursive === void 0 || recursive) {
-      this.data = util.extend(true, {}, this.data, attributes);
+    if (_.isUndefined(recursive) || recursive) {
+      this.data = _.extend(true, {}, this.data, attributes);
     }
     else {
-      this.data = util.extend({}, this.data, attributes);
+      this.data = _.extend({}, this.data, attributes);
     }
 
     // Ensure classes are unique after merge.
-    this.data['class'] = util.arrayUniq(this.data['class']);
+    this.data['class'] = _.arrayUniq(this.data['class']);
 
     return this;
   }
@@ -200,7 +200,7 @@ export default class DreditorAttributes {
    * @param {String} name
    *   The name of the attribute to remove.
    *
-   * @return {DreditorAttributes}
+   * @return {Attributes}
    *   The Attributes instance.
    *
    * @chainable
@@ -218,7 +218,7 @@ export default class DreditorAttributes {
    * @param {...String|Array} value
    *   An individual class or an array of classes to remove.
    *
-   * @return {DreditorAttributes}
+   * @return {Attributes}
    *   The Attributes instance.
    *
    * @chainable
@@ -228,9 +228,9 @@ export default class DreditorAttributes {
     var classes = this.getClasses();
     var values = [];
     for (var i = 0, l = args.length; i < l; i++) {
-      values = values.concat(this.sanitizeClass(args[i]));
+      values = values.concat(_.sanitizeClasses(args[i]));
       for (var ii = 0, ll = values.length; ii < ll; ii++) {
-        var index = util.indexOf(classes, values[ii]);
+        var index = _.indexOf(classes, values[ii]);
         if (index !== -1) {
           classes.slice(index, 1);
         }
@@ -247,39 +247,18 @@ export default class DreditorAttributes {
    * @param {String} newValue
    *   The new class. It will not be added if the old class does not exist.
    *
-   * @return {DreditorAttributes}
+   * @return {Attributes}
    *   The Attributes instance.
    *
    * @chainable
    */
   replaceClass(oldValue, newValue) {
     var classes = this.getClasses();
-    var i = util.indexOf(classes, oldValue);
+    var i = _.indexOf(classes, oldValue);
     if (i !== -1) {
       classes[i] = newValue;
     }
     return this;
-  }
-
-  /**
-   * Ensures class is an array and/or split into individual array items.
-   *
-   * @param {String|Array} classes
-   *   The class or classes to sanitize.
-   *
-   * @return {Array}
-   *   A sanitized array of classes.
-   */
-  sanitizeClass(classes) {
-    var sanitized = [];
-    classes = [].concat(classes).filter(Boolean);
-    for (var i = 0, l = classes.length; i < l; i++) {
-      var value = classes[i].split(' ').filter(Boolean);
-      for (var ii = 0, ll = value.length; ii < ll; ii++) {
-        sanitized.push(value[ii]);
-      }
-    }
-    return sanitized;
   }
 
   /**
@@ -290,13 +269,13 @@ export default class DreditorAttributes {
    * @param {*} value
    *   The value of the attribute to set.
    *
-   * @return {DreditorAttributes}
+   * @return {Attributes}
    *   The Attributes instance.
    *
    * @chainable
    */
   set(name, value) {
-    this.data[name] = name === 'class' ? this.sanitizeClass(value) : value;
+    this.data[name] = name === 'class' ? _.sanitizeClasses(value) : value;
     return this;
   }
 

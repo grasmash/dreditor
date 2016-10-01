@@ -1,10 +1,9 @@
-import DreditorEvent from './DreditorEvent';
-import util from './DreditorUtility';
+import Event from './Event';
 
-export default class DreditorEmitter {
+export default class Emitter {
 
   /**
-   * @class DreditorEmitter
+   * @class Emitter
    *
    * @constructor
    */
@@ -62,7 +61,7 @@ export default class DreditorEmitter {
     }
 
     // Create an event object.
-    var event = new DreditorEvent(type);
+    var event = new Event(type);
 
     // Set the object that emitted the event.
     event.setTarget(this);
@@ -71,9 +70,9 @@ export default class DreditorEmitter {
     args.unshift(event);
 
     // Iterate over the listeners.
-    util.forEach(listeners, (listener) => {
-      listener.apply(this, args);
-    });
+    for (let i = 0, l = listeners.length; i < l; i++) {
+      listeners[i].apply(this, args);
+    }
 
     // Return whether or not the event was prevented.
     return !event.defaultPrevented;
@@ -83,7 +82,7 @@ export default class DreditorEmitter {
    * Removes either a specific listener or all listeners for an event type.
    *
    * @param {String} type
-   *   The event type.
+   *   The event type or types, separated by a space.
    * @param {Function} [listener]
    *   The event listener.
    *
@@ -93,22 +92,27 @@ export default class DreditorEmitter {
    *   The class instance that invoked this method.
    */
   off(type, listener) {
-    // Immediately return if there is no event type.
-    if (!this.listeners[type]) {
-      return this;
-    }
+    let types = type.split(' ');
+    for (let i = 0, l = types.length; i < l; i++) {
+      let type = types[i];
 
-    // Remove all events of a specific type.
-    if (!listener) {
-      this.listeners[type] = [];
-      return this;
-    }
+      // Continue if there is no event type.
+      if (!this.listeners[type]) {
+        continue;
+      }
 
-    // Remove a specific listener.
-    for (var i = 0, l = this.listeners[type].length; i < l; i++) {
-      if (this.listeners[type][i] === listener) {
-        this.listeners[type].splice(i, 1);
-        break;
+      // Remove all events for a specific type.
+      if (!listener) {
+        this.listeners[type] = [];
+        continue;
+      }
+
+      // Remove a specific listener.
+      for (let i = 0, l = this.listeners[type].length; i < l; i++) {
+        if (this.listeners[type][i] === listener) {
+          this.listeners[type].splice(i, 1);
+          break;
+        }
       }
     }
     return this;
@@ -118,7 +122,7 @@ export default class DreditorEmitter {
    * Adds a listener for an event type.
    *
    * @param {String} type
-   *   The event type.
+   *   The event type or types, separated by a space.
    * @param {Function} listener
    *   The event listener.
    *
@@ -128,10 +132,14 @@ export default class DreditorEmitter {
    *   The class instance that invoked this method.
    */
   on(type, listener) {
-    if (!this.listeners[type]) {
-      this.listeners[type] = [];
+    let types = type.split(' ');
+    for (let i = 0, l = types.length; i < l; i++) {
+      let type = types[i];
+      if (!this.listeners[type]) {
+        this.listeners[type] = [];
+      }
+      this.listeners[type].push(listener);
     }
-    this.listeners[type].push(listener);
     return this;
   }
 

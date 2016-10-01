@@ -1,3 +1,29 @@
+.dreditor-tab {
+  background: $deleted;
+  border-radius: $border-radius-small;
+  color: #fff;
+  display: inline-block;
+  line-height: 1;
+  margin: .1em;
+  text-align: center;
+  width: 1em;
+  &:before {
+    content: 'T';
+    display: inline;
+    font-size: 80%;
+  }
+}
+
+.dreditor-trailing-space {
+  background: $deletions;
+  border: 1px solid $deleted;
+  border-radius: $border-radius-small;
+  color: #fff;
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+}
+
 // File table.
 .dreditor-file-table-wrapper {
   overflow-x: auto;
@@ -19,13 +45,13 @@
 }
 .dreditor-line {
   td {
-    border-left: 1px solid $border-color;
+    border-right: 1px solid $border-color;
     line-height: 20px;
     padding: 0 10px;
     position: relative;
     vertical-align: middle;
-    &:first-child {
-      border-left: 0;
+    &:last-child {
+      border-right: 0;
     }
     &.dreditor-line-number {
       color: rgba(0,0,0,0.4);
@@ -46,7 +72,7 @@
     }
     .dreditor-line-code-inner {
       &::before {
-        content: '';
+        content: attr(data-symbol);
       }
       white-space: pre;
       word-wrap: normal;
@@ -68,11 +94,18 @@
           color: rgba(0,0,0,0.4);
         }
       }
+      &.dreditor-hunk-meta::before {
+        content: attr(data-hunk-meta);
+      }
     }
   }
   &.dreditor-line--added {
     td {
       background: $additions;
+    }
+    td.dreditor-line-number {
+      background: darken($additions, 3%);
+      border-color: #c9e2c9;
     }
   }
 
@@ -80,5 +113,18 @@
     td {
       background: $deletions;
     }
+    td.dreditor-line-number {
+      background: darken($deletions, 3%);
+      border-color: #e2cbcb;
+    }
+  }
+
+
+  &.dreditor-line--no-new-line {
+    td {
+      background: $deleted;
+      color: #fff;
+    }
+
   }
 }

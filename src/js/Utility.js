@@ -1,16 +1,17 @@
 import arrayUniq from 'array-uniq';
-import DreditorElement from './DreditorElement';
+import Element from './Element';
+import {deparam, param} from 'node-qs-serialization';
 import extend from 'extend';
+import HTML from 'html-parse-stringify2';
 import indexOf from 'indexof';
 import isArray from 'isarray';
 import isFunction from 'is-function';
 import isObject from 'isobject';
 import isPlainObject from 'is-plain-object';
+import isUndefined from 'is-undefined';
 import urlRegex from 'url-regex';
 
-const forEach = require('async-foreach').forEach;
-
-const DreditorUtility = {
+const Utility = {
 
   /**
    * Ensures that the values in an array are unique.
@@ -21,7 +22,7 @@ const DreditorUtility = {
    * @return {Array}
    *   An array with unique values.
    */
-  arrayUniq: function (array) {
+  arrayUniq(array) {
     return arrayUniq(array);
   },
 
@@ -36,7 +37,7 @@ const DreditorUtility = {
    * @return {String}
    *   The basename of the path, minus any suffix that was passed.
    */
-  basename: function (path, suffix) {
+  basename(path, suffix) {
     /*eslint-disable*/
     /*! PHP's basename in JavaScript (https://github.com/kvz/locutus/blob/master/src/php/filesystem/basename.js) * Copyright (c) 2007-2016 Kevin van Zonneveld (http://kvz.io) and Contributors (http://locutus.io/authors) * Licensed under MIT (https://github.com/kvz/locutus/blob/master/LICENSE) */
     var b = path;
@@ -53,30 +54,29 @@ const DreditorUtility = {
   },
 
   /**
-   * Creates a new DreditorElement.
+   * Creates a new Element.
    *
-   * @param {DreditorElement|String} [content]
+   * @param {Element|String} [content]
    *   The content used to create the element. Must be fully enclosed HTML tags.
-   * @param {DreditorAttributes|Object} [attributes]
-   *   Optional. The attributes to initialize the content with.
    *
-   * @return {DreditorElement|String}
-   *   A new DreditorElement instance or a string value.
+   * @return {Element|String}
+   *   A new Element instance or a string value.
    */
-  createElement: function (content, attributes) {
-    return DreditorElement.create(content, attributes);
+  createElement(content) {
+    return Element.create(content);
   },
 
   /**
-   * Iterate over key/value pairs of either an array or dictionary like object.
+   * Parses any query parameters from a URL.
    *
-   * @param {Iterable|Object} obj
-   *   The array or object to iterate over.
-   * @param {Function} callback
-   *   The callback to invoke on each item in the object.
+   * @param {String} string
+   *   The string to parse.
+   *
+   * @return {Object}
+   *   An object representing the query parameters.
    */
-  forEach: function (obj, callback) {
-    forEach(obj, callback);
+  deparam(string) {
+    return deparam(string);
   },
 
   /**
@@ -92,7 +92,7 @@ const DreditorUtility = {
    * A little wary of doing so though since many of these libraries
    * add a lot of weight (min 40k).
    */
-  encodeHtmlEntities: function (string) {
+  encodeHtmlEntities(string) {
     return ('' + string).replace(/[\u00A0-\u9999<>&]/g, function (i) {
       return `&#${i.charCodeAt(0)};`;
     });
@@ -112,7 +112,7 @@ const DreditorUtility = {
    * @return {Object}
    *   The target object (first object passed).
    */
-  extend: function (deep, obj) {
+  extend(deep, obj) {
     return extend.apply({}, arguments);
   },
 
@@ -127,7 +127,7 @@ const DreditorUtility = {
    *
    * @see http://stackoverflow.com/a/12900504
    */
-  extension: function (filename) {
+  extension(filename) {
     return /tar\.gz$/.test(filename) ? 'tar.gz' : filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2);
   },
 
@@ -142,8 +142,8 @@ const DreditorUtility = {
    * @return {*|null}
    *   The property value or null if it isn't set.
    */
-  getProperty: function (name, object) {
-    return name.split('.').reduce((a, b) => a[b] !== void 0 ? a[b] : null, object);
+  getProperty(name, object) {
+    return name.split('.').reduce((a, b) => !isUndefined(a[b]) ? a[b] : null, object);
   },
 
   /**
@@ -157,7 +157,7 @@ const DreditorUtility = {
    * @return {Number}
    *   The index position or -1 if the value is not in the array.
    */
-  indexOf: function (array, value) {
+  indexOf(array, value) {
     return indexOf(array, value);
   },
 
@@ -170,7 +170,7 @@ const DreditorUtility = {
    * @return {Boolean}
    *   True or false.
    */
-  isArray: function (value) {
+  isArray(value) {
     return isArray(value);
   },
 
@@ -183,7 +183,7 @@ const DreditorUtility = {
    * @return {Boolean}
    *   True or false.
    */
-  isFunction: function (value) {
+  isFunction(value) {
     return isFunction(value);
   },
 
@@ -196,7 +196,7 @@ const DreditorUtility = {
    * @return {Boolean}
    *   True or false.
    */
-  isObject: function (value) {
+  isObject(value) {
     return isObject(value);
   },
 
@@ -209,7 +209,7 @@ const DreditorUtility = {
    * @return {Boolean}
    *   True or false.
    */
-  isPlainObject: function (value) {
+  isPlainObject(value) {
     return isPlainObject(value);
   },
 
@@ -222,8 +222,38 @@ const DreditorUtility = {
    * @return {Boolean}
    *   True or false.
    */
-  isSha1: function (string) {
+  isSha1(string) {
     return /^[0-9a-f]{5,40}$/.test(string);
+  },
+
+  /**
+   * Compares a value against a certain constructor.
+   *
+   * @param {*} value
+   *   The value to check.
+   * @param {String|Function} constructor
+   *   The constructor object to test against. This can be a string value that
+   *   will "require" it. If it cannot find the exported module, then it should
+   *   be required beforehand and the constructor passed instead.
+   *
+   * @return {Boolean}
+   *   True or false.
+   */
+  isType(value, constructor) {
+    return Utility.typeCheck(value, constructor, false);
+  },
+
+  /**
+   * Determines if a value is undefined.
+   *
+   * @param {*} value
+   *   The value to check.
+   *
+   * @return {Boolean}
+   *   True or false.
+   */
+  isUndefined(value) {
+    return isUndefined(value);
   },
 
   /**
@@ -239,7 +269,7 @@ const DreditorUtility = {
    *
    * @see https://www.npmjs.com/package/url-regex
    */
-  isUrl: function (string, options = {exact: true}) {
+  isUrl(string, options = {exact: true}) {
     // Immediately return false if there is more than one line in the string.
     return string.search(/(\n|\r\n|\r)/gm) !== -1 ? false : urlRegex(options).test(string);
   },
@@ -253,7 +283,7 @@ const DreditorUtility = {
    * @return {string}
    *   The machine name.
    */
-  machineName: function (string) {
+  machineName(string) {
     return string.replace(/([A-Z]+[^A-Z]+)/g, '_$1').toLowerCase().replace(/[^a-z0-9-]+/g, '_').replace(/_+/g, '_').replace(/(^_|_$)/g, '');
   },
 
@@ -262,7 +292,93 @@ const DreditorUtility = {
    *
    * @type {Function}
    */
-  noop: function () {
+  noop() {
+  },
+
+  /**
+   * Retrieves a normalized object for a given pre-computed dimension.
+   *
+   * @param {'border'|'margin'|'padding'} dimension
+   *   The dimension to retrieve.
+   * @param {Object|Number} value
+   *   The value to normalize.
+   *
+   * @return {{bottom: Number, left: Number, right: Number, top: Number}}
+   *   The normalized dimension object.
+   */
+  normalizeDimension(dimension, value) {
+    var allowed = ['border', 'margin', 'padding'];
+    if (indexOf(allowed, dimension) === -1) {
+      throw new TypeError(`Unknown dimension: ${dimension}. Only the following dimensions are allowed: ${allowed.join(', ')}`);
+    }
+    var defaultValues = (value = 0) => {
+      return {
+        bottom: value,
+        left: value,
+        right: value,
+        top: value
+      };
+    };
+    if (typeof value === 'number') {
+      value = defaultValues(value);
+    }
+    else if (isPlainObject(value)) {
+      value = extend({}, defaultValues(), value);
+    }
+    else {
+      throw new TypeError(`The "${dimension}" dimension provided must be a Number or a plain object.`);
+    }
+    return value;
+  },
+
+  /**
+   * Serializes an object into query parameters.
+   *
+   * @param {Array|Object} object
+   *   The array or object to serialize.
+   *
+   * @return {String}
+   *   A query string of serialized parameters.
+   */
+  param(object) {
+    return param(object);
+  },
+
+  /**
+   * Parses a string into an HTML AST object.
+   *
+   * @param {String} html
+   *   The HTML string to parse.
+   * @param {Object} [options={ignoreWhitespace: false}]
+   *   An object of options to pass along to the parser.
+   *
+   * @return {Object}
+   *   An AST object representation of the HTML passed.
+   */
+  parseHtml(html, options = {ignoreWhitespace: false}) {
+    return HTML.parse(html, options);
+  },
+
+  /**
+   * Ensures classes is an array and/or split into individual array items.
+   *
+   * @param {...String|Array} classes
+   *   The class or classes to sanitize.
+   *
+   * @return {Array}
+   *   A sanitized array of classes.
+   */
+  sanitizeClasses(...classes) {
+    var sanitized = [];
+    for (let i = 0, l = classes.length; i < l; i++) {
+      var values = classes[i] instanceof Array && classes[i] || typeof classes[i] === 'string' && classes[i].split(' ') || [];
+      if (values.length) {
+        for (let i = 0, l = values.length; i < l; i++) {
+          sanitized.push(values[i]);
+        }
+      }
+    }
+    return arrayUniq(sanitized);
   },
 
   /**
@@ -274,7 +390,7 @@ const DreditorUtility = {
    * @return {String}
    *   The SHA1 digest.
    */
-  sha1: function (str) {
+  sha1(str) {
     /*eslint-disable*/
     /*! PHP's sha1 in JavaScript (https://github.com/kvz/locutus/blob/master/src/php/strings/sha1.js) * Copyright (c) 2007-2016 Kevin van Zonneveld (http://kvz.io) and Contributors (http://locutus.io/authors) Licensed under MIT (https://github.com/kvz/locutus/blob/master/LICENSE) */
     var _rotLeft = function (n, s) {
@@ -392,16 +508,56 @@ const DreditorUtility = {
    * @return {String}
    *   A string representation of the template with data replaced.
    */
-  template: function (template, data = {}, remove = true) {
+  template(template, data = {}, remove = true) {
     return template.replace(/[{][{] ([\w._-]+) [}][}]/gmi, function (token, name) {
-      var value = DreditorUtility.getProperty(name, data);
+      var value = Utility.getProperty(name, data);
       if (value !== null) {
         return value;
       }
       return remove ? '' : token;
     });
+  },
+
+  tick(callback) {
+    global.setImmediate(callback);
+  },
+
+  /**
+   * Ensures that a value is of a certain instance type.
+   *
+   * @param {*} value
+   *   The value to check.
+   * @param {String|Function} constructor
+   *   The constructor object to test against. This can be a string value that
+   *   will "require" it. If it cannot find the exported module, then it should
+   *   be required beforehand and the constructor passed instead.
+   * @param {Boolean} [throwError=true]
+   *   Flag indicating whether or not to throw an error.
+   *
+   * @return {Boolean}
+   *   True or thrown error or false if error argument is false.
+   *
+   * @throws {SyntaxError|ReferenceError|TypeError}
+   *   Throws an error if the value does not pass the check.
+   */
+  typeCheck(value, constructor, throwError = true) {
+    var error;
+    var original = constructor;
+
+    if (!error && !Utility.isFunction(constructor)) {
+      error = new SyntaxError(`The "constructor" passed must be a function: ${constructor}`);
+    }
+    else if (!error && !(value instanceof constructor)) {
+      error = new TypeError(`The value passed must be an instance of ${typeof original === 'string' ? original : original.name}.`);
+    }
+
+    if (error && throwError) {
+      throw error;
+    }
+
+    return !error;
   }
 
 };
 
-export default DreditorUtility;
+export default Utility;

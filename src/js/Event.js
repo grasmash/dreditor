@@ -1,7 +1,7 @@
-export default class DreditorEvent {
+export default class Event {
 
   /**
-   * @class DreditorEvent
+   * @class Event
    *
    * @param {String} type
    *   The event type.

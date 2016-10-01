@@ -2,8 +2,7 @@
 .dreditor-file {
   border: 1px solid $border-color;
   border-radius: $border-radius;
-  margin: 15px 0;
-  overflow: hidden;
+  margin: 0 0 15px;
 }
 
 // File header.
@@ -37,7 +36,7 @@
   font-size: $font-size-small;
   height: 1em;
   line-height: 1;
-  margin-right: .25em;
+  margin-right: 5px;
   padding: 3px 3px 2px;
   text-align: center;
   user-select: none;

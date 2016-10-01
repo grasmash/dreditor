@@ -1,28 +1,9 @@
 import Dreditor from './Dreditor';
-import util from './DreditorUtility';
+import _ from './Utility';
 
-export default class DreditorProxy {
-
-  /**
-   * Creates a new Promise that ensures all items in the iterable have finished.
-   *
-   * @param {Promise[]} array
-   *   An array of promises.
-   *
-   * @return {Promise}
-   *   A new Promise object.
-   *
-   * @see Dreditor.promise
-   */
-  all(array) {
-    // Don't proxy the entire method since "this" needs to be bound correctly.
-    var promise = this.getDreditorOption('promise');
-    return promise.all(array);
-  }
+export default class Proxy {
 
   /**
-   * @class DreditorProxy
-   *
    * A helper class that allows other classes to proxy the methods on the
    * Dreditor instance rather than on their own objects. This helps ensure,
    * for instance, all event bindings are located in one place.
@@ -63,6 +44,23 @@ export default class DreditorProxy {
   }
 
   /**
+   * Creates a new Promise that ensures all items in the iterable have finished.
+   *
+   * @param {Promise[]} array
+   *   An array of promises.
+   *
+   * @return {Promise}
+   *   A new Promise object.
+   *
+   * @see Dreditor.promise
+   */
+  all(array) {
+    // Don't proxy the entire method since "this" needs to be bound correctly.
+    var promise = this.getDreditorOption('promise');
+    return promise.all(array);
+  }
+
+  /**
    * Creates a promised based task with start and end emitted events.
    *
    * @param {String} name
@@ -78,15 +76,10 @@ export default class DreditorProxy {
    *   A Promise object.
    */
   doTask(name, callback) {
-    var obj = this;
-    return obj.promise((fulfill, reject) => {
-      if (!obj.emit(`${name}.start`, this)) {
-        return reject(obj);
-      }
-      return fulfill(callback.call(obj));
-    }).then(() => {
-      return obj.emit(`${name}.end`, this) && obj;
-    });
+    // Execute callback inside setImmediate so long sub-tasks don't block.
+    return this.emit(`${name}.start`, this)
+      .then(() => callback.call(this))
+      .then(value => this.emit(`${name}.end`, this).then(() => value));
   }
 
   /**
@@ -101,7 +94,7 @@ export default class DreditorProxy {
    *   A promise object.
    */
   each(array, callback) {
-    array = util.isArray(array) ? array : [array];
+    array = _.isArray(array) ? array : [array];
     return array.reduce((prev, curr, i) => {
       return prev.then(() => {
         return callback(curr, i, array);
@@ -137,9 +130,9 @@ export default class DreditorProxy {
    */
   garbageCollect(type = 'default') {
     var collect = !!this.getDreditorOption('garbageCollect');
-    if (collect && type === 'render') {
-      this.dreditor = null;
-    }
+    // if (collect && type === 'render') {
+    //   this.dreditor = null;
+    // }
     return collect;
   }
 
@@ -294,9 +287,7 @@ export default class DreditorProxy {
    *   A rejected Promise object.
    */
   reject(value) {
-    // Don't proxy the entire method since "this" needs to be bound correctly.
-    var promise = this.getDreditorOption('promise');
-    return promise.reject(value);
+    return this.proxy('reject', arguments);
   }
 
   /**
@@ -309,9 +300,7 @@ export default class DreditorProxy {
    *   A resolved Promise object.
    */
   resolve(value) {
-    // Don't proxy the entire method since "this" needs to be bound correctly.
-    var promise = this.getDreditorOption('promise');
-    return promise.resolve(value);
+    return this.proxy('resolve', arguments);
   }
 
   /**
@@ -330,6 +319,42 @@ export default class DreditorProxy {
   }
 
   /**
+   * Sets an option specific to the Dreditor instance.
+   *
+   * @param {String} name
+   *   The option name. It can also be a namespaced (using dot notation) key to
+   *   retrieve a deeply nested option value.
+   * @param {*} [value=null]
+   *   The value to set, if no option has been set.
+   *
+   * @chainable
+   *
+   * @return {*}
+   *   The class instance that invoked this method.
+   */
+  setDreditorOption(name, value = null) {
+    return this.proxy('setOption', arguments);
+  }
+
+  /**
+   * Sets an option for this instance.
+   *
+   * @param {String} name
+   *   The option name. It can also be a namespaced (using dot notation) key to
+   *   retrieve a deeply nested option value.
+   * @param {*} [value=null]
+   *   The value to set, if no option has been set.
+   *
+   * @chainable
+   *
+   * @return {*}
+   *   The class instance that invoked this method.
+   */
+  setOption(name, value = null) {
+    return this.dreditor.setOption.apply(this, arguments);
+  }
+
+  /**
    * Generates a translated locale string for a given locale key.
    *
    * @param {String} text
@@ -342,6 +367,28 @@ export default class DreditorProxy {
    */
   t(text, langCode = this.langCode) {
     return this.proxy('t', arguments);
+  }
+
+
+  /**
+   * Ensures that a value is of a certain instance type.
+   *
+   * @param {*} value
+   *   The value to check.
+   * @param {Function} constructor
+   *   The constructor function to test against.
+   * @param {Boolean} [promise=true]
+   *   Whether or not to wrap the type check inside a promise.
+   *
+   * @return {Promise}
+   *   Returns a Promise object, if the parameter is set to true. Otherwise it
+   *   will return nothing and only an Error will be thrown, if any.
+   *
+   * @throws {SyntaxError|ReferenceError|TypeError}
+   *   Throws an error if the value does not pass the check.
+   */
+  typeCheck(value, constructor, promise = true) {
+    return this.proxy('typeCheck', arguments);
   }
 
 }

@@ -4,7 +4,16 @@
  * Licensed under MIT (https://github.com/unicorn-fail/dreditor/blob/2.x/LICENSE-MIT)
  */
 
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Dreditor = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Dreditor = f()}})(function(){
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -71,70 +80,6 @@ if ('Set' in global) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],2:[function(require,module,exports){
-/*!
- * Sync/Async forEach
- * https://github.com/cowboy/javascript-sync-async-foreach
- *
- * Copyright (c) 2012 "Cowboy" Ben Alman
- * Licensed under the MIT license.
- * http://benalman.com/about/license/
- */
-
-(function(exports) {
-
-  // Iterate synchronously or asynchronously.
-  exports.forEach = function(arr, eachFn, doneFn) {
-    var i = -1;
-    // Resolve array length to a valid (ToUint32) number.
-    var len = arr.length >>> 0;
-
-    // This IIFE is called once now, and then again, by name, for each loop
-    // iteration.
-    (function next(result) {
-      // This flag will be set to true if `this.async` is called inside the
-      // eachFn` callback.
-      var async;
-      // Was false returned from the `eachFn` callback or passed to the
-      // `this.async` done function?
-      var abort = result === false;
-
-      // Increment counter variable and skip any indices that don't exist. This
-      // allows sparse arrays to be iterated.
-      do { ++i; } while (!(i in arr) && i !== len);
-
-      // Exit if result passed to `this.async` done function or returned from
-      // the `eachFn` callback was false, or when done iterating.
-      if (abort || i === len) {
-        // If a `doneFn` callback was specified, invoke that now. Pass in a
-        // boolean value representing "not aborted" state along with the array.
-        if (doneFn) {
-          doneFn(!abort, arr);
-        }
-        return;
-      }
-
-      // Invoke the `eachFn` callback, setting `this` inside the callback to a
-      // custom object that contains one method, and passing in the array item,
-      // index, and the array.
-      result = eachFn.call({
-        // If `this.async` is called inside the `eachFn` callback, set the async
-        // flag and return a function that can be used to continue iterating.
-        async: function() {
-          async = true;
-          return next;
-        }
-      }, arr[i], i, arr);
-
-      // If the async flag wasn't set, continue by calling `next` synchronously,
-      // passing in the result of the `eachFn` callback.
-      if (!async) {
-        next(result);
-      }
-    }());
-  };
-
-}(typeof exports === "object" && exports || this));
-},{}],3:[function(require,module,exports){
 'use strict';
 
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -222,7 +167,178 @@ module.exports = function extend() {
 };
 
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+module.exports = {
+    parse: require('./lib/parse'),
+    stringify: require('./lib/stringify')
+};
+
+},{"./lib/parse":5,"./lib/stringify":6}],4:[function(require,module,exports){
+var attrRE = /([\w-]+)|(['"])(.*?)\2/g;
+var voidElements = require('void-elements');
+
+module.exports = function (tag) {
+    var i = 0;
+    var key;
+    var res = {
+        type: 'tag',
+        name: '',
+        voidElement: false,
+        attrs: {},
+        children: []
+    };
+
+    tag.replace(attrRE, function (match) {
+        if (i % 2) {
+            key = match;
+        } else {
+            if (i === 0) {
+                if (voidElements[match]) {
+                    res.voidElement = true;
+                }
+                res.name = match;
+            } else {
+                res.attrs[key] = match.replace(/^['"]|['"]$/g, '');
+            }
+        }
+        i++;
+    });
+
+    return res;
+};
+
+},{"void-elements":25}],5:[function(require,module,exports){
+/*jshint -W030 */
+var tagRE = /(?:<!--[\S\s]*?-->|<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>)/g;
+var parseTag = require('./parse-tag');
+// re-used obj for quick lookups of components
+var empty = Object.create ? Object.create(null) : {};
+// common logic for pushing a child node onto a list
+function pushTextNode(list, html, start, ignoreWhitespace) {
+    // calculate correct end of the content slice in case there's
+    // no tag after the text node.
+    var end = html.indexOf('<', start);
+    var content = html.slice(start, end === -1 ? undefined : end);
+    // if a node is nothing but whitespace, no need to add it.
+    if (!ignoreWhitespace || !/^\s*$/.test(content)) {
+        list.push({
+            type: 'text',
+            content: content
+        });
+    }
+}
+
+module.exports = function parse(html, options) {
+    options || (options = {});
+    options.components || (options.components = empty);
+    if (options.ignoreWhitespace === void 0) {
+        options.ignoreWhitespace = true;
+    }
+    var result = [];
+    var current;
+    var level = -1;
+    var arr = [];
+    var byTag = {};
+    var inComponent = false;
+
+    html.replace(tagRE, function (tag, index) {
+        if (inComponent) {
+            if (tag !== ('</' + current.name + '>')) {
+                return;
+            } else {
+                inComponent = false;
+            }
+        }
+
+        var isOpen = tag.charAt(1) !== '/';
+        var isComment = tag.indexOf('<!--') === 0;
+        var start = index + tag.length;
+        var nextChar = html.charAt(start);
+        var parent;
+
+        if (isOpen && !isComment) {
+            level++;
+
+            current = parseTag(tag);
+            if (current.type === 'tag' && options.components[current.name]) {
+                current.type = 'component';
+                inComponent = true;
+            }
+
+            if (!current.voidElement && !inComponent && nextChar && nextChar !== '<') {
+                pushTextNode(current.children, html, start, options.ignoreWhitespace);
+            }
+
+            byTag[current.tagName] = current;
+
+            // if we're at root, push new base node
+            if (level === 0) {
+                result.push(current);
+            }
+
+            parent = arr[level - 1];
+
+            if (parent) {
+                parent.children.push(current);
+            }
+
+            arr[level] = current;
+        }
+
+        if (isComment || !isOpen || current.voidElement) {
+            if (!isComment) {
+                level--;
+            }
+            if (!inComponent && nextChar !== '<' && nextChar) {
+                // trailing text node
+                // if we're at the root, push a base text node. otherwise add as
+                // a child to the current node.
+                parent = level === -1 ? result : arr[level].children;
+                pushTextNode(parent, html, start, options.ignoreWhitespace);
+            }
+        }
+    });
+
+    // If the "html" passed isn't actually html, add it as a text node.
+    if (!result.length && html.length) {
+        pushTextNode(result, html, 0, options.ignoreWhitespace);
+    }
+
+    return result;
+};
+
+},{"./parse-tag":4}],6:[function(require,module,exports){
+function attrString(attrs) {
+    var buff = [];
+    for (var key in attrs) {
+        buff.push(key + '="' + attrs[key] + '"');
+    }
+    if (!buff.length) {
+        return '';
+    }
+    return ' ' + buff.join(' ');
+}
+
+function stringify(buff, doc) {
+    switch (doc.type) {
+    case 'text':
+        return buff + doc.content;
+    case 'tag':
+        buff += '<' + doc.name + (doc.attrs ? attrString(doc.attrs) : '') + (doc.voidElement ? '/>' : '>');
+        if (doc.voidElement) {
+            return buff;
+        }
+        return buff + doc.children.reduce(stringify, '') + '</' + doc.name + '>';
+    }
+}
+
+module.exports = function (doc) {
+    return doc.reduce(function (token, rootEl) {
+        return token + stringify('', rootEl);
+    }, '');
+};
+
+},{}],7:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -233,7 +349,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],5:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 var v4 = '(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])){3}';
@@ -255,7 +371,7 @@ ip.v6 = function (opts) {
 	return opts.exact ? new RegExp('^' + v6 + '$') : new RegExp(v6, 'g');
 };
 
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -272,7 +388,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],7:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
@@ -311,7 +427,7 @@ module.exports = function isPlainObject(o) {
   return true;
 };
 
-},{"isobject":8}],8:[function(require,module,exports){
+},{"isobject":11}],11:[function(require,module,exports){
 /*!
  * isobject <https://github.com/jonschlinkert/isobject>
  *
@@ -326,14 +442,31 @@ module.exports = function isObject(val) {
     && !Array.isArray(val);
 };
 
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+"use strict";
+
+/**
+ * isUndefined
+ * Checks if a value is undefined or not.
+ *
+ * @name isUndefined
+ * @function
+ * @param {Anything} input The input value.
+ * @returns {Boolean} `true`, if the input is `undefined`, `false` otherwise.
+ */
+
+var u = void 0;
+module.exports = function (input) {
+  return input === u;
+};
+},{}],13:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*!
  * isobject <https://github.com/jonschlinkert/isobject>
  *
@@ -349,7 +482,1006 @@ module.exports = function isObject(val) {
   return val != null && typeof val === 'object' && isArray(val) === false;
 };
 
-},{"isarray":9}],11:[function(require,module,exports){
+},{"isarray":13}],15:[function(require,module,exports){
+module.exports.param = require('./lib/param.js').param;
+module.exports.deparam = require('./lib/deparam.js').deparam;
+
+},{"./lib/deparam.js":16,"./lib/param.js":17}],16:[function(require,module,exports){
+/* global unescape */
+'use strict';
+exports.deparam = function(params, coerce) {
+  var obj = {};
+  var coerceTypes = {
+    true: !0,
+    false: !1,
+    null: null,
+  };
+
+  if (typeof params !== 'string') {
+    return obj;
+  }
+  if (typeof coerce === 'undefined') {
+    coerce = true;
+  }
+
+  function safeDecodeURIComponent(component) {
+    var returnvalue = '';
+    try {
+      returnvalue = decodeURIComponent(component);
+    } catch (e) {
+      returnvalue = unescape(component);
+    }
+    return returnvalue;
+  }
+
+  // Iterate over all name=value pairs.
+  params.replace(/\+/g, ' ').split('&').forEach(function(element) {
+    var param = element.split('=');
+    var key = safeDecodeURIComponent(param[0]);
+    var val;
+    var cur = obj;
+    var i = 0;
+
+    // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
+    // into its component parts.
+    var keys = key.split('][');
+    var keysLast = keys.length - 1;
+
+    // If the first keys part contains [ and the last ends with ], then []
+    // are correctly balanced.
+    if (/\[/.test(keys[0]) && /\]$/.test(keys[keysLast])) {
+      // Remove the trailing ] from the last keys part.
+      keys[keysLast] = keys[keysLast].replace(/\]$/, '');
+      // Split first keys part into two parts on the [ and add them back onto
+      // the beginning of the keys array.
+      keys = keys.shift().split('[').concat(keys);
+      keysLast = keys.length - 1;
+    } else {
+      // Basic 'foo' style key.
+      keysLast = 0;
+    }
+    // Are we dealing with a name=value pair, or just a name?
+    if (param.length === 2) {
+      val = safeDecodeURIComponent(param[1]);
+      // Coerce values.
+      if (coerce) {
+        val = val && !isNaN(val)           ? +val             // number
+          : val === 'undefined'            ? undefined        // undefined
+          : coerceTypes[val] !== undefined ? coerceTypes[val] // true, false, null
+          : val;                                              // string
+      }
+      if (keysLast) {
+        // Complex key, build deep object structure based on a few rules:
+        // * The 'cur' pointer starts at the object top-level
+        // * [] = array push (n is set to array length), [n] = array if n is
+        //   numeric, otherwise object.
+        // * If at the last keys part, set the value.
+        // * For each keys part, if the current level is undefined create an
+        //   object or array based on the type of the next keys part.
+        // * Move the 'cur' pointer to the next level.
+        // * Rinse & repeat.
+        for (; i <= keysLast; i++) {
+          key = keys[i] === '' ?
+            cur.length :
+            keys[i];
+          cur = cur[key] = i < keysLast ?
+            cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ?
+                           {} :
+                           []
+                        ) :
+            val;
+        }
+      } else {
+        // Simple key, even simpler rules, since only scalars and shallow
+        // arrays are allowed.
+        if (Array.isArray(obj[key])) {
+          // val is already an array, so push on the next value.
+          obj[key].push(val);
+        } else if (obj[key] !== undefined) {
+          // val isn't an array, but since a second value has been specified,
+          // convert val into an array.
+          obj[key] = [
+            obj[key],
+            val
+          ];
+        } else {
+          // val is a scalar.
+          obj[key] = val;
+        }
+      }
+    } else if (key) {
+      // No value was defined, so set something meaningful.
+      obj[key] = coerce ? undefined : '';
+    }
+  });
+  return obj;
+};
+
+},{}],17:[function(require,module,exports){
+'use strict';
+
+module.exports.param = function(sourceObject) {
+  var prefix;
+  var querystring = [];
+  var r20 = /%20/g;
+  var rbracket = /\[\]$/;
+
+  function add(key, value) {
+    // If value is a function, invoke it and return its value
+    value = (typeof value === 'function') ?
+      value() :
+      value === null ?
+        '' :
+        value;
+    querystring[querystring.length] = encodeURIComponent(key) +
+      '=' + encodeURIComponent(value);
+  }
+
+  function buildParams(prefix, obj, add) {
+    var name;
+    if (Array.isArray(obj)) {
+      // Serialize array item.
+      for (var index = 0; index < obj.length; index++)
+      {
+        if (rbracket.test(prefix)) {
+          // Treat each array item as a scalar.
+          add(prefix, obj[index]);
+        } else {
+          // Item is non-scalar (array or object), encode its numeric index.
+          buildParams(prefix + '[' + (typeof (obj[index]) === 'object' ?
+                                        index :
+                                        ''
+                                     ) + ']', obj[index], add);
+        }
+      }
+    } else if (typeof obj === 'object') {
+      // Serialize object item.
+      for (name in obj) {
+        buildParams(prefix + '[' + name + ']', obj[name], add);
+      }
+    } else {
+      // Serialize scalar item.
+      add(prefix, obj);
+    }
+  }
+
+  // encode params recursively.
+  for (prefix in sourceObject) {
+    buildParams(prefix, sourceObject[prefix], add);
+  }
+  // Return the resulting serialization
+  return querystring.join('&').replace(r20, '+');
+};
+
+},{}],18:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],19:[function(require,module,exports){
+'use strict';
+
+
+
+function noop() {}
+
+// States:
+//
+// 0 - pending
+// 1 - fulfilled with _value
+// 2 - rejected with _value
+// 3 - adopted the state of another promise, _value
+//
+// once the state is no longer pending (0) it is immutable
+
+// All `_` prefixed properties will be reduced to `_{random number}`
+// at build time to obfuscate them and discourage their use.
+// We don't use symbols or Object.defineProperty to fully hide them
+// because the performance isn't good enough.
+
+
+// to avoid using try/catch inside critical functions, we
+// extract them to here.
+var LAST_ERROR = null;
+var IS_ERROR = {};
+function getThen(obj) {
+  try {
+    return obj.then;
+  } catch (ex) {
+    LAST_ERROR = ex;
+    return IS_ERROR;
+  }
+}
+
+function tryCallOne(fn, a) {
+  try {
+    return fn(a);
+  } catch (ex) {
+    LAST_ERROR = ex;
+    return IS_ERROR;
+  }
+}
+function tryCallTwo(fn, a, b) {
+  try {
+    fn(a, b);
+  } catch (ex) {
+    LAST_ERROR = ex;
+    return IS_ERROR;
+  }
+}
+
+module.exports = Promise;
+
+function Promise(fn) {
+  if (typeof this !== 'object') {
+    throw new TypeError('Promises must be constructed via new');
+  }
+  if (typeof fn !== 'function') {
+    throw new TypeError('not a function');
+  }
+  this._45 = 0;
+  this._81 = 0;
+  this._65 = null;
+  this._54 = null;
+  if (fn === noop) return;
+  doResolve(fn, this);
+}
+Promise._10 = null;
+Promise._97 = null;
+Promise._61 = noop;
+
+Promise.prototype.then = function(onFulfilled, onRejected) {
+  if (this.constructor !== Promise) {
+    return safeThen(this, onFulfilled, onRejected);
+  }
+  var res = new Promise(noop);
+  handle(this, new Handler(onFulfilled, onRejected, res));
+  return res;
+};
+
+function safeThen(self, onFulfilled, onRejected) {
+  return new self.constructor(function (resolve, reject) {
+    var res = new Promise(noop);
+    res.then(resolve, reject);
+    handle(self, new Handler(onFulfilled, onRejected, res));
+  });
+};
+function handle(self, deferred) {
+  while (self._81 === 3) {
+    self = self._65;
+  }
+  if (Promise._10) {
+    Promise._10(self);
+  }
+  if (self._81 === 0) {
+    if (self._45 === 0) {
+      self._45 = 1;
+      self._54 = deferred;
+      return;
+    }
+    if (self._45 === 1) {
+      self._45 = 2;
+      self._54 = [self._54, deferred];
+      return;
+    }
+    self._54.push(deferred);
+    return;
+  }
+  handleResolved(self, deferred);
+}
+
+function handleResolved(self, deferred) {
+  setImmediate(function() {
+    var cb = self._81 === 1 ? deferred.onFulfilled : deferred.onRejected;
+    if (cb === null) {
+      if (self._81 === 1) {
+        resolve(deferred.promise, self._65);
+      } else {
+        reject(deferred.promise, self._65);
+      }
+      return;
+    }
+    var ret = tryCallOne(cb, self._65);
+    if (ret === IS_ERROR) {
+      reject(deferred.promise, LAST_ERROR);
+    } else {
+      resolve(deferred.promise, ret);
+    }
+  });
+}
+function resolve(self, newValue) {
+  // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+  if (newValue === self) {
+    return reject(
+      self,
+      new TypeError('A promise cannot be resolved with itself.')
+    );
+  }
+  if (
+    newValue &&
+    (typeof newValue === 'object' || typeof newValue === 'function')
+  ) {
+    var then = getThen(newValue);
+    if (then === IS_ERROR) {
+      return reject(self, LAST_ERROR);
+    }
+    if (
+      then === self.then &&
+      newValue instanceof Promise
+    ) {
+      self._81 = 3;
+      self._65 = newValue;
+      finale(self);
+      return;
+    } else if (typeof then === 'function') {
+      doResolve(then.bind(newValue), self);
+      return;
+    }
+  }
+  self._81 = 1;
+  self._65 = newValue;
+  finale(self);
+}
+
+function reject(self, newValue) {
+  self._81 = 2;
+  self._65 = newValue;
+  if (Promise._97) {
+    Promise._97(self, newValue);
+  }
+  finale(self);
+}
+function finale(self) {
+  if (self._45 === 1) {
+    handle(self, self._54);
+    self._54 = null;
+  }
+  if (self._45 === 2) {
+    for (var i = 0; i < self._54.length; i++) {
+      handle(self, self._54[i]);
+    }
+    self._54 = null;
+  }
+}
+
+function Handler(onFulfilled, onRejected, promise){
+  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+  this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+  this.promise = promise;
+}
+
+/**
+ * Take a potentially misbehaving resolver function and make sure
+ * onFulfilled and onRejected are only called once.
+ *
+ * Makes no guarantees about asynchrony.
+ */
+function doResolve(fn, promise) {
+  var done = false;
+  var res = tryCallTwo(fn, function (value) {
+    if (done) return;
+    done = true;
+    resolve(promise, value);
+  }, function (reason) {
+    if (done) return;
+    done = true;
+    reject(promise, reason);
+  })
+  if (!done && res === IS_ERROR) {
+    done = true;
+    reject(promise, LAST_ERROR);
+  }
+}
+
+},{}],20:[function(require,module,exports){
+'use strict';
+
+//This file contains the ES6 extensions to the core Promises/A+ API
+
+var Promise = require('./core.js');
+
+module.exports = Promise;
+
+/* Static Functions */
+
+var TRUE = valuePromise(true);
+var FALSE = valuePromise(false);
+var NULL = valuePromise(null);
+var UNDEFINED = valuePromise(undefined);
+var ZERO = valuePromise(0);
+var EMPTYSTRING = valuePromise('');
+
+function valuePromise(value) {
+  var p = new Promise(Promise._61);
+  p._81 = 1;
+  p._65 = value;
+  return p;
+}
+Promise.resolve = function (value) {
+  if (value instanceof Promise) return value;
+
+  if (value === null) return NULL;
+  if (value === undefined) return UNDEFINED;
+  if (value === true) return TRUE;
+  if (value === false) return FALSE;
+  if (value === 0) return ZERO;
+  if (value === '') return EMPTYSTRING;
+
+  if (typeof value === 'object' || typeof value === 'function') {
+    try {
+      var then = value.then;
+      if (typeof then === 'function') {
+        return new Promise(then.bind(value));
+      }
+    } catch (ex) {
+      return new Promise(function (resolve, reject) {
+        reject(ex);
+      });
+    }
+  }
+  return valuePromise(value);
+};
+
+Promise.all = function (arr) {
+  var args = Array.prototype.slice.call(arr);
+
+  return new Promise(function (resolve, reject) {
+    if (args.length === 0) return resolve([]);
+    var remaining = args.length;
+    function res(i, val) {
+      if (val && (typeof val === 'object' || typeof val === 'function')) {
+        if (val instanceof Promise && val.then === Promise.prototype.then) {
+          while (val._81 === 3) {
+            val = val._65;
+          }
+          if (val._81 === 1) return res(i, val._65);
+          if (val._81 === 2) reject(val._65);
+          val.then(function (val) {
+            res(i, val);
+          }, reject);
+          return;
+        } else {
+          var then = val.then;
+          if (typeof then === 'function') {
+            var p = new Promise(then.bind(val));
+            p.then(function (val) {
+              res(i, val);
+            }, reject);
+            return;
+          }
+        }
+      }
+      args[i] = val;
+      if (--remaining === 0) {
+        resolve(args);
+      }
+    }
+    for (var i = 0; i < args.length; i++) {
+      res(i, args[i]);
+    }
+  });
+};
+
+Promise.reject = function (value) {
+  return new Promise(function (resolve, reject) {
+    reject(value);
+  });
+};
+
+Promise.race = function (values) {
+  return new Promise(function (resolve, reject) {
+    values.forEach(function(value){
+      Promise.resolve(value).then(resolve, reject);
+    });
+  });
+};
+
+/* Prototype Methods */
+
+Promise.prototype['catch'] = function (onRejected) {
+  return this.then(null, onRejected);
+};
+
+},{"./core.js":19}],21:[function(require,module,exports){
+'use strict';
+
+var Promise = require('./core.js');
+
+module.exports = Promise;
+Promise.prototype['finally'] = function (f) {
+  return this.then(function (value) {
+    return Promise.resolve(f()).then(function () {
+      return value;
+    });
+  }, function (err) {
+    return Promise.resolve(f()).then(function () {
+      throw err;
+    });
+  });
+};
+
+},{"./core.js":19}],22:[function(require,module,exports){
+'use strict';
+
+var Promise = require('./core');
+
+var DEFAULT_WHITELIST = [
+  ReferenceError,
+  TypeError,
+  RangeError
+];
+
+var enabled = false;
+exports.disable = disable;
+function disable() {
+  enabled = false;
+  Promise._10 = null;
+  Promise._97 = null;
+}
+
+exports.enable = enable;
+function enable(options) {
+  options = options || {};
+  if (enabled) disable();
+  enabled = true;
+  var id = 0;
+  var displayId = 0;
+  var rejections = {};
+  Promise._10 = function (promise) {
+    if (
+      promise._81 === 2 && // IS REJECTED
+      rejections[promise._72]
+    ) {
+      if (rejections[promise._72].logged) {
+        onHandled(promise._72);
+      } else {
+        clearTimeout(rejections[promise._72].timeout);
+      }
+      delete rejections[promise._72];
+    }
+  };
+  Promise._97 = function (promise, err) {
+    if (promise._45 === 0) { // not yet handled
+      promise._72 = id++;
+      rejections[promise._72] = {
+        displayId: null,
+        error: err,
+        timeout: setTimeout(
+          onUnhandled.bind(null, promise._72),
+          // For reference errors and type errors, this almost always
+          // means the programmer made a mistake, so log them after just
+          // 100ms
+          // otherwise, wait 2 seconds to see if they get handled
+          matchWhitelist(err, DEFAULT_WHITELIST)
+            ? 100
+            : 2000
+        ),
+        logged: false
+      };
+    }
+  };
+  function onUnhandled(id) {
+    if (
+      options.allRejections ||
+      matchWhitelist(
+        rejections[id].error,
+        options.whitelist || DEFAULT_WHITELIST
+      )
+    ) {
+      rejections[id].displayId = displayId++;
+      if (options.onUnhandled) {
+        rejections[id].logged = true;
+        options.onUnhandled(
+          rejections[id].displayId,
+          rejections[id].error
+        );
+      } else {
+        rejections[id].logged = true;
+        logError(
+          rejections[id].displayId,
+          rejections[id].error
+        );
+      }
+    }
+  }
+  function onHandled(id) {
+    if (rejections[id].logged) {
+      if (options.onHandled) {
+        options.onHandled(rejections[id].displayId, rejections[id].error);
+      } else if (!rejections[id].onUnhandled) {
+        console.warn(
+          'Promise Rejection Handled (id: ' + rejections[id].displayId + '):'
+        );
+        console.warn(
+          '  This means you can ignore any previous messages of the form "Possible Unhandled Promise Rejection" with id ' +
+          rejections[id].displayId + '.'
+        );
+      }
+    }
+  }
+}
+
+function logError(id, error) {
+  console.warn('Possible Unhandled Promise Rejection (id: ' + id + '):');
+  var errStr = (error && (error.stack || error)) + '';
+  errStr.split('\n').forEach(function (line) {
+    console.warn('  ' + line);
+  });
+}
+
+function matchWhitelist(error, list) {
+  return list.some(function (cls) {
+    return error instanceof cls;
+  });
+}
+},{"./core":19}],23:[function(require,module,exports){
+(function (process,global){
+(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":18}],24:[function(require,module,exports){
 'use strict';
 var ipRegex = require('ip-regex');
 
@@ -373,38 +1505,982 @@ module.exports = function (opts) {
 						new RegExp(regex, 'ig');
 };
 
-},{"ip-regex":5}],12:[function(require,module,exports){
-(function (global){
+},{"ip-regex":8}],25:[function(require,module,exports){
+/**
+ * This file automatically generated from `pre-publish.js`.
+ * Do not manually edit.
+ */
+
+module.exports = {
+  "area": true,
+  "base": true,
+  "br": true,
+  "col": true,
+  "embed": true,
+  "hr": true,
+  "img": true,
+  "input": true,
+  "keygen": true,
+  "link": true,
+  "menuitem": true,
+  "meta": true,
+  "param": true,
+  "source": true,
+  "track": true,
+  "wbr": true
+};
+
+},{}],26:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _Utility = require('./Utility');
 
-var _DreditorLocaleBase2 = require('./DreditorLocaleBase');
+var _Utility2 = _interopRequireDefault(_Utility);
 
-var _DreditorLocaleBase3 = _interopRequireDefault(_DreditorLocaleBase2);
 
-var _DreditorParser = require('./DreditorParser');
 
-var _DreditorParser2 = _interopRequireDefault(_DreditorParser);
+var Attributes = function () {
 
-var _DreditorUtility = require('./DreditorUtility');
+  /**
+   * @class Attributes
+   *
+   * @param {Attributes|Object} [attributes]
+   *   An Attributes object with existing data or a plain object where the key
+   *   is the attribute name and the value is the attribute value.
+   *
+   * @constructor
+   */
+  function Attributes() {
+    var attributes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
+    _classCallCheck(this, Attributes);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+    /*! Attributes (http://cgit.drupalcode.org/bootstrap/tree/js/attributes.js) * Copyright (c) 2016 Mark Carver <https://www.drupal.org/u/markcarver> * Licensed under GPL-2.0 (https://www.drupal.org/about/licensing) */ // eslint-disable-line
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+    /**
+     * The internal object containing the data for the attributes.
+     *
+     * @type {Object}
+     */
+    this.data = {};
+    this.data['class'] = [];
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+    this.merge(attributes);
+  }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  /**
+   * Renders the attributes object as a string to inject into an HTML element.
+   *
+   * @return {String}
+   *   A string representation of the attributes array, intended to be injected
+   *   into a DOM element.
+   */
 
-var Dreditor = function (_DreditorLocaleBase) {
-  _inherits(Dreditor, _DreditorLocaleBase);
+
+  _createClass(Attributes, [{
+    key: 'toString',
+    value: function toString() {
+      var output = '';
+      var name;
+      var value;
+      for (name in this.data) {
+        if (!this.data.hasOwnProperty(name)) {
+          continue;
+        }
+        value = this.data[name];
+        if (_Utility2.default.isFunction(value)) {
+          value = value.call(this);
+        }
+        if (_Utility2.default.isObject(value)) {
+          var values = [];
+          for (var i in value) {
+            if (value.hasOwnProperty(i)) {
+              values.push(value[i]);
+            }
+          }
+          value = values;
+        }
+        if (_Utility2.default.isArray(value)) {
+          value = value.join(' ');
+        }
+        // Don't add an empty class array.
+        if (name === 'class' && !value) {
+          continue;
+        }
+        output += ' ' + _Utility2.default.encodeHtmlEntities(name) + '="' + _Utility2.default.encodeHtmlEntities(value) + '"';
+      }
+      return output;
+    }
+
+    /**
+     * Add class(es) to the Attributes object.
+     *
+     * @param {...String|Array} value
+     *   An individual class or an array of classes to add.
+     *
+     * @return {Attributes}
+     *   The Attributes instance.
+     *
+     * @chainable
+     */
+
+  }, {
+    key: 'addClass',
+    value: function addClass(value) {
+      var args = Array.prototype.slice.call(arguments);
+      var classes = [];
+      for (var i = 0, l = args.length; i < l; i++) {
+        classes = classes.concat(_Utility2.default.sanitizeClasses(args[i]));
+      }
+      this.data['class'] = _Utility2.default.arrayUniq(this.data['class'].concat(classes));
+      return this;
+    }
+
+    /**
+     * Indicates whether an attribute exists in the Attributes object.
+     *
+     * @param {String} name
+     *   An attribute name to check.
+     *
+     * @return {Boolean}
+     *   True or false.
+     */
+
+  }, {
+    key: 'exists',
+    value: function exists(name) {
+      return !_Utility2.default.isUndefined(this.data[name]) && this.data[name] !== null;
+    }
+
+    /**
+     * Retrieve a specific attribute from the Attributes object.
+     *
+     * @param {String} name
+     *   The specific attribute to retrieve.
+     * @param {*} [defaultValue=null]
+     *   (optional) The default value to set if the attribute does not exist.
+     *
+     * @return {*}
+     *   A specific attribute value, passed by reference.
+     */
+
+  }, {
+    key: 'get',
+    value: function get(name, defaultValue) {
+      if (!this.exists(name)) {
+        this.data[name] = !_Utility2.default.isUndefined(defaultValue) ? defaultValue : null;
+      }
+      return this.data[name];
+    }
+
+    /**
+     * Retrieves a cloned copy of the internal attributes data object.
+     *
+     * @return {Object}
+     *   The cloned copy of the attribute data.
+     */
+
+  }, {
+    key: 'getData',
+    value: function getData() {
+      return _Utility2.default.extend({}, this.data);
+    }
+
+    /**
+     * Retrieves classes from the Attributes object.
+     *
+     * @return {Array}
+     *   The classes array.
+     */
+
+  }, {
+    key: 'getClasses',
+    value: function getClasses() {
+      return this.get('class', []);
+    }
+
+    /**
+     * Indicates whether a class is present in the Attributes object.
+     *
+     * @param {String|Array} className
+     *   The class name(s) to search for.
+     *
+     * @return {Boolean}
+     *   True or false.
+     */
+
+  }, {
+    key: 'hasClass',
+    value: function hasClass(className) {
+      className = _Utility2.default.sanitizeClasses(className);
+      var classes = this.getClasses();
+      for (var i = 0, l = className.length; i < l; i++) {
+        // If one of the classes fails, immediately return false.
+        if (_Utility2.default.indexOf(classes, className[i]) === -1) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    /**
+     * Merges multiple values into the Attributes object.
+     *
+     * @param {Attributes|Object|String} attributes
+     *   An Attributes object with existing data or a plain object where the key
+     *   is the attribute name and the value is the attribute value.
+     * @param {Boolean} [recursive]
+     *   Flag determining whether or not to recursively merge key/value pairs.
+     *
+     * @return {Attributes}
+     *   The Attributes instance.
+     *
+     * @chainable
+     */
+
+  }, {
+    key: 'merge',
+    value: function merge(attributes, recursive) {
+      attributes = attributes instanceof Attributes ? attributes.getData() : attributes;
+
+      // Ensure any passed are sanitized.
+      if (attributes && !_Utility2.default.isUndefined(attributes['class'])) {
+        attributes['class'] = _Utility2.default.sanitizeClasses(attributes['class']);
+      }
+
+      if (_Utility2.default.isUndefined(recursive) || recursive) {
+        this.data = _Utility2.default.extend(true, {}, this.data, attributes);
+      } else {
+        this.data = _Utility2.default.extend({}, this.data, attributes);
+      }
+
+      // Ensure classes are unique after merge.
+      this.data['class'] = _Utility2.default.arrayUniq(this.data['class']);
+
+      return this;
+    }
+
+    /**
+     * Removes an attribute from the Attributes object.
+     *
+     * @param {String} name
+     *   The name of the attribute to remove.
+     *
+     * @return {Attributes}
+     *   The Attributes instance.
+     *
+     * @chainable
+     */
+
+  }, {
+    key: 'remove',
+    value: function remove(name) {
+      if (this.exists(name)) {
+        delete this.data[name];
+      }
+      return this;
+    }
+
+    /**
+     * Removes a class from the Attributes object.
+     *
+     * @param {...String|Array} value
+     *   An individual class or an array of classes to remove.
+     *
+     * @return {Attributes}
+     *   The Attributes instance.
+     *
+     * @chainable
+     */
+
+  }, {
+    key: 'removeClass',
+    value: function removeClass(value) {
+      var args = Array.prototype.slice.apply(arguments);
+      var classes = this.getClasses();
+      var values = [];
+      for (var i = 0, l = args.length; i < l; i++) {
+        values = values.concat(_Utility2.default.sanitizeClasses(args[i]));
+        for (var ii = 0, ll = values.length; ii < ll; ii++) {
+          var index = _Utility2.default.indexOf(classes, values[ii]);
+          if (index !== -1) {
+            classes.slice(index, 1);
+          }
+        }
+      }
+      return this;
+    }
+
+    /**
+     * Replaces a class in the Attributes object.
+     *
+     * @param {String} oldValue
+     *   The old class to remove.
+     * @param {String} newValue
+     *   The new class. It will not be added if the old class does not exist.
+     *
+     * @return {Attributes}
+     *   The Attributes instance.
+     *
+     * @chainable
+     */
+
+  }, {
+    key: 'replaceClass',
+    value: function replaceClass(oldValue, newValue) {
+      var classes = this.getClasses();
+      var i = _Utility2.default.indexOf(classes, oldValue);
+      if (i !== -1) {
+        classes[i] = newValue;
+      }
+      return this;
+    }
+
+    /**
+     * Sets an attribute on the Attributes object.
+     *
+     * @param {String} name
+     *   The name of the attribute to set.
+     * @param {*} value
+     *   The value of the attribute to set.
+     *
+     * @return {Attributes}
+     *   The Attributes instance.
+     *
+     * @chainable
+     */
+
+  }, {
+    key: 'set',
+    value: function set(name, value) {
+      this.data[name] = name === 'class' ? _Utility2.default.sanitizeClasses(value) : value;
+      return this;
+    }
+  }]);
+
+  return Attributes;
+}();
+
+exports.default = Attributes;
+
+},{"./Utility":44}],27:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+
+var _Emitter2 = require('./Emitter');
+
+var _Emitter3 = _interopRequireDefault(_Emitter2);
+
+var _Utility = require('./Utility');
+
+var _Utility2 = _interopRequireDefault(_Utility);
+
+
+
+
+
+var Base = function (_Emitter) {
+  _inherits(Base, _Emitter);
+
+  /**
+   * @class Base
+   *
+   * @param {Object} [options={}]
+   *   Options to override defaults.
+   */
+  function Base() {
+    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, Base);
+
+    /**
+     * The options.
+     *
+     * @type {Object}
+     */
+    var _this = _possibleConstructorReturn(this, (Base.__proto__ || Object.getPrototypeOf(Base)).call(this));
+
+    _this.options = _Utility2.default.extend(true, {}, options);
+    return _this;
+  }
+
+  /**
+   * Emit an event.
+   *
+   * @param {String} type
+   *   A string representing the type of the event to emit.
+   * @param {...*} [args]
+   *   Any additional arguments to pass to the listener.
+   *
+   * @return {Promise}
+   *   A Promise object that will resolve if the emitted event succeeded or
+   *   reject if default was prevented.
+   */
+
+
+  _createClass(Base, [{
+    key: 'emit',
+    value: function emit(type) {
+      var _this2 = this;
+
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      return this.promise(function (resolve, reject) {
+        var _get2;
+
+        if (!(_get2 = _get(Base.prototype.__proto__ || Object.getPrototypeOf(Base.prototype), 'emit', _this2)).call.apply(_get2, [_this2, type].concat(args))) {
+          return reject(_this2);
+        }
+        resolve(_this2);
+      });
+    }
+
+    /**
+     * Retrieves an option.
+     *
+     * @param {String} name
+     *   The option name. It can also be a namespaced (using dot notation) key to
+     *   retrieve a deeply nested option value.
+     * @param {*} [defaultValue=null]
+     *   The default value to return, if no option has been set.
+     *
+     * @return {*|null}
+     *   The option value or `null` if there is no option or it hasn't been set.
+     */
+
+  }, {
+    key: 'getOption',
+    value: function getOption(name) {
+      var defaultValue = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+      var ret = _Utility2.default.getProperty(name, this.options);
+      return ret === null ? defaultValue : ret;
+    }
+
+    /**
+     * Creates a new Promise.
+     *
+     * @param {Function} resolver
+     *   The resolver function for the Promise. It will automatically be bound
+     *   to the object that invoked this method.
+     *
+     * @return {Promise}
+     *   A new Promise object.
+     *
+     * @see Dreditor.promise
+     */
+
+  }, {
+    key: 'promise',
+    value: function promise(resolver) {
+      var promise = this.getOption('promise');
+      return new promise(resolver.bind(this));
+    }
+
+    /**
+     * Creates a new Promise that immediately rejects.
+     *
+     * @param {*} [value]
+     *   The value to reject with.
+     *
+     * @return {Promise}
+     *   A rejected Promise object.
+     */
+
+  }, {
+    key: 'reject',
+    value: function reject(value) {
+      var promise = this.getOption('promise');
+      return promise.reject(value);
+    }
+
+    /**
+     * Creates a new Promise that immediately resolves.
+     *
+     * @param {*} [value]
+     *   The value to resolve.
+     *
+     * @return {Promise}
+     *   A resolved Promise object.
+     */
+
+  }, {
+    key: 'resolve',
+    value: function resolve(value) {
+      var promise = this.getOption('promise');
+      return promise.resolve(value);
+    }
+
+    /**
+     * Sanitizes a string.
+     *
+     * @param {String} string
+     *   The string to sanitize.
+     * @param {Boolean} [force=false]
+     *   Bypasses option and forces sanitization.
+     *
+     * @return {String}
+     *   The sanitized string.
+     */
+
+  }, {
+    key: 'sanitize',
+    value: function sanitize(string) {
+      var force = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+      // Always replace CRLF and CR characters with LF. This is necessary for
+      // the parser to function properly, which assumes that everything is a LF.
+      string = string.replace(/\r\n|\r/g, '\n');
+
+      // Remove comments.
+      if (force || this.getOption('sanitize.comments')) {
+        string = string.replace(/^#[^\n]*\n/gm, '');
+      }
+
+      // Encode HTML entities.
+      if (force || this.getOption('sanitize.encodeHtmlEntities')) {
+        string = _Utility2.default.encodeHtmlEntities(string);
+      }
+
+      // Remove SVN new files.
+      if (force || this.getOption('sanitize.svnNewFiles')) {
+        string = string.replace(/^\?[^\n]*\n/gm, '');
+      }
+
+      return string;
+    }
+
+    /**
+     * Sets an option.
+     *
+     * @param {String} name
+     *   The option name. It can also be a namespaced (using dot notation) key to
+     *   retrieve a deeply nested option value.
+     * @param {*} [value=null]
+     *   The value to set, if no option has been set.
+     *
+     * @chainable
+     *
+     * @return {*}
+     *   The class instance that invoked this method.
+     */
+
+  }, {
+    key: 'setOption',
+    value: function setOption(name) {
+      var value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+      var p = name && name.split('.') || [];
+      if (p.length === 1) {
+        this.options[p[0]] = value;
+        return this;
+      }
+      try {
+        var obj = p.reduce(function (obj, i) {
+          return !_Utility2.default.isPlainObject(obj[i]) ? obj : obj[i];
+        }, this.options);
+        obj[p[p.length - 1]] = value;
+      } catch (e) {
+        // Intentionally left empty.
+      }
+      return this;
+    }
+
+    /**
+     * Ensures that a value is of a certain instance type.
+     *
+     * @param {*} value
+     *   The value to check.
+     * @param {Function} constructor
+     *   The constructor function to test against.
+     * @param {Boolean} [promise=true]
+     *   Whether or not to wrap the type check inside a promise.
+     *
+     * @return {Promise}
+     *   Returns a Promise object, if the parameter is set to true. Otherwise it
+     *   will return nothing and only an Error will be thrown, if any.
+     *
+     * @throws {SyntaxError|ReferenceError|TypeError}
+     *   Throws an error if the value does not pass the check.
+     */
+
+  }, {
+    key: 'typeCheck',
+    value: function typeCheck(value, constructor) {
+      var promise = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+
+      if (!promise) {
+        return _Utility2.default.typeCheck(value, constructor);
+      }
+      return this.promise(function (resolve, reject) {
+        try {
+          _Utility2.default.typeCheck(value, constructor);
+          resolve(value);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+  }]);
+
+  return Base;
+}(_Emitter3.default);
+
+exports.default = Base;
+
+},{"./Emitter":31,"./Utility":44}],28:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+
+var _Dreditor = require('./Dreditor');
+
+var _Dreditor2 = _interopRequireDefault(_Dreditor);
+
+var _Proxy2 = require('./Proxy');
+
+var _Proxy3 = _interopRequireDefault(_Proxy2);
+
+var _Utility = require('./Utility');
+
+var _Utility2 = _interopRequireDefault(_Utility);
+
+
+
+
+
+var Diff = function (_Proxy) {
+  _inherits(Diff, _Proxy);
+
+  /**
+   * @class Diff
+   *
+   * @param {String} name
+   *   The name of the Diff object being sub-classed.
+   * @param {String} string
+   *   The raw diff string.
+   * @param {Dreditor|Diff} parent
+   *   A parent Diff object this instance belongs to or a Dreditor
+   *   instance.
+   * @param {String|Function<Diff>} [constructor=null]
+   *   The constructor class used to ensure that when a parent instance is
+   *   passed, it is of a certain type.
+   *
+   * @extends Proxy
+   *
+   * @constructor
+   */
+  function Diff(name, string) {
+    var parent = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+    var constructor = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+
+    _classCallCheck(this, Diff);
+
+    var dreditor;
+    if (_Utility2.default.isType(parent, _Dreditor2.default)) {
+      dreditor = parent;
+      parent = null;
+    } else if (_Utility2.default.isType(parent, Diff)) {
+      dreditor = parent.dreditor;
+    } else {
+      throw new Error('The "parent" argument passed must be an instance of either Dreditor or Diff: ' + parent);
+    }
+
+    var _this = _possibleConstructorReturn(this, (Diff.__proto__ || Object.getPrototypeOf(Diff)).call(this, dreditor));
+
+    if (typeof string !== 'string') {
+      throw new Error('The "string" argument passed must be a string: ' + string);
+    }
+
+    if (constructor) {
+      _Utility2.default.typeCheck(parent, constructor);
+    }
+
+    /**
+     * The parent Diff object this instance belongs to.
+     *
+     * Define this property so that it cannot be overridden or show up in
+     * enumerations. It is meant solely for referencing purposes only.
+     *
+     * @type {Diff}
+     */
+    Object.defineProperty(_this, '__parent__', {
+      value: parent,
+      configurable: true,
+      enumerable: false,
+      writable: true
+    });
+
+    /**
+     * The number additions.
+     *
+     * @type {Number}
+     */
+    _this.additions = 0;
+
+    /**
+     * The number of deletions.
+     *
+     * @type {Number}
+     */
+    _this.deletions = 0;
+
+    /**
+     * The array index associated with this object.
+     *
+     * @type {Number}
+     */
+    _this.index = null;
+
+    /**
+     * The machine name representation of the object.
+     *
+     * @type {String}
+     */
+    _this.name = name;
+
+    /**
+     * Flag indicating whether or not the instance has been parsed.
+     *
+     * @type {Boolean}
+     */
+    _this.parsed = false;
+
+    /**
+     * The un-altered string that was passed.
+     *
+     * @type {String}
+     */
+    _this.raw = string;
+
+    /**
+     * The un-altered byte size of the string that was passed.
+     *
+     * @type {Number}
+     */
+    _this.rawSize = string.length;
+
+    /**
+     * The SHA1 digest of the raw string.
+     *
+     * @type {String}
+     */
+    _this.sha1 = null;
+
+    /**
+     * The patch byte size, minute any meta information.
+     *
+     * @type {Number}
+     */
+    _this.size = 0;
+    return _this;
+  }
+
+  /**
+   * Creates a promised based parse task with start and end emitted events.
+   *
+   * @param {String} name
+   *   The name of the parse task. It will be used as the emitted event and
+   *   will be prepended with "parse" and appended with both a "start" and
+   *   "stop" namespace. If no name is provided the emitted event will simply
+   *   be "parse".
+   * @param {Function} callback
+   *   The parse callback that will be invoked inside the Promise. Once the
+   *   parse task has ended, the return value of the task will be the object
+   *   that originally invoked the task.
+   *
+   * @return {Promise}
+   *   A Promise object.
+   */
+
+
+  _createClass(Diff, [{
+    key: 'doParse',
+    value: function doParse(name, callback) {
+      var _this2 = this;
+
+      if (this.parsed) {
+        return this.resolve(this);
+      }
+      return this.doTask(name ? 'parse.' + name : 'parse', callback).then(function () {
+        // To prevent potentially lengthy SHA1 execution time on large strings,
+        // attempt to just use the name and index as the "identifier". Fallback
+        // to the raw string value otherwise.
+        _this2.sha1 = _Utility2.default.sha1(_this2.index !== null ? _this2.name + '-' + _this2.index : _this2.raw);
+        _this2.parsed = true;
+        return _this2.resolve(_this2);
+      }).finally(function (value) {
+        _this2.garbageCollect('parse');
+        return value;
+      });
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param {String} [type='default']
+     *   The type of garbage collection.
+     *
+     * @return {Boolean}
+     *   True or false.
+     */
+
+  }, {
+    key: 'garbageCollect',
+    value: function garbageCollect() {
+      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+
+      var collect = _get(Diff.prototype.__proto__ || Object.getPrototypeOf(Diff.prototype), 'garbageCollect', this).call(this, type);
+      if (collect) {
+        if (type === 'parse') {
+          this.raw = null;
+        } else if (type === 'render') {
+          this.__parent__ = null;
+        }
+      }
+      return collect;
+    }
+
+    /**
+     * Returns the parent Diff object, if any.
+     *
+     * @return {Diff|null}
+     *   The parent Diff object or null if not set.
+     */
+
+  }, {
+    key: 'getParent',
+    value: function getParent() {
+      return this.__parent__ instanceof Diff && this.__parent__ || null;
+    }
+
+    /**
+     * Increases the addition stat.
+     *
+     * @param {Boolean} [bubble=true]
+     *   Flag determining whether or not the addition should propagate upwards
+     *   on parent instances.
+     */
+
+  }, {
+    key: 'increaseAddition',
+    value: function increaseAddition() {
+      var bubble = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      this.additions++;
+      if (bubble && this.__parent__) {
+        this.__parent__.increaseAddition();
+      }
+    }
+
+    /**
+     * Increases the deletion stat.
+     *
+     * @param {Boolean} [bubble=true]
+     *   Flag determining whether or not the addition should propagate upwards
+     *   on parent instances.
+     */
+
+  }, {
+    key: 'increaseDeletion',
+    value: function increaseDeletion() {
+      var bubble = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      this.deletions++;
+      if (bubble && this.__parent__) {
+        this.__parent__.increaseDeletion();
+      }
+    }
+
+    /**
+     * Parses a Diff object.
+     *
+     * @return {Promise}
+     *   A Promise object.
+     */
+
+  }, {
+    key: 'parse',
+    value: function parse() {
+      return this.doParse(this.name, _Utility2.default.noop);
+    }
+
+    /**
+     * Function to help render consistent diff stats through out all the objects.
+     *
+     * @param {Object<Diff>} [object=this]
+     *   An object to render stats for; it must be an instance of Diff.
+     *   If no object was passed, then the instance that invoked this method will
+     *   be used.
+     *
+     * @return {Element|String}
+     *   The Element object containing the rendered HTML. Can be cast to
+     *   a string value or manually invoked using the toString method.
+     */
+
+  }, {
+    key: 'renderDiffStats',
+    value: function renderDiffStats() {
+      var object = arguments.length <= 0 || arguments[0] === undefined ? this : arguments[0];
+
+      if (!(object instanceof Diff)) {
+        throw new Error('The "object" argument passed is not an instance of Diff: ' + object);
+      }
+      return _Utility2.default.createElement('<span>').addClass('dreditor-stat').append('<span class="dreditor-stat-additions" title="' + object.additions + ' additions">+' + object.additions + '</span>').append('<span class="dreditor-stat-deletions" title="' + object.deletions + ' deletions">-' + object.deletions + '</span>');
+    }
+  }]);
+
+  return Diff;
+}(_Proxy3.default);
+
+exports.default = Diff;
+
+},{"./Dreditor":29,"./Proxy":39,"./Utility":44}],29:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+
+var _es6Extensions = require('promise/setimmediate/es6-extensions');
+
+var _es6Extensions2 = _interopRequireDefault(_es6Extensions);
+
+require('promise/setimmediate/finally');
+
+var _LocaleBase2 = require('./LocaleBase');
+
+var _LocaleBase3 = _interopRequireDefault(_LocaleBase2);
+
+var _Parser = require('./Parser');
+
+var _Parser2 = _interopRequireDefault(_Parser);
+
+var _Utility = require('./Utility');
+
+var _Utility2 = _interopRequireDefault(_Utility);
+
+
+
+
+
+
+require('promise/setimmediate/rejection-tracking').enable({ allRejections: true });
+
+// Local imports.
+
+var Dreditor = function (_LocaleBase) {
+  _inherits(Dreditor, _LocaleBase);
 
   /**
    * @class Dreditor
@@ -420,18 +2496,43 @@ var Dreditor = function (_DreditorLocaleBase) {
     _classCallCheck(this, Dreditor);
 
     // Ensure there is a valid Promise API available.
-    var _this = _possibleConstructorReturn(this, (Dreditor.__proto__ || Object.getPrototypeOf(Dreditor)).call(this, _DreditorUtility2.default.extend(true, {}, Dreditor.__defaultOptions__, options)));
+    var _this = _possibleConstructorReturn(this, (Dreditor.__proto__ || Object.getPrototypeOf(Dreditor)).call(this, _Utility2.default.extend(true, {}, Dreditor.__defaultOptions__, options)));
 
-    var promise = _this.getOption('promise');
-    if (!(typeof promise !== 'function' || (typeof promise === 'undefined' ? 'undefined' : _typeof(promise)) !== 'object') || typeof (promise.then || typeof promise === 'function' && new promise(_DreditorUtility2.default.noop)).then !== 'function') {
+    var Promise = _this.getOption('promise');
+    if (!(typeof Promise !== 'function' || (typeof Promise === 'undefined' ? 'undefined' : _typeof(Promise)) !== 'object') || typeof (Promise.then || typeof Promise === 'function' && new Promise(_Utility2.default.noop)).then !== 'function') {
       throw new Error('Dreditor requires a valid Promise API. There are several polyfills or comprehensive libraries available to choose from.');
     }
 
-    // Bind a highlight method for hunks, if one exists.
+    // Bind the highlight method for hunks.
+    _this.on('render.hunk.start', function (e, hunk) {
+      return hunk.highlightCode();
+    });
+
+    // Wrap multi-line comments.
     var highlighter = _this.getOption('highlighter');
-    if (highlighter) {
-      _this.on('render.hunk.start', function (e, hunk) {
-        hunk.highlightCode();
+    var isPrism = _this.getOption('highlight.isPrism', _Utility2.default.noop);
+    if (isPrism(highlighter)) {
+      highlighter.hooks.add('wrap', function (env) {
+        // eslint-disable-line
+        if (env.type === 'comment') {
+          var lines = env.content.split(/\n/gm);
+          if (lines.length > 1) {
+            var attributes = '';
+            for (var name in env.attributes) {
+              if (env.attributes.hasOwnProperty(name)) {
+                attributes += (attributes ? ' ' : '') + name + '="' + (env.attributes[name] || '') + '"';
+              }
+            }
+            for (var i = 0, l = lines.length; i < l; i++) {
+              if (i !== 0) {
+                lines[i] = '<' + env.tag + ' class="' + env.classes.join(' ') + '"' + (attributes ? ' ' + attributes : '') + '>' + lines[i];
+              } else if (i !== l) {
+                lines[i] += '</' + env.tag + '>';
+              }
+            }
+            env.content = lines.join('\n');
+          }
+        }
       });
     }
 
@@ -444,11 +2545,11 @@ var Dreditor = function (_DreditorLocaleBase) {
   }
 
   /**
-   * Parses a Diff string.
+   * Retrieves a Parser instances for a string.
    *
    * @param {String} string
-   *   The string to parse.
-   * @param {DreditorUrl|String} [url=null]
+   *   The string to use for the parser.
+   * @param {Url|String} [url=null]
    *   A URL to associate with the string.
    *
    * @return {Promise}
@@ -457,23 +2558,38 @@ var Dreditor = function (_DreditorLocaleBase) {
 
 
   _createClass(Dreditor, [{
+    key: 'getParser',
+    value: function getParser(string) {
+      var url = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+      return this.resolve(new _Parser2.default(this, string, url));
+    }
+
+    /**
+     * Parses a diff string.
+     *
+     * @param {String} string
+     *   The string to parse.
+     * @param {Url|String} [url=null]
+     *   A URL to associate with the string.
+     *
+     * @return {Promise}
+     *   A promise.
+     */
+
+  }, {
     key: 'parse',
     value: function parse(string) {
       var url = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
-      return this.promise(function (fulfill, reject) {
-        try {
-          var parser = new _DreditorParser2.default(this, string, url);
-          fulfill(parser.parse());
-        } catch (e) {
-          reject(e);
-        }
+      return this.getParser(string, url).then(function (parser) {
+        return parser.parse();
       });
     }
   }]);
 
   return Dreditor;
-}(_DreditorLocaleBase3.default);
+}(_LocaleBase3.default);
 
 /**
  * The version.
@@ -503,98 +2619,189 @@ Dreditor.__defaultOptions__ = {
   garbageCollect: true,
 
   /**
-   * A function that will highlight code found in the diff.
+   * A library function or object used to highlight code on a hunk level.
+   *
+   * By default, the code is attuned to look for and use PrismJS.
    *
    * @type {PrismJS|Object|Function}
    */
   highlighter: null,
 
   /**
-   * Helper function to highlight the code found in the diff.
-   *
-   * Note: This highlight function makes the assumption that the highlighter
-   * being used is PrismJS. If you choose to implement a different highlighter,
-   * you will likely need to override this function in the options provided to
-   * Dreditor.
-   *
-   * @param {String} string
-   *   The content to be highlighted.
-   *
-   * @return {String}
-   *   The string that was passed, modified if highlight was successful.
-   *
-   * @type {Function|false}
-   *
-   * @this {DreditorHunk}
-   */
-  highlightCode: function highlightCode(string) {
-
-    /**
-     * The highlighter object or function.
-     *
-     * @type {Function|Object}
-     */
-    var highlighter = this.getOption('highlighter');
-
-    // See if the highlighter provided is PrismJS by checking the necessary
-    // functions and objects inside the passed highlighter.
-    if (highlighter && _DreditorUtility2.default.isFunction(highlighter.highlight) && _DreditorUtility2.default.isFunction(highlighter.Token) && _DreditorUtility2.default.isPlainObject(highlighter.languages) && _DreditorUtility2.default.isPlainObject(highlighter.languages.markup)) {
-      // Determine the correct language grammar object to use for Prism.
-      var prismLanguage = this.getOption('prismLanguage', _DreditorUtility2.default.noop);
-      var language = prismLanguage.call(this, highlighter) || 'markup';
-      // Highlight the string.
-      string = highlighter.highlight(string, highlighter.languages[language], language);
-    }
-    // Otherwise if the highlighter option provided is a function, see if it
-    // returns any output.
-    else if (_DreditorUtility2.default.isFunction(highlighter)) {
-        var ret = highlighter.apply(highlighter, string);
-        return ret || string;
-      }
-    return string;
-  },
-
-  /**
-   * Helper function to retrieve the language grammar object for Prism.
-   *
-   * @param {Function|Object} Prism
-   *   The PrismJS object, if it exists.
-   *
-   * @return {Object|void}
-   *   A grammar object for the language, based on the file extension, if any.
-   *
-   * @this {DreditorHunk}
-   */
-  prismLanguage: function prismLanguage(Prism) {
-    // Immediately return if an explicit language exists for the file extension.
-    if (_DreditorUtility2.default.isPlainObject(Prism.languages[this.file.extension])) {
-      return this.file.extension;
-    }
-
-    /** @type Object */
-    var map = this.getOption('prismExtensionLanguageMap', {});
-
-    // Otherwise, attempt to find the appropriate language based on extension.
-    _DreditorUtility2.default.forEach([].concat(map[this.file.extension] || []), function (language) {
-      if (_DreditorUtility2.default.isPlainObject(Prism.languages[language])) {
-        return language;
-      }
-    });
-  },
-
-
-  /**
-   * The PrismJS extension -> language map.
+   * Various options pertaining to highlighting code.
    *
    * @type {Object}
    */
-  prismExtensionLanguageMap: {
-    coffee: ['coffeescript', 'javascript'],
-    htaccess: 'apacheconf',
-    inc: 'php',
-    info: 'ini',
-    md: 'markdown',
-    yml: 'yaml'
+  highlight: {
+
+    /**
+     * Helper function to highlight the code found in the diff.
+     *
+     * Note: This highlight function makes the assumption that the highlighter
+     * being used is PrismJS. If you choose to implement a different highlighter,
+     * you will likely need to override this function in the options provided to
+     * Dreditor.
+     *
+     * @param {String} string
+     *   The content to be highlighted.
+     *
+     * @return {String}
+     *   The string that was passed, modified if highlight was successful.
+     *
+     * @type {Function|false}
+     *
+     * @this {Hunk}
+     */
+    callback: function callback(string) {
+
+      /**
+       * The highlighter object or function.
+       *
+       * @type {Function|Object}
+       */
+      var highlighter = this.getDreditorOption('highlighter');
+      var isPrism = this.getDreditorOption('highlight.isPrism', _Utility2.default.noop);
+
+      // See if the highlighter provided is PrismJS by checking the necessary
+      // functions and objects inside the passed highlighter.
+      if (highlighter && isPrism(highlighter)) {
+        // Determine the correct language grammar object to use for Prism.
+        var prismLanguage = this.getDreditorOption('highlight.prismLanguage', _Utility2.default.noop);
+        var language = prismLanguage.call(this, highlighter) || 'markup';
+        var cLike = _Utility2.default.indexOf(['coffeescript', 'css', 'js', 'less', 'php', 'sass', 'scss'], language) !== -1;
+        var before = false;
+        var after = false;
+
+        // Fix broken context line comments for C-like languages.
+        if (cLike) {
+          // Remove full comments from the string (for comparison).
+          var lines = string.replace(/(^|[^\\])(?:\/\*[\w\W]*?\*\/|\/\/.*)/gm, '').split('\n');
+          var commentStart = false;
+          var commentEnd = false;
+          for (var i = 0, l = lines.length; i < l; i++) {
+            if (commentEnd) {
+              break;
+            }
+            commentStart = commentStart || lines[i].match(/\/\*+/);
+            commentEnd = lines[i].match(/\*+\//);
+          }
+          if (!commentStart && commentEnd) {
+            before = true;
+            string = '/**\n' + string;
+          }
+
+          commentStart = false;
+          commentEnd = false;
+          for (var _i = lines.length - 1; _i >= 0; _i--) {
+            if (commentStart) {
+              break;
+            }
+            commentEnd = commentEnd || lines[_i].match(/\/\*+\//);
+            commentStart = lines[_i].match(/\/\*+/);
+          }
+          if (commentStart && !commentEnd) {
+            after = true;
+            string += '\n*/';
+          }
+        }
+
+        // Highlight the string.
+        string = highlighter.highlight(string, highlighter.languages[language], language);
+
+        // Remove added comments lines.
+        if (before) {
+          string = string.split('\n').slice(1).join('\n');
+        }
+        if (after) {
+          var _lines = string.split('\n');
+          string = _lines.slice(0, _lines.length - 1).join('\n');
+        }
+      }
+      // Otherwise if the highlighter option provided is a function, see if it
+      // returns any output.
+      else if (_Utility2.default.isFunction(highlighter)) {
+          var ret = highlighter.apply(highlighter, string);
+          return ret || string;
+        }
+
+      return string;
+    },
+
+
+    /**
+     * Determines if the provided highlighter object is Prism.
+     *
+     * @param {Object|Prism} highlighter
+     *   The highlighter object.
+     *
+     * @return {Boolean}
+     *   True or false.
+     */
+    isPrism: function isPrism() {
+      var highlighter = arguments.length <= 0 || arguments[0] === undefined ? this.getDreditorOption('highlighter') : arguments[0];
+
+      return !!(highlighter && _Utility2.default.isFunction(highlighter.highlight) && _Utility2.default.isFunction(highlighter.Token) && _Utility2.default.isPlainObject(highlighter.languages) && _Utility2.default.isPlainObject(highlighter.languages.markup));
+    },
+
+
+    /**
+     * A Prism extension -> language map.
+     *
+     * @type {Object}
+     */
+    prismExtensionLanguageMap: {
+      coffee: ['coffeescript', 'javascript'],
+      htaccess: 'apacheconf',
+      inc: 'php',
+      info: 'ini',
+      md: 'markdown',
+      yml: 'yaml'
+    },
+
+    /**
+     * Helper function to retrieve the language grammar object for Prism.
+     *
+     * @param {Function|Object} Prism
+     *   The PrismJS object, if it exists.
+     *
+     * @return {Object|void}
+     *   A grammar object for the language, based on the file extension, if any.
+     *
+     * @this {Hunk}
+     */
+    prismLanguage: function prismLanguage(Prism) {
+      // Immediately return if an explicit language exists for the file extension.
+      if (_Utility2.default.isPlainObject(Prism.languages[this.__parent__.extension])) {
+        return this.__parent__.extension;
+      }
+
+      /** @type Object */
+      var map = this.getDreditorOption('highlight.prismExtensionLanguageMap', {});
+      var languages = [].concat(map[this.__parent__.extension] || []);
+
+      // Otherwise, attempt to find the appropriate language based on extension.
+      for (var i = 0, l = languages.length; i < l; i++) {
+        if (_Utility2.default.isPlainObject(Prism.languages[languages[i]])) {
+          return languages[i];
+        }
+      }
+    },
+
+
+    /**
+     * Flag indicating whether tabs should be highlighted.
+     *
+     * @type {Boolean}
+     */
+    tabs: true,
+
+    /**
+     * Flag indicating whether trailing whitespace should be highlighted.
+     *
+     * @type {Boolean}
+     */
+    trailingWhitespace: true
+
   },
 
   /**
@@ -602,17 +2809,17 @@ Dreditor.__defaultOptions__ = {
    *
    * @type {Promise}
    */
-  promise: global.Promise,
+  promise: _es6Extensions2.default,
 
   /**
    * Flag indicating whether or not to render to a string.
    *
    * By default, the rendered output of any Dreditor object will be an instance
-   * of DreditorElement. This allows for further manipulation of the elements,
+   * of Element. This allows for further manipulation of the elements,
    * in an OO way, before they're ultimately converted into a string.
    *
    * When the object is joined with a string, it will automatically render the
-   * DreditorElement instance (and its children) into strings using the magic
+   * Element instance (and its children) into strings using the magic
    * `toString` method.
    *
    * If you have an object or method that does different things based on
@@ -625,7 +2832,7 @@ Dreditor.__defaultOptions__ = {
    * ```
    *
    * If you find that ugly or have absolutely no need for further manipulation
-   * of the DreditorElement object, you can set this option to `true` to
+   * of the Element object, you can set this option to `true` to
    * enforce that any render method will always return a string.
    *
    * @type {Boolean}
@@ -671,776 +2878,84 @@ Dreditor.__defaultOptions__ = {
 
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./DreditorLocaleBase":22,"./DreditorParser":23,"./DreditorUtility":28}],13:[function(require,module,exports){
+},{"./LocaleBase":36,"./Parser":37,"./Utility":44,"promise/setimmediate/es6-extensions":20,"promise/setimmediate/finally":21,"promise/setimmediate/rejection-tracking":22}],30:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _DreditorUtility = require('./DreditorUtility');
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
+// Local imports.
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _voidElements = require('void-elements');
 
-var DreditorAttributes = function () {
+var _voidElements2 = _interopRequireDefault(_voidElements);
+
+var _Attributes = require('./Attributes');
+
+var _Attributes2 = _interopRequireDefault(_Attributes);
+
+var _Utility = require('./Utility');
+
+var _Utility2 = _interopRequireDefault(_Utility);
+
+
+
+var Element = function () {
 
   /**
-   * @class DreditorAttributes
+   * @class Element
    *
-   * @param {DreditorAttributes|Object} [attributes]
-   *   An Attributes object with existing data or a plain object where the key
-   *   is the attribute name and the value is the attribute value.
+   * @param {String|Object} [tag=null]
+   *   The element tag name or an AST object from html-parse-stringify2.
    *
    * @constructor
    */
-  function DreditorAttributes() {
-    var attributes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, DreditorAttributes);
-
-    /*! Attributes (http://cgit.drupalcode.org/bootstrap/tree/js/attributes.js) * Copyright (c) 2016 Mark Carver <https://www.drupal.org/u/markcarver> * Licensed under GPL-2.0 (https://www.drupal.org/about/licensing) */ // eslint-disable-line
-
-    /**
-     * The internal object containing the data for the attributes.
-     *
-     * @type {Object}
-     */
-    this.data = {};
-    this.data['class'] = [];
-
-    this.merge(attributes);
-  }
-
-  /**
-   * Renders the attributes object as a string to inject into an HTML element.
-   *
-   * @return {String}
-   *   A string representation of the attributes array, intended to be injected
-   *   into a DOM element.
-   */
-
-
-  _createClass(DreditorAttributes, [{
-    key: 'toString',
-    value: function toString() {
-      var output = '';
-      var name;
-      var value;
-      for (name in this.data) {
-        if (!this.data.hasOwnProperty(name)) {
-          continue;
-        }
-        value = this.data[name];
-        if (_DreditorUtility2.default.isFunction(value)) {
-          value = value.call(this);
-        }
-        if (_DreditorUtility2.default.isObject(value)) {
-          var values = [];
-          for (var i in value) {
-            if (value.hasOwnProperty(i)) {
-              values.push(value[i]);
-            }
-          }
-          value = values;
-        }
-        if (_DreditorUtility2.default.isArray(value)) {
-          value = value.join(' ');
-        }
-        // Don't add an empty class array.
-        if (name === 'class' && !value) {
-          continue;
-        }
-        output += ' ' + _DreditorUtility2.default.encodeHtmlEntities(name) + '="' + _DreditorUtility2.default.encodeHtmlEntities(value) + '"';
-      }
-      return output;
-    }
-
-    /**
-     * Add class(es) to the Attributes object.
-     *
-     * @param {...String|Array} value
-     *   An individual class or an array of classes to add.
-     *
-     * @return {DreditorAttributes}
-     *   The Attributes instance.
-     *
-     * @chainable
-     */
-
-  }, {
-    key: 'addClass',
-    value: function addClass(value) {
-      var args = Array.prototype.slice.call(arguments);
-      var classes = [];
-      for (var i = 0, l = args.length; i < l; i++) {
-        classes = classes.concat(this.sanitizeClass(args[i]));
-      }
-      this.data['class'] = _DreditorUtility2.default.arrayUniq(this.data['class'].concat(classes));
-      return this;
-    }
-
-    /**
-     * Indicates whether an attribute exists in the Attributes object.
-     *
-     * @param {String} name
-     *   An attribute name to check.
-     *
-     * @return {Boolean}
-     *   True or false.
-     */
-
-  }, {
-    key: 'exists',
-    value: function exists(name) {
-      return this.data[name] !== void 0 && this.data[name] !== null;
-    }
-
-    /**
-     * Retrieve a specific attribute from the Attributes object.
-     *
-     * @param {String} name
-     *   The specific attribute to retrieve.
-     * @param {*} [defaultValue=null]
-     *   (optional) The default value to set if the attribute does not exist.
-     *
-     * @return {*}
-     *   A specific attribute value, passed by reference.
-     */
-
-  }, {
-    key: 'get',
-    value: function get(name, defaultValue) {
-      if (!this.exists(name)) {
-        this.data[name] = defaultValue !== void 0 ? defaultValue : null;
-      }
-      return this.data[name];
-    }
-
-    /**
-     * Retrieves a cloned copy of the internal attributes data object.
-     *
-     * @return {Object}
-     *   The cloned copy of the attribute data.
-     */
-
-  }, {
-    key: 'getData',
-    value: function getData() {
-      return _DreditorUtility2.default.extend({}, this.data);
-    }
-
-    /**
-     * Retrieves classes from the Attributes object.
-     *
-     * @return {Array}
-     *   The classes array.
-     */
-
-  }, {
-    key: 'getClasses',
-    value: function getClasses() {
-      return this.get('class', []);
-    }
-
-    /**
-     * Indicates whether a class is present in the Attributes object.
-     *
-     * @param {String|Array} className
-     *   The class name(s) to search for.
-     *
-     * @return {Boolean}
-     *   True or false.
-     */
-
-  }, {
-    key: 'hasClass',
-    value: function hasClass(className) {
-      className = this.sanitizeClass(className);
-      var classes = this.getClasses();
-      for (var i = 0, l = className.length; i < l; i++) {
-        // If one of the classes fails, immediately return false.
-        if (_DreditorUtility2.default.indexOf(classes, className[i]) === -1) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    /**
-     * Merges multiple values into the Attributes object.
-     *
-     * @param {DreditorAttributes|Object|String} attributes
-     *   An Attributes object with existing data or a plain object where the key
-     *   is the attribute name and the value is the attribute value.
-     * @param {Boolean} [recursive]
-     *   Flag determining whether or not to recursively merge key/value pairs.
-     *
-     * @return {DreditorAttributes}
-     *   The Attributes instance.
-     *
-     * @chainable
-     */
-
-  }, {
-    key: 'merge',
-    value: function merge(attributes, recursive) {
-      attributes = attributes instanceof DreditorAttributes ? attributes.getData() : attributes;
-
-      // Ensure any passed are sanitized.
-      if (attributes && attributes['class'] !== void 0) {
-        attributes['class'] = this.sanitizeClass(attributes['class']);
-      }
-
-      if (recursive === void 0 || recursive) {
-        this.data = _DreditorUtility2.default.extend(true, {}, this.data, attributes);
-      } else {
-        this.data = _DreditorUtility2.default.extend({}, this.data, attributes);
-      }
-
-      // Ensure classes are unique after merge.
-      this.data['class'] = _DreditorUtility2.default.arrayUniq(this.data['class']);
-
-      return this;
-    }
-
-    /**
-     * Removes an attribute from the Attributes object.
-     *
-     * @param {String} name
-     *   The name of the attribute to remove.
-     *
-     * @return {DreditorAttributes}
-     *   The Attributes instance.
-     *
-     * @chainable
-     */
-
-  }, {
-    key: 'remove',
-    value: function remove(name) {
-      if (this.exists(name)) {
-        delete this.data[name];
-      }
-      return this;
-    }
-
-    /**
-     * Removes a class from the Attributes object.
-     *
-     * @param {...String|Array} value
-     *   An individual class or an array of classes to remove.
-     *
-     * @return {DreditorAttributes}
-     *   The Attributes instance.
-     *
-     * @chainable
-     */
-
-  }, {
-    key: 'removeClass',
-    value: function removeClass(value) {
-      var args = Array.prototype.slice.apply(arguments);
-      var classes = this.getClasses();
-      var values = [];
-      for (var i = 0, l = args.length; i < l; i++) {
-        values = values.concat(this.sanitizeClass(args[i]));
-        for (var ii = 0, ll = values.length; ii < ll; ii++) {
-          var index = _DreditorUtility2.default.indexOf(classes, values[ii]);
-          if (index !== -1) {
-            classes.slice(index, 1);
-          }
-        }
-      }
-      return this;
-    }
-
-    /**
-     * Replaces a class in the Attributes object.
-     *
-     * @param {String} oldValue
-     *   The old class to remove.
-     * @param {String} newValue
-     *   The new class. It will not be added if the old class does not exist.
-     *
-     * @return {DreditorAttributes}
-     *   The Attributes instance.
-     *
-     * @chainable
-     */
-
-  }, {
-    key: 'replaceClass',
-    value: function replaceClass(oldValue, newValue) {
-      var classes = this.getClasses();
-      var i = _DreditorUtility2.default.indexOf(classes, oldValue);
-      if (i !== -1) {
-        classes[i] = newValue;
-      }
-      return this;
-    }
-
-    /**
-     * Ensures class is an array and/or split into individual array items.
-     *
-     * @param {String|Array} classes
-     *   The class or classes to sanitize.
-     *
-     * @return {Array}
-     *   A sanitized array of classes.
-     */
-
-  }, {
-    key: 'sanitizeClass',
-    value: function sanitizeClass(classes) {
-      var sanitized = [];
-      classes = [].concat(classes).filter(Boolean);
-      for (var i = 0, l = classes.length; i < l; i++) {
-        var value = classes[i].split(' ').filter(Boolean);
-        for (var ii = 0, ll = value.length; ii < ll; ii++) {
-          sanitized.push(value[ii]);
-        }
-      }
-      return sanitized;
-    }
-
-    /**
-     * Sets an attribute on the Attributes object.
-     *
-     * @param {String} name
-     *   The name of the attribute to set.
-     * @param {*} value
-     *   The value of the attribute to set.
-     *
-     * @return {DreditorAttributes}
-     *   The Attributes instance.
-     *
-     * @chainable
-     */
-
-  }, {
-    key: 'set',
-    value: function set(name, value) {
-      this.data[name] = name === 'class' ? this.sanitizeClass(value) : value;
-      return this;
-    }
-  }]);
-
-  return DreditorAttributes;
-}();
-
-exports.default = DreditorAttributes;
-
-},{"./DreditorUtility":28}],14:[function(require,module,exports){
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _DreditorEmitter2 = require('./DreditorEmitter');
-
-var _DreditorEmitter3 = _interopRequireDefault(_DreditorEmitter2);
-
-var _DreditorUtility = require('./DreditorUtility');
-
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DreditorBase = function (_DreditorEmitter) {
-  _inherits(DreditorBase, _DreditorEmitter);
-
-  /**
-   * @class DreditorBase
-   *
-   * @param {Object} [options={}]
-   *   Options to override defaults.
-   */
-  function DreditorBase() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, DreditorBase);
-
-    /**
-     * The options.
-     *
-     * @type {Object}
-     */
-    var _this = _possibleConstructorReturn(this, (DreditorBase.__proto__ || Object.getPrototypeOf(DreditorBase)).call(this));
-
-    _this.options = _DreditorUtility2.default.extend(true, {}, options);
-    return _this;
-  }
-
-  /**
-   * Retrieves an option.
-   *
-   * @param {String} name
-   *   The option name. It can also be a namespaced (using dot notation) key to
-   *   retrieve a deeply nested option value.
-   * @param {*} [defaultValue=null]
-   *   The default value to return, if no option has been set.
-   *
-   * @return {*|null}
-   *   The option value or `null` if there is no option or it hasn't been set.
-   */
-
-
-  _createClass(DreditorBase, [{
-    key: 'getOption',
-    value: function getOption(name) {
-      var defaultValue = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-
-      var ret = _DreditorUtility2.default.getProperty(name, this.options);
-      return ret === null ? defaultValue : ret;
-    }
-
-    /**
-     * Creates a new Promise.
-     *
-     * @param {Function} resolver
-     *   The resolver function for the Promise. It will automatically be bound
-     *   to the object that invoked this method.
-     *
-     * @return {Promise}
-     *   A new Promise object.
-     *
-     * @see Dreditor.promise
-     */
-
-  }, {
-    key: 'promise',
-    value: function promise(resolver) {
-      var promise = this.getOption('promise');
-      return new promise(resolver.bind(this));
-    }
-
-    /**
-     * Sanitizes a string.
-     *
-     * @param {String} string
-     *   The string to sanitize.
-     * @param {Boolean} [force=false]
-     *   Bypasses option and forces sanitization.
-     *
-     * @return {String}
-     *   The sanitized string.
-     */
-
-  }, {
-    key: 'sanitize',
-    value: function sanitize(string) {
-      var force = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-      // Always replace CRLF and CR characters with LF. This is necessary for
-      // the parser to function properly, which assumes that everything is a LF.
-      string = string.replace(/\r\n|\r/g, '\n');
-
-      // Remove comments.
-      if (force || this.getOption('sanitize.comments')) {
-        string = string.replace(/^#[^\n]*\n/gm, '');
-      }
-
-      // Encode HTML entities.
-      if (force || this.getOption('sanitize.encodeHtmlEntities')) {
-        string = _DreditorUtility2.default.encodeHtmlEntities(string);
-      }
-
-      // Remove SVN new files.
-      if (force || this.getOption('sanitize.svnNewFiles')) {
-        string = string.replace(/^\?[^\n]*\n/gm, '');
-      }
-
-      return string;
-    }
-
-    /**
-     * Retrieves an option.
-     *
-     * @param {String} name
-     *   The option name. It can also be a namespaced (using dot notation) key to
-     *   retrieve a deeply nested option value.
-     * @param {*} [value=null]
-     *   The value to set, if no option has been set.
-     *
-     * @chainable
-     *
-     * @return {*}
-     *   The class instance that invoked this method.
-     */
-
-  }, {
-    key: 'setOption',
-    value: function setOption(name) {
-      var value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-
-      var p = name && name.split('.') || [];
-      if (p.length === 1) {
-        this.options[p[0]] = value;
-        return this;
-      }
-      try {
-        var obj = p.reduce(function (obj, i) {
-          return !_DreditorUtility2.default.isPlainObject(obj[i]) ? obj : obj[i];
-        }, this.options);
-        obj[p[p.length - 1]] = value;
-      } catch (e) {
-        // Intentionally left empty.
-      }
-      return this;
-    }
-  }]);
-
-  return DreditorBase;
-}(_DreditorEmitter3.default);
-
-exports.default = DreditorBase;
-
-},{"./DreditorEmitter":17,"./DreditorUtility":28}],15:[function(require,module,exports){
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _DreditorRenderable2 = require('./DreditorRenderable');
-
-var _DreditorRenderable3 = _interopRequireDefault(_DreditorRenderable2);
-
-var _DreditorUtility = require('./DreditorUtility');
-
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DreditorDiff = function (_DreditorRenderable) {
-  _inherits(DreditorDiff, _DreditorRenderable);
-
-  /**
-   * @class DreditorDiff
-   *
-   * @param {Dreditor} dreditor
-   *   The Dreditor instance.
-   * @param {String} string
-   *   The raw diff string.
-   *
-   * @constructor
-   */
-  function DreditorDiff(dreditor, string) {
-    _classCallCheck(this, DreditorDiff);
-
-    var _this = _possibleConstructorReturn(this, (DreditorDiff.__proto__ || Object.getPrototypeOf(DreditorDiff)).call(this, dreditor));
-
-    if (typeof string !== 'string') {
-      throw new Error('The argument passed must be a string. This was passed instead: ' + string);
-    }
-
-    /**
-     * The number additions.
-     *
-     * @type {Number}
-     */
-    _this.additions = 0;
-
-    /**
-     * The number of deletions.
-     *
-     * @type {Number}
-     */
-    _this.deletions = 0;
-
-    /**
-     * The un-altered string that was passed.
-     *
-     * @type {String}
-     */
-    _this.raw = string;
-
-    /**
-     * The un-altered byte size of the string that was passed.
-     *
-     * @type {Number}
-     */
-    _this.rawSize = string.length;
-
-    /**
-     * The patch byte size, minute any meta information.
-     *
-     * @type {Number}
-     */
-    _this.size = 0;
-    return _this;
-  }
-
-  /**
-   * Creates a promised based parse task with start and end emitted events.
-   *
-   * @param {String} name
-   *   The name of the parse task. It will be used as the emitted event and
-   *   will be prepended with "parse" and appended with both a "start" and
-   *   "stop" namespace. If no name is provided the emitted event will simply
-   *   be "parse".
-   * @param {Function} callback
-   *   The parse callback that will be invoked inside the Promise. Once the
-   *   parse task has ended, the return value of the task will be the object
-   *   that originally invoked the task.
-   *
-   * @return {Promise}
-   *   A Promise object.
-   */
-
-
-  _createClass(DreditorDiff, [{
-    key: 'doParse',
-    value: function doParse(name, callback) {
-      var _this2 = this;
-
-      return this.doTask(name ? 'parse.' + name : 'parse', function () {
-        return _this2.resolve(callback.call(_this2));
-      }).then(function () {
-        var value = _this2.resolve(_this2);
-        _this2.garbageCollect('parse');
-        return value;
-      });
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param {String} [type='default']
-     *   The type of garbage collection.
-     *
-     * @return {Boolean}
-     *   True or false.
-     */
-
-  }, {
-    key: 'garbageCollect',
-    value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
-
-      var collect = _get(DreditorDiff.prototype.__proto__ || Object.getPrototypeOf(DreditorDiff.prototype), 'garbageCollect', this).call(this, type);
-      if (collect && type === 'render') {
-        this.raw = null;
-      }
-      return collect;
-    }
-
-    /**
-     * Parses a DreditorDiff object.
-     *
-     * @return {Promise}
-     *   A Promise object.
-     */
-
-  }, {
-    key: 'parse',
-    value: function parse() {
-      return this.reject(new Error('You must subclass the "parse" method of DreditorDiff before invoking it.'));
-    }
-
-    /**
-     * Function to help render consistent diff stats through out all the objects.
-     *
-     * @param {Object<DreditorDiff>} [object=this]
-     *   An object to render stats for; it must be an instance of DreditorDiff.
-     *   If no object was passed, then the instance that invoked this method will
-     *   be used.
-     *
-     * @return {DreditorElement|String}
-     *   The DreditorElement object containing the rendered HTML. Can be cast to
-     *   a string value or manually invoked using the toString method.
-     */
-
-  }, {
-    key: 'renderDiffStats',
-    value: function renderDiffStats() {
-      var object = arguments.length <= 0 || arguments[0] === undefined ? this : arguments[0];
-
-      if (!(object instanceof DreditorDiff)) {
-        throw new Error('The "object" argument passed is not an instance of DreditorDiff: ' + object);
-      }
-      return _DreditorUtility2.default.createElement('<span>').addClass('dreditor-stat').append('<span class="dreditor-stat-additions" title="' + object.additions + ' additions">+' + object.additions + '</span>').append('<span class="dreditor-stat-deletions" title="' + object.deletions + ' deletions">-' + object.deletions + '</span>');
-    }
-  }]);
-
-  return DreditorDiff;
-}(_DreditorRenderable3.default);
-
-exports.default = DreditorDiff;
-
-},{"./DreditorRenderable":26,"./DreditorUtility":28}],16:[function(require,module,exports){
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _DreditorAttributes = require('./DreditorAttributes');
-
-var _DreditorAttributes2 = _interopRequireDefault(_DreditorAttributes);
-
-var _DreditorUtility = require('./DreditorUtility');
-
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DreditorElement = function () {
-
-  /**
-   * @class DreditorElement
-   *
-   * @param {String} [tag=null]
-   *   The element tag name.
-   * @param {DreditorAttributes|Object} [attributes={}]
-   *   Optional. The attributes to initialize with.
-   * @param {String} [value=null]
-   *   The text value.
-   *
-   * @constructor
-   */
-  function DreditorElement() {
+  function Element() {
     var tag = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-    var attributes = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-    var value = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
-    _classCallCheck(this, DreditorElement);
+    _classCallCheck(this, Element);
+
+    var ast = _Utility2.default.isObject(tag) ? tag : {
+      type: 'tag',
+      name: tag,
+      voidElement: !!_voidElements2.default[tag],
+      attrs: {},
+      children: []
+    };
+
+    if (ast.type === 'tag' && typeof ast.name !== 'string') {
+      throw new Error('You must pass a string tag name when creating a tag element: ' + ast.name);
+    }
 
     /**
      * The Attributes object for this instance.
      *
-     * @type {DreditorAttributes}
+     * @type {Attributes}
      */
-    this.attributes = attributes instanceof _DreditorAttributes2.default ? attributes : new _DreditorAttributes2.default(attributes);
+    this.attributes = new _Attributes2.default(ast.attrs);
 
     /**
-     * The child DreditorElement objects, if any.
+     * The child Element objects, if any.
      *
      * @type {Array}
      */
     this.children = [];
+
+    // Create necessary child elements.
+    if (ast.type === 'tag') {
+      for (var i = 0, l = ast.children.length; i < l; i++) {
+        this.children.push(new Element(ast.children[i]));
+      }
+    }
+
+    /**
+     * The text content of the element, if any.
+     *
+     * @type {String}
+     */
+    this.content = ast.type === 'text' && ast.content || '';
 
     /**
      * Flag determining whether or not the element should be rendered.
@@ -1450,18 +2965,27 @@ var DreditorElement = function () {
     this.enabled = true;
 
     /**
-     * The tag name of the element.
+     * The name of the tag element to construct.
      *
      * @type {String}
      */
-    this.tag = tag;
+    this.name = ast.type === 'tag' && ast.name;
 
     /**
-     * The text value of the element, if any.
+     * The rendered output.
      *
      * @type {String}
      */
-    this.value = value;
+    this.rendered = null;
+
+    /**
+     * The type of element.
+     *
+     * Can be either "tag" or "text".
+     *
+     * @type {String}
+     */
+    this.type = ast.type;
 
     /**
      * Flag indicating whether or not this is a void element.
@@ -1469,7 +2993,7 @@ var DreditorElement = function () {
      * @type {Boolean}
      *   True or false.
      */
-    this.voidElement = tag && _DreditorUtility2.default.indexOf(DreditorElement.voidElements, tag) !== -1;
+    this.voidElement = ast.voidElement;
   }
 
   /**
@@ -1478,14 +3002,14 @@ var DreditorElement = function () {
    * @param {...String|Array} value
    *   An individual class or an array of classes to add.
    *
-   * @return {DreditorElement|String}
-   *   The DreditorElement instance.
+   * @return {Element|String}
+   *   The Element instance.
    *
    * @chainable
    */
 
 
-  _createClass(DreditorElement, [{
+  _createClass(Element, [{
     key: 'addClass',
     value: function addClass(value) {
       this.attributes.addClass.apply(this.attributes, arguments);
@@ -1493,49 +3017,65 @@ var DreditorElement = function () {
     }
 
     /**
-     * Appends content to this element as a child DreditorElement object.
+     * Appends content to this element as a child Element object.
      *
-     * @param {DreditorElement|String} content
-     *   The content used to create the element. Must be fully enclosed HTML tags.
-     * @param {DreditorAttributes|Object} [attributes]
-     *   Optional. The attributes to initialize the content with.
+     * @param {Element|Object|String} [content=null]
+     *   The content used to create the element. Can be an existing Element
+     *   object, an AST object from html-parse-stringify2 or a string containing
+     *   fully enclosed/valid HTML.
+     * @param {Boolean} [raw=false]
+     *   Whether or not to simply add the content as a raw value to be rendered.
+     *   This is only useful if whitespace needs to be preserved.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      */
 
   }, {
     key: 'append',
-    value: function append(content, attributes) {
-      this.children.push(DreditorElement.create(content, attributes));
+    value: function append() {
+      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var raw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+      var elements = raw ? new Element({
+        type: 'text',
+        content: content.toString()
+      }) : Element.create(content);
+      if (elements instanceof Array) {
+        for (var i = 0, l = elements.length; i < l; i++) {
+          this.children.push(elements[i]);
+        }
+      } else if (elements instanceof Element) {
+        this.children.push(elements);
+      }
       return this;
     }
 
     /**
-     * Appends this element as a child of the provided DreditorElement object.
+     * Appends this element as a child of the provided Element object.
      *
-     * @param {DreditorElement} element
-     *   The DreditorElement object to append this object inside of.
+     * @param {Element} element
+     *   The Element object to append this object inside of.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      */
 
   }, {
     key: 'appendTo',
     value: function appendTo(element) {
-      if (!(element instanceof DreditorElement)) {
-        throw new Error('You can only append to another DreditorElement instance.');
+      if (!(element instanceof Element)) {
+        throw new Error('You can only append to another Element instance.');
       }
       element.append(this);
       return this;
     }
 
     /**
-     * Clones a DreditorElement object.
+     * Clones a Element object.
      *
-     * @return {DreditorElement}
-     *   The cloned DreditorElement instance.
+     * @return {Element}
+     *   The cloned Element instance.
      *
      * @chainable
      */
@@ -1543,9 +3083,9 @@ var DreditorElement = function () {
   }, {
     key: 'clone',
     value: function clone() {
-      var clone = new DreditorElement(this.tag, this.attributes.getData());
-      if (this.value) {
-        clone.value = this.value;
+      var clone = new Element(this.name).setAttributes(this.attributes.getData());
+      if (this.content) {
+        clone.content = this.content;
       }
       for (var i = 0, l = this.children.length; i < l; i++) {
         clone.children.push(this.children[i].clone());
@@ -1556,8 +3096,8 @@ var DreditorElement = function () {
     /**
      * Disables an element from rendering.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      *
      * @chainable
      */
@@ -1572,8 +3112,8 @@ var DreditorElement = function () {
     /**
      * Enables an element for rendering.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      *
      * @chainable
      */
@@ -1651,27 +3191,36 @@ var DreditorElement = function () {
     /**
      * Sets or retrieves the inner HTML content (children) of this element.
      *
-     * @param {DreditorElement|String} [content]
-     *   The content to set. Must be fully enclosed HTML tags.
+     * @param {Element|Object|String} [content=null]
+     *   The content used to create the element. Can be an existing Element
+     *   object, an AST object from html-parse-stringify2 or a string containing
+     *   fully enclosed/valid HTML.
+     * @param {Boolean} [raw=false]
+     *   Whether or not to simply add the content as a raw value to be rendered.
+     *   This is only useful if whitespace needs to be preserved.
      *
-     * @return {DreditorElement|String}
+     * @return {Element|String}
      *   If no content was provided, then the current value of the element's inner
      *   HTML (children) will be rendered. If content was provided, then the
-     *   DreditorElement instance will be returned.
+     *   Element instance will be returned.
      *
      * @chainable
      */
 
   }, {
     key: 'html',
-    value: function html(content) {
+    value: function html() {
+      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var raw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
       // If any argument was provided, then it's in "set" mode.
-      if (content !== void 0) {
-        // Clear out any children.
+      if (!_Utility2.default.isUndefined(content)) {
+        // Clear out any children or content.
         this.children = [];
-        // Only set the content if there's value.
+        this.content = null;
+        // Only set the content if there's content.
         if (content) {
-          this.append(content);
+          this.append(content, raw);
         }
         return this;
       } else {
@@ -1684,39 +3233,55 @@ var DreditorElement = function () {
     }
 
     /**
-     * Prepends content to this element as a child DreditorElement object.
+     * Prepends content to this element as a child Element object.
      *
-     * @param {DreditorElement|String} content
-     *   The content used to create the element. Must be fully enclosed HTML tags.
-     * @param {DreditorAttributes|Object} [attributes]
-     *   Optional. The attributes to initialize the content with.
+     * @param {Element|Object|String} [content=null]
+     *   The content used to create the element. Can be an existing Element
+     *   object, an AST object from html-parse-stringify2 or a string containing
+     *   fully enclosed/valid HTML.
+     * @param {Boolean} [raw=false]
+     *   Whether or not to simply add the content as a raw value to be rendered.
+     *   This is only useful if whitespace needs to be preserved.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      */
 
   }, {
     key: 'prepend',
-    value: function prepend(content, attributes) {
-      this.children.unshift(DreditorElement.create(content, attributes));
+    value: function prepend() {
+      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var raw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+      var elements = raw ? new Element({
+        type: 'text',
+        content: content.toString()
+      }) : Element.create(content);
+      if (elements instanceof Array) {
+        for (var l = elements.length; l > 0; l--) {
+          this.children.unshift(elements[l]);
+        }
+      } else if (elements instanceof Element) {
+        this.children.unshift(elements);
+      }
       return this;
     }
 
     /**
-     * Prepends this element as a child of the provided DreditorElement object.
+     * Prepends this element as a child of the provided Element object.
      *
-     * @param {DreditorElement} element
-     *   The DreditorElement object to prepend this object inside of.
+     * @param {Element} element
+     *   The Element object to prepend this object inside of.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      */
 
   }, {
     key: 'prependTo',
     value: function prependTo(element) {
-      if (!(element instanceof DreditorElement)) {
-        throw new Error('You can only prepend to another DreditorElement instance.');
+      if (!(element instanceof Element)) {
+        throw new Error('You can only prepend to another Element instance.');
       }
       element.prepend(this);
       return this;
@@ -1728,8 +3293,8 @@ var DreditorElement = function () {
      * @param {String} name
      *   The name of the attribute to remove.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      *
      * @chainable
      */
@@ -1747,8 +3312,8 @@ var DreditorElement = function () {
      * @param {...String|Array} value
      *   An individual class or an array of classes to remove.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      *
      * @chainable
      */
@@ -1768,8 +3333,8 @@ var DreditorElement = function () {
      * @param {String} newValue
      *   The new class. It will not be added if the old class does not exist.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      *
      * @chainable
      */
@@ -1789,8 +3354,8 @@ var DreditorElement = function () {
      * @param {*} value
      *   The value of the attribute to set.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      *
      * @chainable
      */
@@ -1805,12 +3370,12 @@ var DreditorElement = function () {
     /**
      * Sets an attribute on the element's Attributes object.
      *
-     * @param {DreditorAttributes|Object} attributes
+     * @param {Attributes|Object} attributes
      *   An Attributes object with existing data or a plain object where the key
      *   is the attribute name and the value is the attribute value.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement instance.
+     * @return {Element|String}
+     *   The Element instance.
      *
      * @chainable
      */
@@ -1825,12 +3390,12 @@ var DreditorElement = function () {
     /**
      * Sets or retrieves the text value of the element.
      *
-     * @param {String} [string]
+     * @param {String|*} [string]
      *   The text string to set. Any HTML will be escaped.
      *
-     * @return {DreditorElement|String}
+     * @return {Element|String}
      *   If no string value was provided, then the current value of the element
-     *   will be returned. If a string value was provided, then the DreditorElement
+     *   will be returned. If a string value was provided, then the Element
      *   instance will be returned.
      *
      * @chainable
@@ -1839,17 +3404,29 @@ var DreditorElement = function () {
   }, {
     key: 'text',
     value: function text(string) {
-      if (string !== void 0) {
-        this.children = [];
-        this.value = _DreditorUtility2.default.encodeHtmlEntities(string);
+      if (!_Utility2.default.isUndefined(string)) {
+        this.children = [new Element({
+          type: 'text',
+          content: _Utility2.default.encodeHtmlEntities(string + '')
+        })];
         return this;
       } else {
-        return this.value || '';
+        var text = this.type === 'text' && this.content || '';
+        for (var i = 0, l = this.children.length; i < l; i++) {
+          if (this.children[i].type === 'text' && this.children[i].content) {
+            text += this.children[i].text();
+          }
+        }
+        return text;
       }
     }
 
     /**
      * Renders an element to a string.
+     *
+     * @param {Boolean} [reset=false]
+     *   Resets any already rendered output and forces the element to be
+     *   constructed again.
      *
      * @return {String}
      *   The rendered HTML output.
@@ -1858,114 +3435,88 @@ var DreditorElement = function () {
   }, {
     key: 'toString',
     value: function toString() {
-      var output = '';
+      var reset = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
-      // Skip if the element is not enabled.
-      if (!this.enabled) {
-        return output;
+      // Immediately return with the rendered output if set.
+      if (!reset && this.rendered !== null) {
+        return this.enabled ? this.rendered : '';
       }
+      this.rendered = '';
+      if (this.type === 'text' && this.content) {
+        this.rendered += this.content;
+      } else if (this.type === 'tag' && this.name) {
+        // To ensure backwards XHTML compatibility, add a "self-closing" forward
+        // slash for void elements. HTML5 ignores these anyway.
+        this.rendered += '<' + this.name + this.attributes + (this.voidElement ? ' /' : '') + '>';
 
-      if (this.tag) {
-        // To ensure backwards comparability, add a "self-closing" forward slash
-        // for void element since HTML5 ignores these anyway.
-        output += '<' + this.tag + this.attributes + (this.voidElement ? ' /' : '') + '>';
-      }
-
-      // Parser set a text element as child.
-      if (!this.value && this.children.length === 1 && !(this.children[0] instanceof DreditorElement)) {
-        this.value = this.children[0];
-        this.children = [];
-      }
-
-      if (this.value) {
-        output += this.value;
-      }
-
-      // Render any value or children.
-      if (this.children.length) {
-        for (var i = 0, l = this.children.length; i < l; i++) {
-          output += this.children[i].toString();
+        // Only render children and close tag if this isn't a void element.
+        if (this.name && !this.voidElement) {
+          // Render any value or children.
+          for (var i = 0, l = this.children.length; i < l; i++) {
+            this.rendered += this.children[i].toString(reset);
+          }
+          this.rendered += '</' + this.name + '>';
         }
       }
-
-      // Only close if there is a tag and it isn't a void element.
-      if (this.tag && !this.voidElement) {
-        output += '</' + this.tag + '>\n';
-      }
-
-      return output;
+      return this.enabled ? this.rendered : '';
     }
   }]);
 
-  return DreditorElement;
+  return Element;
 }();
 
 /**
- * The void elements.
+ * Creates a new Element.
  *
- * @type {String[]}
+ * @param {Element|Object|String} [content='']
+ *   The content used to create the element. Can be an existing Element
+ *   object, an AST object from html-parse-stringify2 or a string containing
+ *   fully enclosed/valid HTML.
+ *
+ * @return {Element[]|Element|String}
+ *   A new Element instance or an array of Element instances depending on if
+ *   there are multiple top level elements, e.g.:
+ *   <div class="item-1"></div><div class="item-2"></div>
  */
 
 
-exports.default = DreditorElement;
-DreditorElement.voidElements = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'];
+exports.default = Element;
+Element.create = function create() {
+  var content = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
 
-/**
- * Creates a new DreditorElement.
- *
- * @param {DreditorElement|String} [content=null]
- *   The content used to create the element. Must be fully enclosed HTML tags.
- * @param {DreditorAttributes|Object} [attributes={}]
- *   Optional. The attributes to initialize the content with.
- *
- * @return {DreditorElement|String}
- *   A new DreditorElement instance or a string value.
- */
-DreditorElement.create = function create() {
-  var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-  var attributes = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-  if (content instanceof DreditorElement) {
-    return content.setAttributes(attributes);
+  // Immediately return if content is already an Element instance.
+  if (content instanceof Element) {
+    return content;
   }
-  var tag = content && content.match(/^<?(\w+)[^>]*>?$/);
-  if (tag) {
-    return new DreditorElement(tag[1]);
-  } else {
-    var element = new DreditorElement();
-    element.value = content;
-    return element;
+  var elements = [];
+  var ast = _Utility2.default.parseHtml(content);
+  for (var i = 0, l = ast.length; i < l; i++) {
+    elements[i] = new Element(ast[i]);
   }
+  return elements.length === 1 ? elements[0] : elements;
 };
 
-},{"./DreditorAttributes":13,"./DreditorUtility":28}],17:[function(require,module,exports){
+},{"./Attributes":26,"./Utility":44,"void-elements":25}],31:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _DreditorEvent = require('./DreditorEvent');
+var _Event = require('./Event');
 
-var _DreditorEvent2 = _interopRequireDefault(_DreditorEvent);
+var _Event2 = _interopRequireDefault(_Event);
 
-var _DreditorUtility = require('./DreditorUtility');
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DreditorEmitter = function () {
+var Emitter = function () {
 
   /**
-   * @class DreditorEmitter
+   * @class Emitter
    *
    * @constructor
    */
-  function DreditorEmitter() {
-    _classCallCheck(this, DreditorEmitter);
+  function Emitter() {
+    _classCallCheck(this, Emitter);
 
     /**
      * A list of listeners.
@@ -1998,15 +3549,9 @@ var DreditorEmitter = function () {
    */
 
 
-  _createClass(DreditorEmitter, [{
+  _createClass(Emitter, [{
     key: 'emit',
     value: function emit(type) {
-      var _this = this;
-
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
       if (!type || typeof type !== 'string') {
         throw new Error('Invalid event type: ' + type);
       }
@@ -2028,18 +3573,23 @@ var DreditorEmitter = function () {
       }
 
       // Create an event object.
-      var event = new _DreditorEvent2.default(type);
+      var event = new _Event2.default(type);
 
       // Set the object that emitted the event.
       event.setTarget(this);
 
       // Prepend arguments with the event object.
+
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
       args.unshift(event);
 
       // Iterate over the listeners.
-      _DreditorUtility2.default.forEach(listeners, function (listener) {
-        listener.apply(_this, args);
-      });
+      for (var i = 0, l = listeners.length; i < l; i++) {
+        listeners[i].apply(this, args);
+      }
 
       // Return whether or not the event was prevented.
       return !event.defaultPrevented;
@@ -2049,7 +3599,7 @@ var DreditorEmitter = function () {
      * Removes either a specific listener or all listeners for an event type.
      *
      * @param {String} type
-     *   The event type.
+     *   The event type or types, separated by a space.
      * @param {Function} [listener]
      *   The event listener.
      *
@@ -2062,22 +3612,27 @@ var DreditorEmitter = function () {
   }, {
     key: 'off',
     value: function off(type, listener) {
-      // Immediately return if there is no event type.
-      if (!this.listeners[type]) {
-        return this;
-      }
+      var types = type.split(' ');
+      for (var i = 0, l = types.length; i < l; i++) {
+        var _type = types[i];
 
-      // Remove all events of a specific type.
-      if (!listener) {
-        this.listeners[type] = [];
-        return this;
-      }
+        // Continue if there is no event type.
+        if (!this.listeners[_type]) {
+          continue;
+        }
 
-      // Remove a specific listener.
-      for (var i = 0, l = this.listeners[type].length; i < l; i++) {
-        if (this.listeners[type][i] === listener) {
-          this.listeners[type].splice(i, 1);
-          break;
+        // Remove all events for a specific type.
+        if (!listener) {
+          this.listeners[_type] = [];
+          continue;
+        }
+
+        // Remove a specific listener.
+        for (var _i = 0, _l = this.listeners[_type].length; _i < _l; _i++) {
+          if (this.listeners[_type][_i] === listener) {
+            this.listeners[_type].splice(_i, 1);
+            break;
+          }
         }
       }
       return this;
@@ -2087,7 +3642,7 @@ var DreditorEmitter = function () {
      * Adds a listener for an event type.
      *
      * @param {String} type
-     *   The event type.
+     *   The event type or types, separated by a space.
      * @param {Function} listener
      *   The event listener.
      *
@@ -2100,10 +3655,14 @@ var DreditorEmitter = function () {
   }, {
     key: 'on',
     value: function on(type, listener) {
-      if (!this.listeners[type]) {
-        this.listeners[type] = [];
+      var types = type.split(' ');
+      for (var i = 0, l = types.length; i < l; i++) {
+        var _type2 = types[i];
+        if (!this.listeners[_type2]) {
+          this.listeners[_type2] = [];
+        }
+        this.listeners[_type2].push(listener);
       }
-      this.listeners[type].push(listener);
       return this;
     }
 
@@ -2132,30 +3691,29 @@ var DreditorEmitter = function () {
     }
   }]);
 
-  return DreditorEmitter;
+  return Emitter;
 }();
 
-exports.default = DreditorEmitter;
+exports.default = Emitter;
 
-},{"./DreditorEvent":18,"./DreditorUtility":28}],18:[function(require,module,exports){
+},{"./Event":32}],32:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var DreditorEvent =
+var Event =
 
 /**
- * @class DreditorEvent
+ * @class Event
  *
  * @param {String} type
  *   The event type.
  *
  * @constructor
  */
-function DreditorEvent(type) {
-  _classCallCheck(this, DreditorEvent);
+function Event(type) {
+  _classCallCheck(this, Event);
 
   // Read-only/internal variables.
   var defaultPrevented = false;
@@ -2189,77 +3747,62 @@ function DreditorEvent(type) {
   });
 };
 
-exports.default = DreditorEvent;
+exports.default = Event;
 
-},{}],19:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+var _Hunk = require('./Hunk');
 
-var _DreditorDiff2 = require('./DreditorDiff');
+var _Hunk2 = _interopRequireDefault(_Hunk);
 
-var _DreditorDiff3 = _interopRequireDefault(_DreditorDiff2);
+var _Patch = require('./Patch');
 
-var _DreditorHunk = require('./DreditorHunk');
+var _Patch2 = _interopRequireDefault(_Patch);
 
-var _DreditorHunk2 = _interopRequireDefault(_DreditorHunk);
+var _Renderable2 = require('./Renderable');
 
-var _DreditorPatch = require('./DreditorPatch');
+var _Renderable3 = _interopRequireDefault(_Renderable2);
 
-var _DreditorPatch2 = _interopRequireDefault(_DreditorPatch);
+var _Table = require('./Table');
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Table2 = _interopRequireDefault(_Table);
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
+var _Utility = require('./Utility');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Utility2 = _interopRequireDefault(_Utility);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DreditorFile = function (_DreditorDiff) {
-  _inherits(DreditorFile, _DreditorDiff);
+
+var File = function (_Renderable) {
+  _inherits(File, _Renderable);
 
   /**
-   * @class DreditorFile
+   * @class File
    *
-   * @param {DreditorPatch} patch
-   *   The DreditorPatch object this file belongs to.
+   * @param {Patch} patch
+   *   The Patch instance this File belongs to.
    * @param {String} string
    *   The contents of a diff file section.
    *
    * @constructor
    */
-  function DreditorFile(patch, string) {
-    _classCallCheck(this, DreditorFile);
-
-    if (!(patch instanceof _DreditorPatch2.default)) {
-      throw new Error('The "patch" argument must be an instance of DreditorPatch: ' + patch);
-    }
+  function File(patch, string) {
+    _classCallCheck(this, File);
 
     /**
-     * The DreditorPatch object this file belongs to.
+     * {@inheritDoc}
      *
-     * Define this property so that it cannot be overridden or show up in
-     * enumerations. It is meant solely for referencing purposes only.
-     *
-     * @type {DreditorPatch}
+     * @type {Object|Number}
      */
-    var _this = _possibleConstructorReturn(this, (DreditorFile.__proto__ || Object.getPrototypeOf(DreditorFile)).call(this, patch.dreditor, string));
+    var _this = _possibleConstructorReturn(this, (File.__proto__ || Object.getPrototypeOf(File)).call(this, 'file', string, patch, _Patch2.default));
 
-    Object.defineProperty(_this, 'patch', {
-      value: patch,
-      configurable: true,
-      enumerable: false,
-      writable: true
-    });
+    _this.border = 1;
 
     /**
      * The file extension.
@@ -2276,9 +3819,23 @@ var DreditorFile = function (_DreditorDiff) {
     _this.filename = null;
 
     /**
-     * An array of DreditorHunk objects.
+     * {@inheritDoc}
      *
-     * @type {DreditorHunk[]}
+     * @type {Number}
+     */
+    _this.height = 43; // Initial height for header.
+
+    /**
+     * {@inheritDoc}
+     *
+     * @type {Object|Number}
+     */
+    _this.margin = { top: 30 };
+
+    /**
+     * An array of Hunk objects.
+     *
+     * @type {Hunk[]}
      */
     _this.hunks = [];
 
@@ -2309,37 +3866,79 @@ var DreditorFile = function (_DreditorDiff) {
      * @type {String}
      */
     _this.target = null;
+
+    // Separate file into hunks.
+    var hunks = _this.raw.split(/^@@+\s/gm).filter(Boolean);
+
+    _this.meta = hunks.shift().split(/\n/);
+
+    // Extract the file meta information.
+    for (var i = 0, l = _this.meta.length; i < l; i++) {
+      var line = _this.meta[i];
+      // Skip null and index values.
+      if (/\/dev\/null|^index\s/.test(line)) {
+        continue;
+      }
+      // Source file.
+      if (/^---\s/.test(line)) {
+        // Remove mnemonic prefixes.
+        // @see https://git-scm.com/docs/diff-config (diff.mnemonicPrefix)
+        _this.source = line.replace(/^---\s(?:(?:a|b|c|i|o|w|1|2)\/)?/, '');
+      }
+      // Target file.
+      else if (/^\+\+\+\s/.test(line)) {
+          // Remove mnemonic prefixes.
+          // @see https://git-scm.com/docs/diff-config (diff.mnemonicPrefix)
+          _this.target = line.replace(/^\+\+\+\s(?:(?:a|b|c|i|o|w|1|2)\/)?/, '');
+        }
+    }
+
+    if (!_this.source && _this.target) {
+      _this.filename = _this.target;
+      _this.status = 'added';
+    } else if (_this.source && !_this.target) {
+      _this.filename = _this.source;
+      _this.status = 'deleted';
+    } else if (_this.source && _this.target && _this.source !== _this.target) {
+      _this.filename = _this.source + ' -> ' + _this.target;
+      _this.status = 'renamed';
+    } else if (_this.source === _this.target) {
+      _this.filename = _this.target;
+      _this.status = 'modified';
+    }
+
+    // Determine the extension to associate with the File object.
+    _this.extension = _Utility2.default.extension(_this.target ? _this.target : _this.source);
+
+    // Create the Hunk instances.
+    for (var _i = 0, _l = hunks.length; _i < _l; _i++) {
+      _this.hunks[_i] = new _Hunk2.default(_this, hunks[_i]);
+      _this.hunks[_i].index = _i;
+      _this.height += _this.hunks[_i].height;
+      _this.size += _this.hunks[_i].size;
+    }
     return _this;
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves the Patch instance this File belongs to.
    *
-   * @param {String} [type='default']
-   *   The type of garbage collection.
-   *
-   * @return {Boolean}
-   *   True or false.
+   * @return {Patch|Diff}
+   *   The Patch instance.
    */
 
 
-  _createClass(DreditorFile, [{
-    key: 'garbageCollect',
-    value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
-
-      var collect = _get(DreditorFile.prototype.__proto__ || Object.getPrototypeOf(DreditorFile.prototype), 'garbageCollect', this).call(this, type);
-      if (collect && type === 'render') {
-        this.patch = null;
-      }
-      return collect;
+  _createClass(File, [{
+    key: 'getPatch',
+    value: function getPatch() {
+      return this.getParent();
     }
 
     /**
      * {@inheritDoc}
      *
      * @return {Promise}
-     *   A promise object.
+     *   A Promise object.
      */
 
   }, {
@@ -2347,51 +3946,9 @@ var DreditorFile = function (_DreditorDiff) {
     value: function parse() {
       var _this2 = this;
 
-      return this.doParse('file', function () {
-        // Separate file into hunks.
-        var hunks = _this2.raw.split(/^@@+\s/gm).filter(Boolean);
-
-        // Extract the file information from the first hunk.
-        _DreditorUtility2.default.forEach(hunks.shift().split(/\n/), function (line) {
-          // Skip null values.
-          if (/\/dev\/null/.test(line)) {
-            return;
-          }
-          if (/^index\s/.test(line)) {
-            _this2.index = line.replace(/^index\s/, '');
-          } else if (/^---\s/.test(line)) {
-            _this2.source = line.replace(/^---\s(a\/)?/, '');
-          } else if (/^\+\+\+\s/.test(line)) {
-            _this2.target = line.replace(/^\+\+\+\s(b\/)?/, '');
-          }
-        });
-
-        if (!_this2.source && _this2.target) {
-          _this2.filename = _this2.target;
-          _this2.status = 'added';
-        } else if (_this2.source && !_this2.target) {
-          _this2.filename = _this2.source;
-          _this2.status = 'deleted';
-        } else if (_this2.source && _this2.target && _this2.source !== _this2.target) {
-          _this2.filename = _this2.source + ' -> ' + _this2.target;
-          _this2.status = 'renamed';
-        } else if (_this2.source === _this2.target) {
-          _this2.filename = _this2.target;
-          _this2.status = 'modified';
-        }
-
-        // Determine the extension to associate with the DreditorFile object.
-        _this2.extension = _DreditorUtility2.default.extension(_this2.target ? _this2.target : _this2.source);
-
-        // Parse the hunks.
-        return _this2.map(hunks, function (string, i) {
-          var hunk = new _DreditorHunk2.default(_this2, string);
-          return hunk.parse().then(function () {
-            hunk.id = 'hunk-' + (i + 1);
-            hunk.index = i;
-            _this2.size += hunk.size;
-            _this2.hunks[i] = hunk;
-          });
+      return this.doParse(null, function () {
+        return _this2.each(_this2.hunks, function (hunk) {
+          return hunk.parse();
         });
       });
     }
@@ -2409,45 +3966,44 @@ var DreditorFile = function (_DreditorDiff) {
       var _this3 = this;
 
       return this.doRender('file', function () {
-        _this3.rendered = _DreditorUtility2.default.createElement('<div>', _this3.attributes).addClass('dreditor-file');
-
-        var header = _DreditorUtility2.default.createElement('<div>').addClass('dreditor-file-header').appendTo(_this3.rendered);
-
-        // Create file info.
-        _DreditorUtility2.default.createElement('<div>').addClass('dreditor-file-info').appendTo(header).append(_this3.renderDiffStats()).append(_this3.renderStatus()).append(_this3.renderFilename());
-
-        var wrapper = _DreditorUtility2.default.createElement('<div>').addClass('dreditor-file-table-wrapper').appendTo(_this3.rendered);
-        var table = _DreditorUtility2.default.createElement('<table>').addClass('dreditor-file-table').appendTo(wrapper);
-        var body = _DreditorUtility2.default.createElement('<tbody>').appendTo(table);
-
-        // Render the hunks.
-        return _this3.map([].concat(_this3.hunks), function (hunk) {
-          return hunk.render().then(function (content) {
-            return body.append(content);
-          });
+        _this3.renderContainer();
+        _this3.header = _Utility2.default.createElement('<div>').addClass('dreditor-file-header').appendTo(_this3.container);
+        _Utility2.default.createElement('<div>').addClass('dreditor-file-info').appendTo(_this3.header).append(_this3.renderDiffStats()).append(_this3.renderStatus()).append(_this3.renderFilename());
+        _this3.table = new _Table2.default(_this3.name).appendTo(_this3.container);
+        return _this3.each(_this3.hunks, function (hunk) {
+          return hunk.render(_this3.table);
+        }).then(function () {
+          return _this3.container;
         });
       });
+    }
+  }, {
+    key: 'renderPlaceholder',
+    value: function renderPlaceholder() {
+      var header = _Utility2.default.createElement('<div>').addClass('dreditor-file-header');
+      _Utility2.default.createElement('<div>').addClass('dreditor-file-info').append(this.getDreditorOption('throbber').replace('dreditor-throbber', 'dreditor-throbber xs in')).append(this.renderStatus()).append(this.renderFilename()).appendTo(header);
+      return this.renderContainer().append(header);
     }
 
     /**
      * Renders the filename.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement object containing the rendered HTML. Can be cast to
+     * @return {Element|String}
+     *   The Element object containing the rendered HTML. Can be cast to
      *   a string value or manually invoked using the toString method.
      */
 
   }, {
     key: 'renderFilename',
     value: function renderFilename() {
-      return _DreditorUtility2.default.createElement('<span>').addClass('dreditor-filename').text(this.filename);
+      return _Utility2.default.createElement('<span>').addClass('dreditor-filename').text(this.filename);
     }
 
     /**
      * Determines which abbreviation to use for the status.
      *
-     * @return {DreditorElement|String}
-     *   The DreditorElement object containing the rendered HTML. Can be cast to
+     * @return {Element|String}
+     *   The Element object containing the rendered HTML. Can be cast to
      *   a string value or manually invoked using the toString method.
      */
 
@@ -2464,110 +4020,81 @@ var DreditorFile = function (_DreditorDiff) {
       } else if (this.status === 'renamed') {
         status = 'R';
       }
-      return _DreditorUtility2.default.createElement('<span>').text(status).addClass(['dreditor-file-status', 'dreditor-file-status--' + (this.status ? this.status : 'unknown')]).setAttribute('title', this.status[0].toUpperCase() + this.status.substr(1));
+      return _Utility2.default.createElement('<span>').text(status).addClass(['dreditor-file-status', 'dreditor-file-status--' + (this.status ? this.status : 'unknown')]).setAttribute('title', this.status[0].toUpperCase() + this.status.substr(1));
     }
   }]);
 
-  return DreditorFile;
-}(_DreditorDiff3.default);
+  return File;
+}(_Renderable3.default);
 
-exports.default = DreditorFile;
+exports.default = File;
 
-},{"./DreditorDiff":15,"./DreditorHunk":20,"./DreditorPatch":24,"./DreditorUtility":28}],20:[function(require,module,exports){
+},{"./Hunk":34,"./Patch":38,"./Renderable":40,"./Table":41,"./Utility":44}],34:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+var _File = require('./File');
 
-var _DreditorDiff2 = require('./DreditorDiff');
+var _File2 = _interopRequireDefault(_File);
 
-var _DreditorDiff3 = _interopRequireDefault(_DreditorDiff2);
+var _Line = require('./Line');
 
-var _DreditorFile = require('./DreditorFile');
+var _Line2 = _interopRequireDefault(_Line);
 
-var _DreditorFile2 = _interopRequireDefault(_DreditorFile);
+var _Renderable2 = require('./Renderable');
 
-var _DreditorLine = require('./DreditorLine');
+var _Renderable3 = _interopRequireDefault(_Renderable2);
 
-var _DreditorLine2 = _interopRequireDefault(_DreditorLine);
+var _Utility = require('./Utility');
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Utility2 = _interopRequireDefault(_Utility);
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DreditorHunk = function (_DreditorDiff) {
-  _inherits(DreditorHunk, _DreditorDiff);
+var Hunk = function (_Renderable) {
+  _inherits(Hunk, _Renderable);
 
   /**
-   * @class DreditorHunk
+   * @class Hunk
    *
-   * @param {DreditorFile} file
-   *   The DreditorFile object this hunk belongs to.
+   * @param {File} file
+   *   The File instance this Hunk belongs to.
    * @param {String} string
    *   The hunk string.
    *
+   * @extends Renderable
+   *
    * @constructor
    */
-  function DreditorHunk(file, string) {
-    _classCallCheck(this, DreditorHunk);
-
-    if (!(file instanceof _DreditorFile2.default)) {
-      throw new Error('The "file" argument must be an instance of DreditorFile: ' + file);
-    }
-
-    /**
-     * The DreditorFile object this hunk belongs to.
-     *
-     * Define this property so that it cannot be overridden or show up in
-     * enumerations. It is meant solely for referencing purposes only.
-     *
-     * @type {DreditorFile}
-     */
-    var _this = _possibleConstructorReturn(this, (DreditorHunk.__proto__ || Object.getPrototypeOf(DreditorHunk)).call(this, file.dreditor, string));
-
-    Object.defineProperty(_this, 'file', {
-      value: file,
-      configurable: true,
-      enumerable: false,
-      writable: true
-    });
+  function Hunk(file, string) {
+    _classCallCheck(this, Hunk);
 
     /**
      * The hunk header, if any.
      *
      * @type {String}
      */
+    var _this = _possibleConstructorReturn(this, (Hunk.__proto__ || Object.getPrototypeOf(Hunk)).call(this, 'hunk', string, file, _File2.default));
+
     _this.header = null;
 
-    /**
-     * The array index associated with this object.
-     *
-     * @type {Number}
-     */
-    _this.index = null;
+    _this.height = 26;
 
     /**
-     * An array of DreditorLine objects.
+     * An array of Line objects.
      *
-     * @type {DreditorLine[]}
+     * @type {Line[]}
      */
     _this.lines = [];
 
     /**
-     * The hunk meta information.
+     * The meta information for this hunk.
      *
-     * @type {String}
+     * @type {Object}
      */
     _this.meta = null;
 
@@ -2584,30 +4111,37 @@ var DreditorHunk = function (_DreditorDiff) {
      * @type {{start: Number, total: Number}}
      */
     _this.target = { start: 0, total: 0 };
+
+    var lines = string.split(/\n/);
+    _this.meta = lines.shift();
+
+    // Filter out completely empty lines, not lines with just whitespace.
+    lines = lines.filter(function (line) {
+      return line !== '';
+    });
+
+    // Create the Line instances.
+    for (var i = 0, l = lines.length; i < l; i++) {
+      _this.lines[i] = new _Line2.default(_this, lines[i]);
+      _this.lines[i].index = i;
+      _this.height += _this.lines[i].height;
+      _this.size += _this.lines[i].size;
+    }
     return _this;
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves the File instance this Hunk belongs to.
    *
-   * @param {String} [type='default']
-   *   The type of garbage collection.
-   *
-   * @return {Boolean}
-   *   True or false.
+   * @return {File|Diff}
+   *   The File instance.
    */
 
 
-  _createClass(DreditorHunk, [{
-    key: 'garbageCollect',
-    value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
-
-      var collect = _get(DreditorHunk.prototype.__proto__ || Object.getPrototypeOf(DreditorHunk.prototype), 'garbageCollect', this).call(this, type);
-      if (collect && type === 'render') {
-        this.file = null;
-      }
-      return collect;
+  _createClass(Hunk, [{
+    key: 'getFile',
+    value: function getFile() {
+      return this.getParent();
     }
 
     /**
@@ -2617,23 +4151,39 @@ var DreditorHunk = function (_DreditorDiff) {
   }, {
     key: 'highlightCode',
     value: function highlightCode() {
-      var _this2 = this;
-
       // Join each line value to simulate the hunk in its entirety.
       var string = '';
-      _DreditorUtility2.default.forEach(this.lines, function (line, i) {
-        string += line.value + (i !== _this2.lines.length - 1 ? '\n' : '');
-      });
+      for (var i = 0, l = this.lines.length; i < l; i++) {
+        string += this.lines[i].value + (i !== l - 1 ? '\n' : '');
+      }
 
-      var callback = this.getDreditorOption('highlightCode', _DreditorUtility2.default.noop);
+      var highlighter = this.getDreditorOption('highlighter');
+      var callback = this.getDreditorOption('highlight.callback', _Utility2.default.noop);
 
-      // Highlight the hunk code and split into an array of lines.
-      var ret = (callback.apply(this, [string]) || '').split('\n').filter(Boolean);
+      // Highlight the hunk code.
+      if (highlighter && _Utility2.default.isFunction(callback)) {
+        string = callback.apply(this, [string]) || '';
+      }
 
-      // Iterate over the return and set the corresponding line.
-      _DreditorUtility2.default.forEach(ret, function (line, i) {
-        _this2.lines[i].value = line;
-      });
+      // Highlight trailing whitespace.
+      if (this.getDreditorOption('highlight.trailingWhitespace')) {
+        string = string.replace(/(\t| )+\n/g, '<span class="dreditor-trailing-space" title="Trailing whitespace">$1</span>\n');
+      }
+
+      // Highlight tabs.
+      if (this.getDreditorOption('highlight.tabs')) {
+        string = string.replace(/\t/g, '<span class="dreditor-tab" title="Tab"></span>');
+      }
+
+      // Iterate over the highlighted lines and set the corresponding line value.
+      var lines = string.split('\n');
+      for (var _i = 0, _l = lines.length; _i < _l; _i++) {
+        // Skip "no-new-line".
+        if (this.lines[_i].status === 'no-new-line') {
+          continue;
+        }
+        this.lines[_i].value = lines[_i];
+      }
     }
 
     /**
@@ -2646,20 +4196,19 @@ var DreditorHunk = function (_DreditorDiff) {
   }, {
     key: 'parse',
     value: function parse() {
-      var _this3 = this;
+      var _this2 = this;
 
       return this.doParse('hunk', function () {
         // Extract hunk meta information.
-        var info = _this3.raw.match(/^[^\n]+/);
-        if (info[0]) {
+        if (_this2.meta.length) {
           // Extract the "at" separator, and prepend it to the meta information.
-          // This was removed from the hunk split in DreditorFile.
-          var at = info[0].match(/\s?(@@+)\s?/);
-          _this3.meta = (at && at[1] && at[1] + ' ' || '') + info[0];
+          // This was removed from the hunk split in File.
+          var at = _this2.meta.match(/\s?(@@+)\s?/);
+          _this2.meta = (at && at[1] && at[1] + ' ' || '') + _this2.meta;
 
-          var parts = info[0].split(/\s?@@+\s?/);
+          var parts = _this2.meta.split(/\s?@@+\s?/).filter(Boolean);
           if (parts[1]) {
-            _this3.header = parts[1];
+            _this2.header = parts[1];
           }
 
           var source;
@@ -2672,24 +4221,18 @@ var DreditorHunk = function (_DreditorDiff) {
             source = ranges[1].substr(1).split(',');
             target = ranges[0].substr(1).split(',');
           }
-          _this3.source.start = parseInt(source[0], 10);
-          _this3.source.total = parseInt(source[1] || 0, 10);
-          _this3.target.start = parseInt(target[0], 10);
-          _this3.target.total = parseInt(target[1] || 0, 10);
+          _this2.source.start = parseInt(source[0], 10);
+          _this2.source.total = parseInt(source[1] || 0, 10);
+          _this2.target.start = parseInt(target[0], 10);
+          _this2.target.total = parseInt(target[1] || 0, 10);
         }
 
-        var sourceStart = _this3.source.start;
-        var targetStart = _this3.target.start;
+        var sourceStart = _this2.source.start;
+        var targetStart = _this2.target.start;
 
-        var lines = _this3.raw.replace(/^[^\n]*\n/, '').split(/\n/).filter(Boolean);
-
-        // Parse the lines.
-        return _this3.map(lines, function (string, i) {
-          var line = new _DreditorLine2.default(_this3, string);
+        // Parse lines.
+        return _this2.each(_this2.lines, function (line) {
           return line.parse().then(function () {
-            line.id = 'line-' + (i + 1);
-            line.index = i;
-            _this3.size += line.size;
             switch (line.status) {
               case 'added':
                 line.lineNumbers.target = targetStart++;
@@ -2703,7 +4246,6 @@ var DreditorHunk = function (_DreditorDiff) {
                 line.lineNumbers.target = targetStart++;
                 break;
             }
-            _this3.lines[i] = line;
           });
         });
       });
@@ -2712,117 +4254,94 @@ var DreditorHunk = function (_DreditorDiff) {
     /**
      * {@inheritDoc}
      *
+     * @param {Table} table
+     *   The Table element this hunk is being rendered to.
+     *
      * @return {Promise}
      *   A Promise object.
      */
 
   }, {
     key: 'render',
-    value: function render() {
-      var _this4 = this;
+    value: function render(table) {
+      var _this3 = this;
 
       return this.doRender('hunk', function () {
         // Just create an empty element to house the rows.
-        _this4.rendered = _DreditorUtility2.default.createElement();
+        _this3.rendered = _Utility2.default.createElement();
 
-        if (_this4.meta) {
-          _DreditorUtility2.default.createElement('<tr>', _this4.attributes).addClass(['dreditor-line', 'dreditor-line--hunk']).append('<td data-line-number="..." class="dreditor-line-number"></td>').append('<td data-line-number="..." class="dreditor-line-number"></td>').append('<td>' + _this4.meta + '</td>').appendTo(_this4.rendered);
+        if (_this3.meta) {
+          var row = table.addRow().setAttributes(_this3.attributes).addClass(['dreditor-line', 'dreditor-line--hunk']);
+          row.addCell().setAttribute('data-line-number', '...').addClass('dreditor-line-number');
+          row.addCell().setAttribute('data-line-number', '...').addClass('dreditor-line-number');
+          row.addCell().setAttribute('data-hunk-meta', _this3.meta).addClass('dreditor-hunk-meta');
         }
 
         // Render the lines.
-        return _this4.map([].concat(_this4.lines), function (line) {
-          return line.render().then(function (content) {
-            return _this4.rendered.append(content);
-          });
+        return _this3.each(_this3.lines, function (line) {
+          return line.render(table.addRow());
+        }).then(function () {
+          return table;
         });
       });
     }
   }]);
 
-  return DreditorHunk;
-}(_DreditorDiff3.default);
+  return Hunk;
+}(_Renderable3.default);
 
-exports.default = DreditorHunk;
+exports.default = Hunk;
 
-},{"./DreditorDiff":15,"./DreditorFile":19,"./DreditorLine":21,"./DreditorUtility":28}],21:[function(require,module,exports){
+},{"./File":33,"./Line":35,"./Renderable":40,"./Utility":44}],35:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+var _Hunk = require('./Hunk');
 
-var _DreditorDiff2 = require('./DreditorDiff');
+var _Hunk2 = _interopRequireDefault(_Hunk);
 
-var _DreditorDiff3 = _interopRequireDefault(_DreditorDiff2);
+var _Renderable2 = require('./Renderable');
 
-var _DreditorHunk = require('./DreditorHunk');
+var _Renderable3 = _interopRequireDefault(_Renderable2);
 
-var _DreditorHunk2 = _interopRequireDefault(_DreditorHunk);
+var _Utility = require('./Utility');
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Utility2 = _interopRequireDefault(_Utility);
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DreditorLine = function (_DreditorDiff) {
-  _inherits(DreditorLine, _DreditorDiff);
+var Line = function (_Renderable) {
+  _inherits(Line, _Renderable);
 
   /**
-   * @class DreditorLine
+   * @class Line
    *
-   * @param {DreditorHunk} hunk
-   *   The DreditorHunk object that this line belongs to.
+   * @param {Hunk} hunk
+   *   The Hunk instance that this Line belongs to.
    * @param {String} string
    *   The line of text.
    *
+   * @extends Renderable
+   *
    * @constructor
    */
-  function DreditorLine(hunk, string) {
-    _classCallCheck(this, DreditorLine);
-
-    if (!(hunk instanceof _DreditorHunk2.default)) {
-      throw new Error('The "hunk" argument must be an instance of DreditorHunk: ' + hunk);
-    }
-
-    /**
-     * The DreditorHunk object this line belongs to.
-     *
-     * Define this property so that it cannot be overridden or show up in
-     * enumerations. It is meant solely for referencing purposes only.
-     *
-     * @type {DreditorHunk}
-     */
-    var _this = _possibleConstructorReturn(this, (DreditorLine.__proto__ || Object.getPrototypeOf(DreditorLine)).call(this, hunk.dreditor, string));
-
-    Object.defineProperty(_this, 'hunk', {
-      value: hunk,
-      configurable: true,
-      enumerable: false,
-      writable: true
-    });
-
-    /**
-     * The array index associated with this object.
-     *
-     * @type {Number}
-     */
-    _this.index = null;
+  function Line(hunk, string) {
+    _classCallCheck(this, Line);
 
     /**
      * The source and target line numbers.
      *
      * @type {{source: Number, target: Number}}
      */
+    var _this = _possibleConstructorReturn(this, (Line.__proto__ || Object.getPrototypeOf(Line)).call(this, 'line', string, hunk, _Hunk2.default));
+
     _this.lineNumbers = { source: 0, target: 0 };
+
+    _this.height = 20;
 
     /**
      * The status of the line.
@@ -2836,31 +4355,62 @@ var DreditorLine = function (_DreditorDiff) {
      *
      * @type {String}
      */
-    _this.value = null;
+    _this.value = string.substr(1);
+
+    // Set the size of the line.
+    _this.size = _this.value.length;
+
+    /**
+     * The first character of the line, indicating the "status".
+     *
+     * @type {String}
+     */
+    _this.symbol = string[0];
+
+    switch (_this.symbol) {
+      case '-':
+        _this.status = 'deleted';
+        break;
+
+      case '+':
+        _this.status = 'added';
+        break;
+
+      case '\\':
+        _this.status = 'no-new-line';
+        _this.symbol = '';
+        _this.value = _this.value.replace(/^\s*|\s*$/, '');
+        break;
+
+      default:
+        _this.status = 'context';
+    }
+
+    // Increase stats.
+    switch (_this.status) {
+      case 'added':
+        _this.increaseAddition();
+        break;
+
+      case 'deleted':
+        _this.increaseDeletion();
+        break;
+    }
     return _this;
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves the Hunk instance this Line belongs to.
    *
-   * @param {String} [type='default']
-   *   The type of garbage collection.
-   *
-   * @return {Boolean}
-   *   True or false.
+   * @return {Hunk|Diff}
+   *   The Hunk instance.
    */
 
 
-  _createClass(DreditorLine, [{
-    key: 'garbageCollect',
-    value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
-
-      var collect = _get(DreditorLine.prototype.__proto__ || Object.getPrototypeOf(DreditorLine.prototype), 'garbageCollect', this).call(this, type);
-      if (collect && type === 'render') {
-        this.hunk = null;
-      }
-      return collect;
+  _createClass(Line, [{
+    key: 'getHunk',
+    value: function getHunk() {
+      return this.getParent();
     }
 
     /**
@@ -2876,40 +4426,15 @@ var DreditorLine = function (_DreditorDiff) {
       var _this2 = this;
 
       return this.doParse('line', function () {
-        // Determine if this line was added, deleted or purely contextual.
-        _this2.status = _this2.raw[0] === '+' && 'added' || _this2.raw[0] === '-' && 'deleted' || 'context';
-
         _this2.attributes.addClass('dreditor-line--' + _this2.status);
-
-        // Remove the first character from the string as the "value".
-        _this2.value = _this2.raw.substr(1);
-
-        // Set the size of the line.
-        _this2.size = _this2.value.length;
-
-        // Increase stats.
-        switch (_this2.status) {
-          case 'added':
-            _this2.hunk.additions++;
-            _this2.hunk.file.additions++;
-            _this2.hunk.file.patch.additions++;
-            _this2.hunk.file.patch.parser.additions++;
-            break;
-
-          case 'deleted':
-            _this2.hunk.deletions++;
-            _this2.hunk.file.deletions++;
-            _this2.hunk.file.patch.deletions++;
-            _this2.hunk.file.patch.parser.deletions++;
-            break;
-        }
-
-        return _this2.resolve(_this2.value);
       });
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @param {TableRow} row
+     *   The TableRow instance this line belongs to.
      *
      * @return {Promise}
      *   A Promise object.
@@ -2917,69 +4442,82 @@ var DreditorLine = function (_DreditorDiff) {
 
   }, {
     key: 'render',
-    value: function render() {
+    value: function render(row) {
       var _this3 = this;
 
       return this.doRender('line', function () {
-        _this3.rendered = _DreditorUtility2.default.createElement('<tr>', _this3.attributes).addClass(['dreditor-line', 'dreditor-line--' + _this3.status]).setAttribute('id', _this3.id);
+        var file = _this3.getHunk().getFile();
+        var id = 'file-' + file.sha1;
 
-        // Source line number.
-        _DreditorUtility2.default.createElement('<td>').appendTo(_this3.rendered).addClass('dreditor-line-number').setAttribute('id', _this3.id + 'S' + _this3.lineNumbers.source).setAttribute('data-line-number', _this3.lineNumbers.source ? _this3.lineNumbers.source : '');
+        row.setAttributes(_this3.attributes).addClass(['dreditor-line', 'dreditor-line--' + _this3.status]);
 
-        // Target line number.
-        _DreditorUtility2.default.createElement('<td>').appendTo(_this3.rendered).addClass('dreditor-line-number').setAttribute('id', _this3.id + 'T' + _this3.lineNumbers.target).setAttribute('data-line-number', _this3.lineNumbers.target ? _this3.lineNumbers.target : '');
+        // Don't show line numbers for "no-new-line" status.
+        if (_this3.status !== 'no-new-line') {
+          // Source line number.
+          var source = row.addCell().addClass('dreditor-line-number');
+          if (_this3.lineNumbers.source) {
+            source.setAttribute('id', id + '-S' + _this3.lineNumbers.source).setAttribute('data-line-number', _this3.lineNumbers.source ? _this3.lineNumbers.source : '');
+          }
+
+          // Target line number.
+          var target = row.addCell().addClass('dreditor-line-number');
+          if (_this3.lineNumbers.target) {
+            target.setAttribute('id', id + '-T' + _this3.lineNumbers.target).setAttribute('data-line-number', _this3.lineNumbers.target ? _this3.lineNumbers.target : '');
+          }
+        }
 
         // Source code.
-        var code = _DreditorUtility2.default.createElement('<td>').appendTo(_this3.rendered).addClass('dreditor-line-code');
-        _DreditorUtility2.default.createElement('<span>').appendTo(code).addClass('dreditor-line-code-inner').html('' + (_this3.status === 'added' && '+' || _this3.status === 'deleted' && '-' || ' ') + _this3.value);
+        var code = row.addCell().addClass('dreditor-line-code');
 
-        return _this3.resolve(_this3.rendered);
+        // Ensure "no-new-line" status spans the line number columns.
+        if (_this3.status === 'no-new-line') {
+          code.setAttribute('colspan', 3);
+        }
+
+        _Utility2.default.createElement('<span class="dreditor-line-code-inner"/>').appendTo(code).setAttribute('data-symbol', _this3.symbol).html(_this3.value, true);
+
+        return row;
       });
     }
   }]);
 
-  return DreditorLine;
-}(_DreditorDiff3.default);
+  return Line;
+}(_Renderable3.default);
 
-exports.default = DreditorLine;
+exports.default = Line;
 
-},{"./DreditorDiff":15,"./DreditorHunk":20,"./DreditorUtility":28}],22:[function(require,module,exports){
+},{"./Hunk":34,"./Renderable":40,"./Utility":44}],36:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _DreditorBase2 = require('./DreditorBase');
+var _Base2 = require('./Base');
 
-var _DreditorBase3 = _interopRequireDefault(_DreditorBase2);
+var _Base3 = _interopRequireDefault(_Base2);
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Utility = require('./Utility');
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
+var _Utility2 = _interopRequireDefault(_Utility);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DreditorLocaleBase = function (_DreditorBase) {
-  _inherits(DreditorLocaleBase, _DreditorBase);
+var LocaleBase = function (_Base) {
+  _inherits(LocaleBase, _Base);
 
-  function DreditorLocaleBase() {
+  function LocaleBase() {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-    _classCallCheck(this, DreditorLocaleBase);
+    _classCallCheck(this, LocaleBase);
 
     /**
      * The current language code.
      *
      * @type {String}
      */
-    var _this = _possibleConstructorReturn(this, (DreditorLocaleBase.__proto__ || Object.getPrototypeOf(DreditorLocaleBase)).call(this, _DreditorUtility2.default.extend(true, {}, DreditorLocaleBase.__defaultOptions__, options)));
+    var _this = _possibleConstructorReturn(this, (LocaleBase.__proto__ || Object.getPrototypeOf(LocaleBase)).call(this, _Utility2.default.extend(true, {}, LocaleBase.__defaultOptions__, options)));
 
     _this.langCode = _this.getOption('langCode', 'en-US');
 
@@ -3005,7 +4543,7 @@ var DreditorLocaleBase = function (_DreditorBase) {
    */
 
 
-  _createClass(DreditorLocaleBase, [{
+  _createClass(LocaleBase, [{
     key: 't',
     value: function t(text) {
       var langCode = arguments.length <= 1 || arguments[1] === undefined ? this.langCode : arguments[1];
@@ -3017,95 +4555,102 @@ var DreditorLocaleBase = function (_DreditorBase) {
     }
   }]);
 
-  return DreditorLocaleBase;
-}(_DreditorBase3.default);
+  return LocaleBase;
+}(_Base3.default);
 
-exports.default = DreditorLocaleBase;
+exports.default = LocaleBase;
 
 
-DreditorLocaleBase.__defaultOptions__ = {
+LocaleBase.__defaultOptions__ = {
   locale: {}
 };
 
-},{"./DreditorBase":14,"./DreditorUtility":28}],23:[function(require,module,exports){
+},{"./Base":27,"./Utility":44}],37:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _Dreditor = require('./Dreditor');
 
 var _Dreditor2 = _interopRequireDefault(_Dreditor);
 
-var _DreditorDiff2 = require('./DreditorDiff');
+var _Patch = require('./Patch');
 
-var _DreditorDiff3 = _interopRequireDefault(_DreditorDiff2);
+var _Patch2 = _interopRequireDefault(_Patch);
 
-var _DreditorPatch = require('./DreditorPatch');
+var _Renderable2 = require('./Renderable');
 
-var _DreditorPatch2 = _interopRequireDefault(_DreditorPatch);
+var _Renderable3 = _interopRequireDefault(_Renderable2);
 
-var _DreditorUrl = require('./DreditorUrl');
+var _Url = require('./Url');
 
-var _DreditorUrl2 = _interopRequireDefault(_DreditorUrl);
+var _Url2 = _interopRequireDefault(_Url);
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Utility = require('./Utility');
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
+var _Utility2 = _interopRequireDefault(_Utility);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DreditorParser = function (_DreditorDiff) {
-  _inherits(DreditorParser, _DreditorDiff);
+var Parser = function (_Renderable) {
+  _inherits(Parser, _Renderable);
 
   /**
-   * @class DreditorParser
+   * @class Parser
    *
    * @param {Dreditor} dreditor
    *   The Dreditor instance.
    * @param {String} string
    *   The diff contents to parse.
-   * @param {DreditorUrl} [url=null]
-   *   The DreditorUrl object associated with the string.
+   * @param {Url} [url=null]
+   *   The Url object associated with the string.
    *
    * @constructor
    */
-  function DreditorParser(dreditor, string) {
+  function Parser(dreditor, string) {
     var url = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
-    _classCallCheck(this, DreditorParser);
+    _classCallCheck(this, Parser);
+
+    /**
+     * An array of Patch objects.
+     *
+     * @type {Patch[]}
+     */
+    var _this = _possibleConstructorReturn(this, (Parser.__proto__ || Object.getPrototypeOf(Parser)).call(this, 'parser', string, dreditor));
+
+    _this.patches = [];
+
+    /**
+     * The Url object that provided the contents of this file, if any.
+     *
+     * @type {Url}
+     */
+    _this.url = url && _Url2.default.create(url) || null;
 
     /**
      * The sanitized string.
      *
      * @type {String}
      */
-    var _this = _possibleConstructorReturn(this, (DreditorParser.__proto__ || Object.getPrototypeOf(DreditorParser)).call(this, dreditor, string));
+    _this.sanitized = _this.sanitize(_this.raw);
 
-    _this.sanitized = null;
+    // Extract sequential constructed patches created using git-format-patch by
+    // splitting the file up based on git's "fixed magic date" header.
+    // @see https://git-scm.com/docs/git-format-patch
+    var patches = _this.sanitized.split(/^From \b[0-9a-f]{5,40}\b Mon Sep 17 00:00:00 2001/gm).filter(Boolean);
 
-    /**
-     * An array of DreditorPatch objects.
-     *
-     * @type {DreditorPatch[]}
-     */
-    _this.patches = [];
-
-    /**
-     * The DreditorUrl object that provided the contents of this file, if any.
-     *
-     * @type {DreditorUrl}
-     */
-    _this.url = url && _DreditorUrl2.default.create(url) || null;
+    // Create the Patch instances.
+    for (var i = 0, l = patches.length; i < l; i++) {
+      _this.patches[i] = new _Patch2.default(_this, patches[i]);
+      _this.patches[i].index = i;
+      _this.height += _this.patches[i].height;
+      _this.size += _this.patches[i].size;
+    }
     return _this;
   }
 
@@ -3120,57 +4665,16 @@ var DreditorParser = function (_DreditorDiff) {
    */
 
 
-  _createClass(DreditorParser, [{
+  _createClass(Parser, [{
     key: 'garbageCollect',
     value: function garbageCollect() {
       var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
 
-      var collect = _get(DreditorParser.prototype.__proto__ || Object.getPrototypeOf(DreditorParser.prototype), 'garbageCollect', this).call(this, type);
+      var collect = _get(Parser.prototype.__proto__ || Object.getPrototypeOf(Parser.prototype), 'garbageCollect', this).call(this, type);
       if (collect && type === 'parse') {
         this.sanitized = null;
       }
       return collect;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {Promise}
-     *   A promise object.
-     */
-
-  }, {
-    key: 'parse',
-    value: function parse() {
-      var _this2 = this;
-
-      return this.doParse(null, function () {
-        _this2.sanitized = _this2.sanitize(_this2.raw);
-
-        // Extract sequential constructed patches created using git-format-patch by
-        // splitting the file up based on git's "fixed magic date" header.
-        // @see https://git-scm.com/docs/git-format-patch
-        var sha1 = [];
-        var patches = _this2.sanitized.split(/^From (\b[0-9a-f]{5,40}\b) Mon Sep 17 00:00:00 2001/gm).filter(function (patch) {
-          if (/^[0-9a-f]{5,40}/.test(patch)) {
-            sha1.push(patch);
-            return false;
-          }
-          return !!patch.length;
-        });
-
-        // Parse the patches.
-        return _this2.map(patches, function (string, i) {
-          var patch = new _DreditorPatch2.default(_this2, string);
-          return patch.parse().then(function () {
-            patch.sha1 = sha1[i] || null;
-            patch.id = 'patch-' + (patch.sha1 ? patch.sha1.substr(0, 5) : i + 1);
-            patch.index = i;
-            _this2.size += patch.size;
-            _this2.patches[i] = patch;
-          });
-        });
-      });
     }
 
     /**
@@ -3183,110 +4687,102 @@ var DreditorParser = function (_DreditorDiff) {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       return this.doRender(null, function () {
-        _this3.rendered = _DreditorUtility2.default.createElement('<div>', _this3.attributes).addClass(['dreditor-wrapper', 'dreditor-reset']);
-
-        var pager = _DreditorUtility2.default.createElement('<ul>').addClass('dreditor-patch-menu').appendTo(_this3.rendered).append('<li><strong>Patch</strong></li>');
-        var patches = _DreditorUtility2.default.createElement('<div>').addClass('dreditor-patches').appendTo(_this3.rendered);
-
-        // Disable the pager if there isn't more than 1 patch.
-        if (_this3.patches.length <= 1) {
-          pager.disable();
-        }
-
-        // Render the patches.
-        return _this3.map([].concat(_this3.patches), function (patch, i) {
-          pager.append('<li><a href="#' + patch.id + '">' + (i + 1) + '</a></li>');
-          return patch.render().then(function (output) {
-            return patches.append(output);
+        _this2.rendered = _Utility2.default.createElement('<div>').setAttributes(_this2.attributes).addClass(['dreditor-wrapper', 'dreditor-reset']);
+        var patches = _Utility2.default.createElement('<div>').addClass('dreditor-patches').appendTo(_this2.rendered);
+        return _this2.each(_this2.patches, function (patch) {
+          return patch.render().then(function (content) {
+            return patches.append(content);
           });
+        });
+      });
+    }
+
+    /**
+     * Renders a menu for sequential patches from git-format-patch output.
+     *
+     * @return {Promise}
+     *   A Promise object.
+     */
+
+  }, {
+    key: 'renderPatchesMenu',
+    value: function renderPatchesMenu() {
+      var _this3 = this;
+
+      return this.doRender('patch.menu', function () {
+        var menu = _Utility2.default.createElement('<ul>').addClass('dreditor-patch-menu').append('<li><strong>Patch</strong></li>');
+        if (_this3.patches.length <= 1) {
+          return _this3.resolve(menu.disable());
+        }
+        return _this3.each(_this3.patches, function (patch) {
+          return patch.renderMenuItem().then(function (item) {
+            return menu.append(item);
+          });
+        }).then(function () {
+          return menu;
         });
       });
     }
   }]);
 
-  return DreditorParser;
-}(_DreditorDiff3.default);
+  return Parser;
+}(_Renderable3.default);
 
-exports.default = DreditorParser;
+exports.default = Parser;
 
-},{"./Dreditor":12,"./DreditorDiff":15,"./DreditorPatch":24,"./DreditorUrl":27,"./DreditorUtility":28}],24:[function(require,module,exports){
+},{"./Dreditor":29,"./Patch":38,"./Renderable":40,"./Url":43,"./Utility":44}],38:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+var _File = require('./File');
 
-var _DreditorDiff2 = require('./DreditorDiff');
+var _File2 = _interopRequireDefault(_File);
 
-var _DreditorDiff3 = _interopRequireDefault(_DreditorDiff2);
+var _Parser = require('./Parser');
 
-var _DreditorFile = require('./DreditorFile');
+var _Parser2 = _interopRequireDefault(_Parser);
 
-var _DreditorFile2 = _interopRequireDefault(_DreditorFile);
+var _Renderable2 = require('./Renderable');
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Renderable3 = _interopRequireDefault(_Renderable2);
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
+var _Utility = require('./Utility');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Utility2 = _interopRequireDefault(_Utility);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DreditorPatch = function (_DreditorDiff) {
-  _inherits(DreditorPatch, _DreditorDiff);
+
+var Patch = function (_Renderable) {
+  _inherits(Patch, _Renderable);
 
   /**
-   * @class DreditorPatch
+   * @class Patch
    *
-   * @param {DreditorParser} parser
-   *   The DreditorParser object this file belongs to.
+   * @param {Parser} parser
+   *   The Parser object this Patch belongs to.
    * @param {String} string
    *   The contents of a diff file section.
    *
    * @constructor
    */
-  function DreditorPatch(parser, string) {
-    _classCallCheck(this, DreditorPatch);
+  function Patch(parser, string) {
+    _classCallCheck(this, Patch);
 
     /**
-     * The DreditorParser object this patch belongs to.
+     * An array of File objects.
      *
-     * Define this property so that it cannot be overridden or show up in
-     * enumerations. It is meant solely for referencing purposes only.
-     *
-     * @type {DreditorParser}
+     * @type {File[]}
      */
-    var _this = _possibleConstructorReturn(this, (DreditorPatch.__proto__ || Object.getPrototypeOf(DreditorPatch)).call(this, parser.dreditor, string));
+    var _this = _possibleConstructorReturn(this, (Patch.__proto__ || Object.getPrototypeOf(Patch)).call(this, 'patch', string, parser, _Parser2.default));
 
-    Object.defineProperty(_this, 'parser', {
-      value: parser,
-      configurable: true,
-      enumerable: false,
-      writable: true
-    });
-
-    /**
-     * An array of DreditorFile objects.
-     *
-     * @type {DreditorFile[]}
-     */
     _this.files = [];
-
-    /**
-     * The array index associated with this object.
-     *
-     * @type {Number}
-     */
-    _this.index = null;
 
     /**
      * Meta information for the patch.
@@ -3295,68 +4791,40 @@ var DreditorPatch = function (_DreditorDiff) {
      */
     _this.meta = null;
 
-    /**
-     * The patch SHA1 identifier, if any.
-     *
-     * Normally, this SHA1 is meaningless (for any real reference), however it
-     * can be used to construct the DOM identifier (above) for creating anchors.
-     *
-     * @type {String}
-     */
-    _this.sha1 = null;
+    // Split into separate files, delimited by lines starting with "diff".
+    var files = _this.raw.split(/^diff\s[^\n]+\n/gm);
+
+    // Extract any meta information from the first array item.
+    var meta = files.shift();
+
+    // Remove any lingering empty array items.
+    files = files.filter(Boolean);
+
+    // Parse any meta info (safe to do now since there is only a few at most).
+    _this.parseMetaInfo(meta, files);
+
+    // Create the File instances.
+    for (var i = 0, l = files.length; i < l; i++) {
+      _this.files[i] = new _File2.default(_this, files[i]);
+      _this.files[i].index = i;
+      _this.height += _this.files[i].height;
+      _this.size += _this.files[i].size;
+    }
     return _this;
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves the Parser instance this Patch belongs to.
    *
-   * @param {String} [type='default']
-   *   The type of garbage collection.
-   *
-   * @return {Boolean}
-   *   True or false.
+   * @return {Parser|Diff}
+   *   The Parser instance.
    */
 
 
-  _createClass(DreditorPatch, [{
-    key: 'garbageCollect',
-    value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
-
-      var collect = _get(DreditorPatch.prototype.__proto__ || Object.getPrototypeOf(DreditorPatch.prototype), 'garbageCollect', this).call(this, type);
-      if (collect && type === 'render') {
-        this.parser = null;
-      }
-      return collect;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {Promise}
-     *   A promise object.
-     */
-
-  }, {
-    key: 'parse',
-    value: function parse() {
-      var _this2 = this;
-
-      return this.doParse('patch', function () {
-        // Split into separate files, delimited by lines starting with "diff".
-        var files = _this2.raw.split(/^diff\s[^\n]+\n/gm);
-
-        // Extract any meta information from the first array item.
-        var meta = files.shift();
-
-        // Remove any lingering empty array items.
-        files = files.filter(Boolean);
-
-        // Parse the meta info and then the files.
-        return _this2.parseMetaInfo(meta, files).then(function () {
-          return _this2.parseFiles(files);
-        });
-      });
+  _createClass(Patch, [{
+    key: 'getParser',
+    value: function getParser() {
+      return this.getParent();
     }
 
     /**
@@ -3368,113 +4836,81 @@ var DreditorPatch = function (_DreditorDiff) {
      * @param {String} info
      *   A string of meta information from a patch.
      * @param {Array} files
-     *   The array of diff files in the patch.
-     *
-     * @return {Object|null}
-     *   The fully parsed git-format object or null.
+     *   The array of raw files.
      */
 
   }, {
     key: 'parseMetaInfo',
     value: function parseMetaInfo(info, files) {
-      var _this3 = this;
-
       if (this.meta) {
-        return this.meta;
+        return;
       }
-      return this.doParse('patch.meta', function () {
-        var meta = {};
+      var meta = {};
 
-        if (info.length) {
-          var headers = info.split('\n').filter(Boolean);
+      if (info.length) {
+        var headers = info.split('\n').filter(Boolean);
 
-          // Determine position of the "first blank line", if any.
-          var blank = _DreditorUtility2.default.indexOf(headers, '');
+        // Determine position of the "first blank line", if any.
+        var blank = _Utility2.default.indexOf(headers, '');
 
-          // Determine position of the "scissor", if any.
-          var scissor = _DreditorUtility2.default.indexOf(headers, '-- >8 --');
+        // Determine position of the "scissor", if any.
+        var scissor = _Utility2.default.indexOf(headers, '-- >8 --');
 
-          // Join the headers and any subsequent headers from the "body" after the
-          // first blank line and/or "scissor" delimiters.
-          if (blank !== -1 && scissor !== -1) {
-            // If there is no blank line, then just use the headers array length.
-            if (blank === -1) {
-              blank = headers.length;
-            }
-            headers = headers.slice(0, blank).concat(headers.slice((scissor !== -1 ? scissor : blank) + 1));
+        // Join the headers and any subsequent headers from the "body" after the
+        // first blank line and/or "scissor" delimiters.
+        if (blank !== -1 && scissor !== -1) {
+          // If there is no blank line, then just use the headers array length.
+          if (blank === -1) {
+            blank = headers.length;
           }
+          headers = headers.slice(0, blank).concat(headers.slice((scissor !== -1 ? scissor : blank) + 1));
+        }
 
-          // Parse any meta information as "email header fields" per RFC 2822.
-          // https://tools.ietf.org/html/rfc2822#section-2.2
-          var previousKey;
-          _DreditorUtility2.default.forEach(headers, function (header, i) {
-            var parts = header.match(/^([\w\d\-_]+):\s(.*)/);
-            var key = parts && parts[1] && _DreditorUtility2.default.machineName(parts[1]);
-            var value = parts && parts[2];
-            if (key && value) {
-              // Convert to a date object.
-              if (/^date/i.test(key)) {
-                value = !isNaN(Date.parse(value)) ? new Date(value) : value;
-              }
-              // Remove the standard git subject prefix ([PATCH]) if there's
-              // just one patch. If there is more than one patch ([PATCH n/n])
-              // then keeping this prefix is important for identification.
-              else if (/^subject/i.test(key)) {
-                  value = value.replace(/^\[PATCH]\s/, '');
-                }
-              meta[key] = value;
-              previousKey = key;
+        // Parse any meta information as "email header fields" per RFC 2822.
+        // https://tools.ietf.org/html/rfc2822#section-2.2
+        var previousKey;
+        for (var i = 0, l = headers.length; i < l; i++) {
+          var header = headers[i];
+          var parts = header.match(/^([\w\d\-_]+):\s(.*)/);
+          var key = parts && parts[1] && _Utility2.default.machineName(parts[1]);
+          var value = parts && parts[2];
+          if (key && value) {
+            // Convert to a date object.
+            if (/^date/i.test(key)) {
+              value = !isNaN(Date.parse(value)) ? new Date(value) : value;
             }
-            // Parse "Long Header Fields" (lines that start with a single space)
-            // and append its value to the previous key.
-            else if (previousKey && header.match(/^\s/)) {
-                meta[previousKey] += header;
-              } else if (!header || header.match(/^---/)) {
-                previousKey = null;
+            // Remove the standard git subject prefix ([PATCH]) if there's
+            // just one patch. If there is more than one patch ([PATCH n/n])
+            // then keeping this prefix is important for identification.
+            else if (/^subject/i.test(key)) {
+                value = value.replace(/^\[PATCH]\s/, '');
               }
-          });
+            meta[key] = value;
+            previousKey = key;
+          }
+          // Parse "Long Header Fields" (lines that start with a single space)
+          // and append its value to the previous key.
+          else if (previousKey && header.match(/^\s/)) {
+              meta[previousKey] += header;
+            } else if (!header || header.match(/^---/)) {
+              previousKey = null;
+            }
+        }
 
-          // Finally, extract any signature and remove it from the last file.
-          if (files && files.length) {
-            var lastFile = files[files.length - 1];
-            var signaturePosition = lastFile.search(/^--\s*\n(.|\n)*$/m);
-            if (signaturePosition !== -1) {
-              meta.signature = lastFile.substr(signaturePosition).replace(/^--\s*\n/, '') || null;
-              if (meta.signature) {
-                files[files.length - 1] = lastFile.substr(0, signaturePosition);
-              }
+        // Finally, extract any signature and remove it from the last file.
+        if (files && files.length) {
+          var lastFile = files[files.length - 1];
+          var signaturePosition = lastFile.search(/^--\s*\n(.|\n)*$/m);
+          if (signaturePosition !== -1) {
+            meta.signature = lastFile.substr(signaturePosition).replace(/^--\s*\n/, '') || null;
+            if (meta.signature) {
+              files[files.length - 1] = lastFile.substr(0, signaturePosition);
             }
           }
         }
+      }
 
-        _this3.meta = meta;
-      });
-    }
-
-    /**
-     * Parses the array of file strings.
-     *
-     * @param {Array} files
-     *   The array of string files that was split.
-     *
-     * @return {Promise}
-     *   A promise object.
-     */
-
-  }, {
-    key: 'parseFiles',
-    value: function parseFiles(files) {
-      var _this4 = this;
-
-      return this.map(files, function (string, i) {
-        var file = new _DreditorFile2.default(_this4, string);
-        return file.parse().then(function () {
-          file.id = 'file-' + (i + 1);
-          file.index = i;
-          _this4.size += file.size;
-          _this4.files[i] = file;
-        });
-      });
+      this.meta = meta;
     }
 
     /**
@@ -3487,18 +4923,60 @@ var DreditorPatch = function (_DreditorDiff) {
   }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this2 = this;
 
       return this.doRender('patch', function () {
-        _this5.rendered = _DreditorUtility2.default.createElement('<div>').addClass('dreditor-patch');
+        return _this2.renderContainer().then(function () {
+          return _this2.renderMeta();
+        }).then(function (meta) {
+          return meta.appendTo(_this2.container);
+        }).then(function () {
+          return _this2.each(_this2.files, function (file) {
+            return file.render();
+          });
+        }).then(function () {
+          return _this2.container;
+        });
+      });
+    }
 
-        if (Object.keys(_this5.meta).length) {
-          var meta = _DreditorUtility2.default.createElement('<div>').addClass('dreditor-patch-meta').appendTo(_this5.rendered);
-          var table = _DreditorUtility2.default.createElement('<table>').appendTo(meta);
-          var body = _DreditorUtility2.default.createElement('<tbody>').appendTo(table);
-          for (var p in _this5.meta) {
-            if (_this5.meta.hasOwnProperty(p)) {
-              var value = _this5.meta[p];
+    /**
+     * Renders a menu for sequential patches from git-format-patch output.
+     *
+     * @return {Promise}
+     *   A Promise object.
+     */
+
+  }, {
+    key: 'renderMenuItem',
+    value: function renderMenuItem() {
+      var _this3 = this;
+
+      return this.doRender('patch.menu.item', function () {
+        var item = _Utility2.default.createElement('<li>').addClass('patch-item');
+        var patch = _this3.index + 1;
+        return _Utility2.default.createElement('<a>').setAttribute('href', '#').setAttribute('data-patch', patch).text(patch).appendTo(item);
+      });
+    }
+
+    /**
+     * @return {Promise}
+     *   A Promise object.
+     */
+
+  }, {
+    key: 'renderMeta',
+    value: function renderMeta() {
+      var _this4 = this;
+
+      return this.promise(function (resolve, reject) {
+        var meta = _Utility2.default.createElement('<div>').addClass('dreditor-patch-meta');
+        if (Object.keys(_this4.meta).length) {
+          var table = _Utility2.default.createElement('<table>').appendTo(meta);
+          var body = _Utility2.default.createElement('<tbody>').appendTo(table);
+          for (var p in _this4.meta) {
+            if (_this4.meta.hasOwnProperty(p)) {
+              var value = _this4.meta[p];
               if (value instanceof Date) {
                 var iso = typeof value.toISOString === 'function' ? value.toISOString() : false;
                 value = typeof value.toLocaleString === 'function' ? value.toLocaleString() : value.toString();
@@ -3506,87 +4984,56 @@ var DreditorPatch = function (_DreditorDiff) {
                   value = '<time datetime="' + iso + '">' + value + '</time>';
                 }
               }
-              _DreditorUtility2.default.createElement('<tr><td>' + p + '</td><td>' + value + '</td></tr>').appendTo(body);
+              _Utility2.default.createElement('<tr><td>' + p + '</td><td>' + value + '</td></tr>').appendTo(body);
             }
           }
+        } else {
+          meta.disable();
         }
-        // Render the files.
-        return _this5.map([].concat(_this5.files), function (file) {
-          return file.render().then(function (content) {
-            return _this5.rendered.append(content);
-          });
-        });
+        resolve(meta);
       });
     }
   }]);
 
-  return DreditorPatch;
-}(_DreditorDiff3.default);
+  return Patch;
+}(_Renderable3.default);
 
-exports.default = DreditorPatch;
+exports.default = Patch;
 
-},{"./DreditorDiff":15,"./DreditorFile":19,"./DreditorUtility":28}],25:[function(require,module,exports){
+},{"./File":33,"./Parser":37,"./Renderable":40,"./Utility":44}],39:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Dreditor = require('./Dreditor');
 
 var _Dreditor2 = _interopRequireDefault(_Dreditor);
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Utility = require('./Utility');
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DreditorProxy = function () {
-  _createClass(DreditorProxy, [{
-    key: 'all',
+var _Utility2 = _interopRequireDefault(_Utility);
 
 
-    /**
-     * Creates a new Promise that ensures all items in the iterable have finished.
-     *
-     * @param {Promise[]} array
-     *   An array of promises.
-     *
-     * @return {Promise}
-     *   A new Promise object.
-     *
-     * @see Dreditor.promise
-     */
-    value: function all(array) {
-      // Don't proxy the entire method since "this" needs to be bound correctly.
-      var promise = this.getDreditorOption('promise');
-      return promise.all(array);
-    }
 
-    /**
-     * @class DreditorProxy
-     *
-     * A helper class that allows other classes to proxy the methods on the
-     * Dreditor instance rather than on their own objects. This helps ensure,
-     * for instance, all event bindings are located in one place.
-     *
-     * @param {Dreditor} dreditor
-     *   The Dreditor instance.
-     * @param {Object} [options={}]
-     *   The options specific to this proxied instance.
-     *
-     * @constructor
-     */
+var Proxy = function () {
 
-  }]);
-
-  function DreditorProxy(dreditor) {
+  /**
+   * A helper class that allows other classes to proxy the methods on the
+   * Dreditor instance rather than on their own objects. This helps ensure,
+   * for instance, all event bindings are located in one place.
+   *
+   * @param {Dreditor} dreditor
+   *   The Dreditor instance.
+   * @param {Object} [options={}]
+   *   The options specific to this proxied instance.
+   *
+   * @constructor
+   */
+  function Proxy(dreditor) {
     var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-    _classCallCheck(this, DreditorProxy);
+    _classCallCheck(this, Proxy);
 
     if (!(dreditor instanceof _Dreditor2.default)) {
       throw new Error('The "dreditor" argument must be an instance of Dreditor: ' + dreditor);
@@ -3616,35 +5063,54 @@ var DreditorProxy = function () {
   }
 
   /**
-   * Creates a promised based task with start and end emitted events.
+   * Creates a new Promise that ensures all items in the iterable have finished.
    *
-   * @param {String} name
-   *   The name of the task. It will be used as the emitted event and will be
-   *   appended with both a "start" and "stop" namespace.
-   * @param {Function} callback
-   *   The task callback that will be invoked inside the Promise. It's return
-   *   value will be used to fulfill the task's promise. Once the task has
-   *   ended, the return value of the task will be the object that originally
-   *   invoked the task.
+   * @param {Promise[]} array
+   *   An array of promises.
    *
    * @return {Promise}
-   *   A Promise object.
+   *   A new Promise object.
+   *
+   * @see Dreditor.promise
    */
 
 
-  _createClass(DreditorProxy, [{
+  _createClass(Proxy, [{
+    key: 'all',
+    value: function all(array) {
+      // Don't proxy the entire method since "this" needs to be bound correctly.
+      var promise = this.getDreditorOption('promise');
+      return promise.all(array);
+    }
+
+    /**
+     * Creates a promised based task with start and end emitted events.
+     *
+     * @param {String} name
+     *   The name of the task. It will be used as the emitted event and will be
+     *   appended with both a "start" and "stop" namespace.
+     * @param {Function} callback
+     *   The task callback that will be invoked inside the Promise. It's return
+     *   value will be used to fulfill the task's promise. Once the task has
+     *   ended, the return value of the task will be the object that originally
+     *   invoked the task.
+     *
+     * @return {Promise}
+     *   A Promise object.
+     */
+
+  }, {
     key: 'doTask',
     value: function doTask(name, callback) {
       var _this = this;
 
-      var obj = this;
-      return obj.promise(function (fulfill, reject) {
-        if (!obj.emit(name + '.start', _this)) {
-          return reject(obj);
-        }
-        return fulfill(callback.call(obj));
-      }).then(function () {
-        return obj.emit(name + '.end', _this) && obj;
+      // Execute callback inside setImmediate so long sub-tasks don't block.
+      return this.emit(name + '.start', this).then(function () {
+        return callback.call(_this);
+      }).then(function (value) {
+        return _this.emit(name + '.end', _this).then(function () {
+          return value;
+        });
       });
     }
 
@@ -3665,7 +5131,7 @@ var DreditorProxy = function () {
     value: function each(array, callback) {
       var _this2 = this;
 
-      array = _DreditorUtility2.default.isArray(array) ? array : [array];
+      array = _Utility2.default.isArray(array) ? array : [array];
       return array.reduce(function (prev, curr, i) {
         return prev.then(function () {
           return callback(curr, i, array);
@@ -3709,9 +5175,9 @@ var DreditorProxy = function () {
       var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
 
       var collect = !!this.getDreditorOption('garbageCollect');
-      if (collect && type === 'render') {
-        this.dreditor = null;
-      }
+      // if (collect && type === 'render') {
+      //   this.dreditor = null;
+      // }
       return collect;
     }
 
@@ -3899,9 +5365,7 @@ var DreditorProxy = function () {
   }, {
     key: 'reject',
     value: function reject(value) {
-      // Don't proxy the entire method since "this" needs to be bound correctly.
-      var promise = this.getDreditorOption('promise');
-      return promise.reject(value);
+      return this.proxy('reject', arguments);
     }
 
     /**
@@ -3917,9 +5381,7 @@ var DreditorProxy = function () {
   }, {
     key: 'resolve',
     value: function resolve(value) {
-      // Don't proxy the entire method since "this" needs to be bound correctly.
-      var promise = this.getDreditorOption('promise');
-      return promise.resolve(value);
+      return this.proxy('resolve', arguments);
     }
 
     /**
@@ -3943,6 +5405,52 @@ var DreditorProxy = function () {
     }
 
     /**
+     * Sets an option specific to the Dreditor instance.
+     *
+     * @param {String} name
+     *   The option name. It can also be a namespaced (using dot notation) key to
+     *   retrieve a deeply nested option value.
+     * @param {*} [value=null]
+     *   The value to set, if no option has been set.
+     *
+     * @chainable
+     *
+     * @return {*}
+     *   The class instance that invoked this method.
+     */
+
+  }, {
+    key: 'setDreditorOption',
+    value: function setDreditorOption(name) {
+      var value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+      return this.proxy('setOption', arguments);
+    }
+
+    /**
+     * Sets an option for this instance.
+     *
+     * @param {String} name
+     *   The option name. It can also be a namespaced (using dot notation) key to
+     *   retrieve a deeply nested option value.
+     * @param {*} [value=null]
+     *   The value to set, if no option has been set.
+     *
+     * @chainable
+     *
+     * @return {*}
+     *   The class instance that invoked this method.
+     */
+
+  }, {
+    key: 'setOption',
+    value: function setOption(name) {
+      var value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+      return this.dreditor.setOption.apply(this, arguments);
+    }
+
+    /**
      * Generates a translated locale string for a given locale key.
      *
      * @param {String} text
@@ -3961,78 +5469,146 @@ var DreditorProxy = function () {
 
       return this.proxy('t', arguments);
     }
+
+    /**
+     * Ensures that a value is of a certain instance type.
+     *
+     * @param {*} value
+     *   The value to check.
+     * @param {Function} constructor
+     *   The constructor function to test against.
+     * @param {Boolean} [promise=true]
+     *   Whether or not to wrap the type check inside a promise.
+     *
+     * @return {Promise}
+     *   Returns a Promise object, if the parameter is set to true. Otherwise it
+     *   will return nothing and only an Error will be thrown, if any.
+     *
+     * @throws {SyntaxError|ReferenceError|TypeError}
+     *   Throws an error if the value does not pass the check.
+     */
+
+  }, {
+    key: 'typeCheck',
+    value: function typeCheck(value, constructor) {
+      var promise = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+
+      return this.proxy('typeCheck', arguments);
+    }
   }]);
 
-  return DreditorProxy;
+  return Proxy;
 }();
 
-exports.default = DreditorProxy;
+exports.default = Proxy;
 
-},{"./Dreditor":12,"./DreditorUtility":28}],26:[function(require,module,exports){
+},{"./Dreditor":29,"./Utility":44}],40:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _DreditorAttributes = require('./DreditorAttributes');
+var _Attributes = require('./Attributes');
 
-var _DreditorAttributes2 = _interopRequireDefault(_DreditorAttributes);
+var _Attributes2 = _interopRequireDefault(_Attributes);
 
-var _DreditorProxy2 = require('./DreditorProxy');
+var _Diff2 = require('./Diff');
 
-var _DreditorProxy3 = _interopRequireDefault(_DreditorProxy2);
+var _Diff3 = _interopRequireDefault(_Diff2);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Element = require('./Element');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _Element2 = _interopRequireDefault(_Element);
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+var _Utility = require('./Utility');
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _Utility2 = _interopRequireDefault(_Utility);
 
-var DreditorRenderable = function (_DreditorProxy) {
-  _inherits(DreditorRenderable, _DreditorProxy);
+
+
+
+
+var Renderable = function (_Diff) {
+  _inherits(Renderable, _Diff);
 
   /**
-   * @class DreditorRenderable
+   * @class Renderable
    *
-   * @param {Dreditor} dreditor
-   *   The Dreditor instance.
+   * @param {Dreditor|Diff} [parent=null]
+   *   A parent Diff object this instance belongs to.
    * @param {String} string
    *   The raw diff string.
+   * @param {Function<Diff>} [constructor=null]
+   *   The constructor class used to ensure that when a parent instance is
+   *   passed, it is of a certain type.
+   *
+   * @extends Diff
    *
    * @constructor
    */
-  function DreditorRenderable(dreditor, string) {
-    _classCallCheck(this, DreditorRenderable);
+  function Renderable(parent, string) {
+    var constructor = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+    _classCallCheck(this, Renderable);
 
     /**
      * An Attributes object.
      *
-     * @type {DreditorAttributes}
+     * @type {Attributes}
      */
-    var _this = _possibleConstructorReturn(this, (DreditorRenderable.__proto__ || Object.getPrototypeOf(DreditorRenderable)).call(this, dreditor, string));
+    var _this = _possibleConstructorReturn(this, (Renderable.__proto__ || Object.getPrototypeOf(Renderable)).call(this, parent, string, constructor));
 
-    _this.attributes = new _DreditorAttributes2.default();
+    _this.attributes = new _Attributes2.default();
 
     /**
-     * The DOM identifier.
+     * The pre-calculated border width of the Renderable instance.
      *
-     * It defaults to "patch-N", where N is the array index + 1.
-     *
-     * @type {String}
+     * @type {{bottom: Number, left: Number, right: Number, top: Number}|Number}
      */
-    _this.id = null;
+    _this.border = 0;
 
     /**
-     * The rendered HTML output.
+     * The containers element.
      *
-     * @type {DreditorElement|String}
+     * @type {Element}
+     */
+    _this.container = null;
+
+    /**
+     * The pre-computed height of the Renderable instance.
+     *
+     * @type {Number}
+     */
+    _this.height = 0;
+
+    /**
+     * The pre-computed margin of the Renderable instance.
+     *
+     * @type {{bottom: Number, left: Number, right: Number, top: Number}|Number}
+     */
+    _this.margin = 0;
+
+    /**
+     * The pre-computed padding of the Renderable instance.
+     *
+     * @type {{bottom: Number, left: Number, right: Number, top: Number}|Number}
+     */
+    _this.padding = 0;
+
+    /**
+     * An Element object containing the rendered content.
+     *
+     * @type {Element|String}
      */
     _this.rendered = null;
+
+    /**
+     * The pre-computed width of the Renderable instance.
+     *
+     * @type {Number}
+     */
+    _this.width = 0;
     return _this;
   }
 
@@ -4054,32 +5630,45 @@ var DreditorRenderable = function (_DreditorProxy) {
    */
 
 
-  _createClass(DreditorRenderable, [{
+  _createClass(Renderable, [{
     key: 'doRender',
-    value: function doRender(name, callback) {
+    value: function doRender() {
       var _this2 = this;
+
+      var name = arguments.length <= 0 || arguments[0] === undefined ? 'rendered' : arguments[0];
+      var callback = arguments[1];
 
       if (this.rendered) {
         return this.resolve(this.rendered);
       }
-      return this.doTask(name ? 'render.' + name : 'render', function () {
-        return _this2.resolve(callback.call(_this2)).then(function () {
-          if (_this2.getDreditorOption('renderToString')) {
-            _this2.rendered = _this2.rendered.toString();
-          }
-          return _this2.resolve(_this2.rendered);
+      // Ensure instance is first parsed before attempting to render anything.
+      return this.resolve(!this.parsed ? this.parse() : null).then(function () {
+        return _this2.doTask(name ? 'render.' + name : 'render', function () {
+          return _this2.resolve(callback.call(_this2))
+          // Ensure return value is an Element.
+          .then(function (element) {
+            return _this2.typeCheck(element, _Element2.default);
+          })
+          // Rethrow any actual errors, otherwise it was just an event that was
+          // prevented. Otherwise, just disable the element.
+          .catch(function (element) {
+            return element instanceof Error ? _this2.reject(element) : element.disable();
+          })
+          // Cache the element.
+          .then(function (element) {
+            _this2.rendered = element;
+            return element;
+          });
         });
-      }).catch(function (e) {
-        // Rethrow any actual errors.
-        if (e instanceof Error) {
-          throw e;
-        }
-        // Otherwise, just resolve.
-        return _this2.resolve(_this2.rendered.disable());
-      }).then(function () {
-        var value = _this2.resolve(_this2.rendered);
+      })
+      // Cleanup and normalizing of positional objects.
+      .finally(function (element) {
         _this2.garbageCollect('render');
-        return value;
+        var dimensions = ['border', 'margin', 'padding'];
+        for (var i = 0, l = dimensions.length; i < l; i++) {
+          _this2[dimensions[i]] = _Utility2.default.normalizeDimension(dimensions[i], _this2[dimensions[i]]);
+        }
+        return element;
       });
     }
 
@@ -4098,7 +5687,7 @@ var DreditorRenderable = function (_DreditorProxy) {
     value: function garbageCollect() {
       var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
 
-      var collect = _get(DreditorRenderable.prototype.__proto__ || Object.getPrototypeOf(DreditorRenderable.prototype), 'garbageCollect', this).call(this, type);
+      var collect = _get(Renderable.prototype.__proto__ || Object.getPrototypeOf(Renderable.prototype), 'garbageCollect', this).call(this, type);
       if (collect && type === 'render') {
         this.attributes = null;
       }
@@ -4106,7 +5695,66 @@ var DreditorRenderable = function (_DreditorProxy) {
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the pre-computed height for the Renderable instance.
+     *
+     * Includes padding, border, and optionally margin.
+     *
+     * @param {Boolean} includeMargin
+     *   Flag indicating whether to include margins in the computed value.
+     *
+     * @return {Number}
+     *   A number (without "px") representation of the value.
+     */
+
+  }, {
+    key: 'outerHeight',
+    value: function outerHeight() {
+      var includeMargin = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+      var height = this.height;
+      this.border = _Utility2.default.normalizeDimension('border', this.border);
+      this.padding = _Utility2.default.normalizeDimension('padding', this.padding);
+      height += this.border.bottom + this.border.top + this.padding.bottom + this.padding.top;
+      if (includeMargin) {
+        this.margin = _Utility2.default.normalizeDimension('margin', this.margin);
+        height += this.margin.bottom + this.margin.top;
+      }
+      return height;
+    }
+
+    /**
+     * Retrieves the pre-computed width for the Renderable instance.
+     *
+     * Includes padding, border, and optionally margin.
+     *
+     * @param {Boolean} includeMargin
+     *   Flag indicating whether to include margins in the computed value.
+     *
+     * @return {Number}
+     *   A number (without "px") representation of the value.
+     */
+
+  }, {
+    key: 'outerWidth',
+    value: function outerWidth() {
+      var includeMargin = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+      var width = this.width;
+      this.border = _Utility2.default.normalizeDimension('border', this.border);
+      this.padding = _Utility2.default.normalizeDimension('padding', this.padding);
+      width += this.border.left + this.border.right + this.padding.left + this.padding.right;
+      if (includeMargin) {
+        this.margin = _Utility2.default.normalizeDimension('margin', this.margin);
+        width += this.margin.left + this.margin.right;
+      }
+      return width;
+    }
+
+    /**
+     * Renders the instance.
+     *
+     * @param {...*} [args]
+     *   Any arguments to pass.
      *
      * @return {Promise}
      *   A Promise object.
@@ -4115,125 +5763,494 @@ var DreditorRenderable = function (_DreditorProxy) {
   }, {
     key: 'render',
     value: function render() {
-      return this.reject(new Error('You must subclass the "render" method of DreditorRenderable before invoking it.'));
+      return this.doRender(null, _Utility2.default.noop);
+    }
+
+    /**
+     * Renders the container.
+     *
+     * @param {String} [tag='div']
+     *   The name name used to create the container.
+     *
+     * @return {Element|String}
+     *   An element for the container.
+     */
+
+  }, {
+    key: 'renderContainer',
+    value: function renderContainer() {
+      var tag = arguments.length <= 0 || arguments[0] === undefined ? 'div' : arguments[0];
+
+      this.container = _Utility2.default.createElement('<' + tag + '>').setAttributes(this.attributes).addClass('dreditor-' + this.name);
+      return this.container;
+    }
+
+    /**
+     * Renders a placeholder for the instance.
+     *
+     * @return {Promise}
+     *   A Promise object.
+     */
+
+  }, {
+    key: 'renderPlaceholder',
+    value: function renderPlaceholder() {
+      var _this3 = this;
+
+      return this.doRender(this.name + '.placeholder', function () {
+        return _this3.renderContainer().addClass('placeholder');
+      });
     }
   }]);
 
-  return DreditorRenderable;
-}(_DreditorProxy3.default);
+  return Renderable;
+}(_Diff3.default);
 
-exports.default = DreditorRenderable;
+exports.default = Renderable;
 
-},{"./DreditorAttributes":13,"./DreditorProxy":25}],27:[function(require,module,exports){
+},{"./Attributes":26,"./Diff":28,"./Element":30,"./Utility":44}],41:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _DreditorUtility = require('./DreditorUtility');
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Element2 = require('./Element');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _Element3 = _interopRequireDefault(_Element2);
 
-var DreditorUrl =
+var _TableRow = require('./TableRow');
+
+var _TableRow2 = _interopRequireDefault(_TableRow);
+
+
+
+
+
+var Table = function (_Element) {
+  _inherits(Table, _Element);
+
+  /**
+   * @class Table
+   *
+   * @param {String} [id=null]
+   *   An additional name to use for identifiers.
+   * @param {Boolean} [wrapper=true]
+   *   Flag indicating whether or not to wrap the table with a <div>.
+   *
+   * @constructor
+   */
+  function Table() {
+    var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+    var wrapper = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+
+    _classCallCheck(this, Table);
+
+    var _this = _possibleConstructorReturn(this, (Table.__proto__ || Object.getPrototypeOf(Table)).call(this, wrapper ? 'div' : 'table'));
+    // Construct a wrapper for the table, if necessary.
+
+
+    _this.addClass(wrapper ? 'dreditor-table-wrapper' : 'dreditor-table');
+
+    /**
+     * Flag indicating whether or not to wrap the table with a <div>.
+     *
+     * @type {Boolean}
+     */
+    _this.wrapper = wrapper;
+
+    /**
+     * The <table> Element.
+     *
+     * @type {Element}
+     */
+    _this.table = wrapper ? _Element3.default.create('<table/>').appendTo(_this) : _this;
+
+    /**
+     * The <thead> Element.
+     *
+     * @type {Element}
+     */
+    _this.header = _Element3.default.create('<thead class="dreditor-table-header"/>').appendTo(_this.table);
+
+    /**
+     * The <tbody> Element.
+     *
+     * @type {Element}
+     */
+    _this.body = _Element3.default.create('<tbody class="dreditor-table-body"/>').appendTo(_this.table);
+
+    /**
+     * The <tfooter> Element.
+     *
+     * @type {Element}
+     */
+    _this.footer = _Element3.default.create('<tfoot class="dreditor-table-footer"/>').appendTo(_this.table);
+
+    /**
+     * An identifier for the table to use in classes.
+     *
+     * @type {String}
+     */
+    _this.id = id;
+
+    if (_this.id) {
+      if (wrapper) {
+        _this.addClass('dreditor-' + _this.id + '-table-wrapper');
+      }
+      _this.table.addClass('dreditor-' + _this.id + '-table');
+      _this.header.addClass('dreditor-' + _this.id + '-table-header');
+      _this.body.addClass('dreditor-' + _this.id + '-table-body');
+      _this.footer.addClass('dreditor-' + _this.id + '-table-footer');
+    }
+    return _this;
+  }
+
+  /**
+   * Adds a row to the table.
+   *
+   * @param {String} [to='body']
+   *   Where to add the new row.
+   *
+   * @return {Element|String}
+   *   The row element added.
+   */
+
+
+  _createClass(Table, [{
+    key: 'addRow',
+    value: function addRow() {
+      var to = arguments.length <= 0 || arguments[0] === undefined ? 'body' : arguments[0];
+
+      var row = new _TableRow2.default(this.id, to === 'header' ? 'th' : 'td');
+      return row.appendTo(this[to]);
+    }
+
+    /**
+     * Appends content to the body of the Table element.
+     *
+     * @param {Element|Object|String} [content=null]
+     *   The content to append.
+     */
+
+  }, {
+    key: 'appendToBody',
+    value: function appendToBody() {
+      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      if (content) {
+        this.body.append(content);
+      }
+    }
+
+    /**
+     * Appends content to the footer of the Table element.
+     *
+     * @param {Element|Object|String} [content=null]
+     *   The content to append.
+     */
+
+  }, {
+    key: 'appendToFooter',
+    value: function appendToFooter() {
+      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      if (content) {
+        this.footer.append(content);
+      }
+    }
+
+    /**
+     * Appends content to the header of the Table element.
+     *
+     * @param {Element|Object|String} [content=null]
+     *   The content to append.
+     */
+
+  }, {
+    key: 'appendToHeader',
+    value: function appendToHeader() {
+      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      if (content) {
+        this.header.append(content);
+      }
+    }
+
+    /**
+     * Renders the Table to a string.
+     *
+     * @param {Boolean} [reset=false]
+     *   Resets any already rendered output and forces the element to be
+     *   constructed again.
+     *
+     * @return {String}
+     *   The rendered HTML output.
+     */
+
+  }, {
+    key: 'toString',
+    value: function toString() {
+      var reset = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+      // Disable the following elements if they have no children.
+      if (!this.body.children.length) {
+        this.body.disable();
+      }
+      if (!this.footer.children.length) {
+        this.footer.disable();
+      }
+      if (!this.header.children.length) {
+        this.header.disable();
+      }
+      return _get(Table.prototype.__proto__ || Object.getPrototypeOf(Table.prototype), 'toString', this).call(this, reset);
+    }
+  }]);
+
+  return Table;
+}(_Element3.default);
+
+exports.default = Table;
+
+},{"./Element":30,"./TableRow":42}],42:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+var _Element2 = require('./Element');
+
+var _Element3 = _interopRequireDefault(_Element2);
+
+
+
+
+
+var TableRow = function (_Element) {
+  _inherits(TableRow, _Element);
+
+  /**
+   * @class TableRow
+   *
+   * @param {String} [id=null]
+   *   An additional name to use for identifiers.
+   * @param {String} [cellType='td']
+   *   The type of cells to create.
+   *
+   * @constructor
+   */
+  function TableRow() {
+    var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+    var cellType = arguments.length <= 1 || arguments[1] === undefined ? 'td' : arguments[1];
+
+    _classCallCheck(this, TableRow);
+
+    /**
+     * The cell type.
+     *
+     * @type {String}
+     */
+    var _this = _possibleConstructorReturn(this, (TableRow.__proto__ || Object.getPrototypeOf(TableRow)).call(this, 'tr'));
+
+    _this.cellType = cellType || 'td';
+
+    _this.addClass('dreditor-table-row');
+    _this.id = id;
+    if (_this.id) {
+      _this.addClass('dreditor-' + _this.id + '-table-row');
+    }
+    return _this;
+  }
+
+  /**
+   * Adds a cell to the row.
+   *
+   * @param {Element|String} [content=null]
+   *   The content to use for the cell.
+   *
+   * @return {Element|String}
+   *   The cell element added.
+   */
+
+
+  _createClass(TableRow, [{
+    key: 'addCell',
+    value: function addCell() {
+      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      var cell = _Element3.default.create('<' + this.cellType + '/>').appendTo(this);
+      if (content) {
+        cell.html(content);
+      }
+      return cell;
+    }
+  }]);
+
+  return TableRow;
+}(_Element3.default);
+
+exports.default = TableRow;
+
+},{"./Element":30}],43:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+var _Utility = require('./Utility');
+
+var _Utility2 = _interopRequireDefault(_Utility);
+
+
+
+
+
+var Url = function (_String) {
+  _inherits(Url, _String);
+
+  /**
+   * @class Url
+   *
+   * @param {Url|String|{url: String}} url
+   *   The URL for the file. Optionally, an object can be passed instead and
+   *   its properties will be merged in.
+   *
+   * @constructor
+   */
+  function Url(url) {
+    _classCallCheck(this, Url);
+
+    /**
+     * The base filename, without the extension.
+     *
+     * @type {String}
+     */
+    var _this = _possibleConstructorReturn(this, (Url.__proto__ || Object.getPrototypeOf(Url)).call(this, url));
+
+    _this.basename = null;
+
+    /**
+     * The file extensions.
+     *
+     * @type {String}
+     */
+    _this.extension = null;
+
+    /**
+     * The filename.
+     *
+     * @type {String}
+     */
+    _this.filename = null;
+
+    /**
+     * The file SHA1 digest based on the value of the URL.
+     *
+     * @type {Number}
+     */
+    _this.sha1 = null;
+
+    /**
+     * The file size, if known.
+     *
+     * @type {Number}
+     */
+    _this.size = 0;
+
+    /**
+     * The file mime type, if known.
+     *
+     * @type {String}
+     */
+    _this.type = null;
+
+    /**
+     * The file URL.
+     *
+     * @type {String}
+     */
+    _this.url = typeof url === 'string' && url || null;
+
+    // Merge in any passed object properties.
+    if (_Utility2.default.isObject(url)) {
+      _Utility2.default.extend(_this, url);
+    }
+
+    // Ensure the URL is valid.
+    if (!_this.url || !_Utility2.default.isUrl(_this.url)) {
+      throw new Error('A Url object must be initialized with a valid "url" property.');
+    }
+
+    /**
+     * The URL fragment, if any.
+     *
+     * @type {String}
+     */
+    _this.fragment = '';
+
+    // Parse the fragment from the URL.
+    var fragment = _this.url.search(/#/);
+    if (fragment !== -1) {
+      _this.fragment = _this.url.substr(fragment + 1);
+      _this.url = _this.url.substr(0, fragment);
+    }
+
+    /**
+     * A query parameter object.
+     *
+     * @type {Object}
+     */
+    _this.query = {};
+
+    var query = _this.url.search(/\?/);
+    if (query !== -1) {
+      _this.query = _this.url.substr(query + 1);
+      _this.url = _this.url.substr(0, query);
+    }
+
+    // Fill in the defaults.
+    _this.extension = _this.extension || _Utility2.default.extension(_this.url);
+    _this.basename = _this.basename || _Utility2.default.basename(_this.url, '.' + _this.extension);
+    _this.filename = [_this.basename, _this.extension].join('.');
+    _this.sha1 = _Utility2.default.sha1(_this.url);
+
+    return _this;
+  }
+
+  _createClass(Url, [{
+    key: 'toString',
+    value: function toString() {
+      return this.url + _Utility2.default.param(this.query) + this.fragment;
+    }
+  }, {
+    key: 'valueOf',
+    value: function valueOf() {
+      return this.toString();
+    }
+  }]);
+
+  return Url;
+}(String);
 
 /**
- * @class DreditorUrl
+ * Creates a new Url instance.
  *
- * @param {DreditorUrl|String|{url: String}} url
+ * @param {Url|String|{url: String}} url
  *   The URL for the file. Optionally, an object can be passed instead and
  *   its properties will be merged in.
  *
- * @constructor
- */
-function DreditorUrl(url) {
-  _classCallCheck(this, DreditorUrl);
-
-  /**
-   * The base filename, without the extension.
-   *
-   * @type {String}
-   */
-  this.basename = null;
-
-  /**
-   * The file extensions.
-   *
-   * @type {String}
-   */
-  this.extension = null;
-
-  /**
-   * The filename.
-   *
-   * @type {String}
-   */
-  this.filename = null;
-
-  /**
-   * The file SHA1 digest based on the value of the URL.
-   *
-   * @type {Number}
-   */
-  this.sha1 = null;
-
-  /**
-   * The file size, if known.
-   *
-   * @type {Number}
-   */
-  this.size = 0;
-
-  /**
-   * The file mime type, if known.
-   *
-   * @type {String}
-   */
-  this.type = null;
-
-  /**
-   * The file URL.
-   *
-   * @type {String}
-   */
-  this.url = typeof url === 'string' && url || null;
-
-  // Merge in any passed object properties.
-  if (_DreditorUtility2.default.isObject(url)) {
-    _DreditorUtility2.default.extend(this, url);
-  }
-
-  if (!this.url || !_DreditorUtility2.default.isUrl(this.url)) {
-    throw new Error('A DreditorUrl object must be initialized with a valid "url" property.');
-  }
-
-  // Fill in the defaults.
-  this.extension = _DreditorUtility2.default.extension(this.url);
-  this.basename = _DreditorUtility2.default.basename(this.url, '.' + this.extension);
-  this.filename = [this.basename, this.extension].join('.');
-  this.sha1 = _DreditorUtility2.default.sha1(this.url);
-};
-
-/**
- * Creates a new DreditorUrl instance.
- *
- * @param {DreditorUrl|String|{url: String}} url
- *   The URL for the file. Optionally, an object can be passed instead and
- *   its properties will be merged in.
- *
- * @return {DreditorUrl}
- *   A new DreditorFile instance.
+ * @return {Url}
+ *   A new File instance.
  */
 
 
-exports.default = DreditorUrl;
-DreditorUrl.create = function create(url) {
-  return url instanceof DreditorUrl ? url : new DreditorUrl(url);
+exports.default = Url;
+Url.create = function create(url) {
+  return url instanceof Url ? url : new Url(url);
 };
 
-},{"./DreditorUtility":28}],28:[function(require,module,exports){
+},{"./Utility":44}],44:[function(require,module,exports){
+(function (global){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4242,13 +6259,19 @@ var _arrayUniq2 = require('array-uniq');
 
 var _arrayUniq3 = _interopRequireDefault(_arrayUniq2);
 
-var _DreditorElement = require('./DreditorElement');
+var _Element = require('./Element');
 
-var _DreditorElement2 = _interopRequireDefault(_DreditorElement);
+var _Element2 = _interopRequireDefault(_Element);
+
+var _nodeQsSerialization = require('node-qs-serialization');
 
 var _extend2 = require('extend');
 
 var _extend3 = _interopRequireDefault(_extend2);
+
+var _htmlParseStringify = require('html-parse-stringify2');
+
+var _htmlParseStringify2 = _interopRequireDefault(_htmlParseStringify);
 
 var _indexof = require('indexof');
 
@@ -4270,15 +6293,16 @@ var _isPlainObject2 = require('is-plain-object');
 
 var _isPlainObject3 = _interopRequireDefault(_isPlainObject2);
 
+var _isUndefined2 = require('is-undefined');
+
+var _isUndefined3 = _interopRequireDefault(_isUndefined2);
+
 var _urlRegex = require('url-regex');
 
 var _urlRegex2 = _interopRequireDefault(_urlRegex);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _forEach = require('async-foreach').forEach;
-
-var DreditorUtility = {
+var Utility = {
 
   /**
    * Ensures that the values in an array are unique.
@@ -4292,6 +6316,7 @@ var DreditorUtility = {
   arrayUniq: function arrayUniq(array) {
     return (0, _arrayUniq3.default)(array);
   },
+
 
   /**
    * Retrieves the basename for a path.
@@ -4320,32 +6345,34 @@ var DreditorUtility = {
     /*eslint-enable*/
   },
 
-  /**
-   * Creates a new DreditorElement.
-   *
-   * @param {DreditorElement|String} [content]
-   *   The content used to create the element. Must be fully enclosed HTML tags.
-   * @param {DreditorAttributes|Object} [attributes]
-   *   Optional. The attributes to initialize the content with.
-   *
-   * @return {DreditorElement|String}
-   *   A new DreditorElement instance or a string value.
-   */
-  createElement: function createElement(content, attributes) {
-    return _DreditorElement2.default.create(content, attributes);
-  },
 
   /**
-   * Iterate over key/value pairs of either an array or dictionary like object.
+   * Creates a new Element.
    *
-   * @param {Iterable|Object} obj
-   *   The array or object to iterate over.
-   * @param {Function} callback
-   *   The callback to invoke on each item in the object.
+   * @param {Element|String} [content]
+   *   The content used to create the element. Must be fully enclosed HTML tags.
+   *
+   * @return {Element|String}
+   *   A new Element instance or a string value.
    */
-  forEach: function forEach(obj, callback) {
-    _forEach(obj, callback);
+  createElement: function createElement(content) {
+    return _Element2.default.create(content);
   },
+
+
+  /**
+   * Parses any query parameters from a URL.
+   *
+   * @param {String} string
+   *   The string to parse.
+   *
+   * @return {Object}
+   *   An object representing the query parameters.
+   */
+  deparam: function deparam(string) {
+    return (0, _nodeQsSerialization.deparam)(string);
+  },
+
 
   /**
    * Small helper method to encode html entities.
@@ -4366,6 +6393,7 @@ var DreditorUtility = {
     });
   },
 
+
   /**
    * Extends an object (similar to jQuery's extend).
    *
@@ -4384,6 +6412,7 @@ var DreditorUtility = {
     return _extend3.default.apply({}, arguments);
   },
 
+
   /**
    * Retrieves a file's extension.
    *
@@ -4400,6 +6429,7 @@ var DreditorUtility = {
     );
   },
 
+
   /**
    * Retrieves a property of an object using dot notation.
    *
@@ -4413,9 +6443,10 @@ var DreditorUtility = {
    */
   getProperty: function getProperty(name, object) {
     return name.split('.').reduce(function (a, b) {
-      return a[b] !== void 0 ? a[b] : null;
+      return !(0, _isUndefined3.default)(a[b]) ? a[b] : null;
     }, object);
   },
+
 
   /**
    * Retrieves the index of the value in an array.
@@ -4432,6 +6463,7 @@ var DreditorUtility = {
     return (0, _indexof2.default)(array, value);
   },
 
+
   /**
    * Determines if the value passed is an array.
    *
@@ -4444,6 +6476,7 @@ var DreditorUtility = {
   isArray: function isArray(value) {
     return (0, _isarray2.default)(value);
   },
+
 
   /**
    * Determines if the value passed is a function.
@@ -4458,6 +6491,7 @@ var DreditorUtility = {
     return (0, _isFunction3.default)(value);
   },
 
+
   /**
    * Determines if the value passed is an object.
    *
@@ -4470,6 +6504,7 @@ var DreditorUtility = {
   isObject: function isObject(value) {
     return (0, _isobject2.default)(value);
   },
+
 
   /**
    * Determines if the value passed is a "plain" object.
@@ -4484,6 +6519,7 @@ var DreditorUtility = {
     return (0, _isPlainObject3.default)(value);
   },
 
+
   /**
    * Determines if a string is a valid SHA1 digest.
    *
@@ -4497,6 +6533,39 @@ var DreditorUtility = {
     return (/^[0-9a-f]{5,40}$/.test(string)
     );
   },
+
+
+  /**
+   * Compares a value against a certain constructor.
+   *
+   * @param {*} value
+   *   The value to check.
+   * @param {String|Function} constructor
+   *   The constructor object to test against. This can be a string value that
+   *   will "require" it. If it cannot find the exported module, then it should
+   *   be required beforehand and the constructor passed instead.
+   *
+   * @return {Boolean}
+   *   True or false.
+   */
+  isType: function isType(value, constructor) {
+    return Utility.typeCheck(value, constructor, false);
+  },
+
+
+  /**
+   * Determines if a value is undefined.
+   *
+   * @param {*} value
+   *   The value to check.
+   *
+   * @return {Boolean}
+   *   True or false.
+   */
+  isUndefined: function isUndefined(value) {
+    return (0, _isUndefined3.default)(value);
+  },
+
 
   /**
    * Determines if a string is a properly constructed URL.
@@ -4518,6 +6587,7 @@ var DreditorUtility = {
     return string.search(/(\n|\r\n|\r)/gm) !== -1 ? false : (0, _urlRegex2.default)(options).test(string);
   },
 
+
   /**
    * Retrieves a machine name version of a string.
    *
@@ -4531,12 +6601,111 @@ var DreditorUtility = {
     return string.replace(/([A-Z]+[^A-Z]+)/g, '_$1').toLowerCase().replace(/[^a-z0-9-]+/g, '_').replace(/_+/g, '_').replace(/(^_|_$)/g, '');
   },
 
+
   /**
    * An empty function.
    *
    * @type {Function}
    */
   noop: function noop() {},
+
+
+  /**
+   * Retrieves a normalized object for a given pre-computed dimension.
+   *
+   * @param {'border'|'margin'|'padding'} dimension
+   *   The dimension to retrieve.
+   * @param {Object|Number} value
+   *   The value to normalize.
+   *
+   * @return {{bottom: Number, left: Number, right: Number, top: Number}}
+   *   The normalized dimension object.
+   */
+  normalizeDimension: function normalizeDimension(dimension, value) {
+    var allowed = ['border', 'margin', 'padding'];
+    if ((0, _indexof2.default)(allowed, dimension) === -1) {
+      throw new TypeError('Unknown dimension: ' + dimension + '. Only the following dimensions are allowed: ' + allowed.join(', '));
+    }
+    var defaultValues = function defaultValues() {
+      var value = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+      return {
+        bottom: value,
+        left: value,
+        right: value,
+        top: value
+      };
+    };
+    if (typeof value === 'number') {
+      value = defaultValues(value);
+    } else if ((0, _isPlainObject3.default)(value)) {
+      value = (0, _extend3.default)({}, defaultValues(), value);
+    } else {
+      throw new TypeError('The "' + dimension + '" dimension provided must be a Number or a plain object.');
+    }
+    return value;
+  },
+
+
+  /**
+   * Serializes an object into query parameters.
+   *
+   * @param {Array|Object} object
+   *   The array or object to serialize.
+   *
+   * @return {String}
+   *   A query string of serialized parameters.
+   */
+  param: function param(object) {
+    return (0, _nodeQsSerialization.param)(object);
+  },
+
+
+  /**
+   * Parses a string into an HTML AST object.
+   *
+   * @param {String} html
+   *   The HTML string to parse.
+   * @param {Object} [options={ignoreWhitespace: false}]
+   *   An object of options to pass along to the parser.
+   *
+   * @return {Object}
+   *   An AST object representation of the HTML passed.
+   */
+  parseHtml: function parseHtml(html) {
+    var options = arguments.length <= 1 || arguments[1] === undefined ? { ignoreWhitespace: false } : arguments[1];
+
+    return _htmlParseStringify2.default.parse(html, options);
+  },
+
+
+  /**
+   * Ensures classes is an array and/or split into individual array items.
+   *
+   * @param {...String|Array} classes
+   *   The class or classes to sanitize.
+   *
+   * @return {Array}
+   *   A sanitized array of classes.
+   */
+  sanitizeClasses: function sanitizeClasses() {
+    var sanitized = [];
+
+    for (var _len = arguments.length, classes = Array(_len), _key = 0; _key < _len; _key++) {
+      classes[_key] = arguments[_key];
+    }
+
+    for (var i = 0, l = classes.length; i < l; i++) {
+      var values = classes[i] instanceof Array && classes[i] || typeof classes[i] === 'string' && classes[i].split(' ') || [];
+      if (values.length) {
+        for (var _i = 0, _l = values.length; _i < _l; _i++) {
+          sanitized.push(values[_i]);
+        }
+      }
+    }
+    return (0, _arrayUniq3.default)(sanitized);
+  },
+
 
   /**
    * Generates an SHA1 digest for a string.
@@ -4653,6 +6822,7 @@ var DreditorUtility = {
     /*eslint-enable*/
   },
 
+
   /**
    * Replaces template strings with data.
    *
@@ -4677,88 +6847,130 @@ var DreditorUtility = {
     var remove = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
 
     return _template.replace(/[{][{] ([\w._-]+) [}][}]/gmi, function (token, name) {
-      var value = DreditorUtility.getProperty(name, data);
+      var value = Utility.getProperty(name, data);
       if (value !== null) {
         return value;
       }
       return remove ? '' : token;
     });
-  }
+  },
+  tick: function tick(callback) {
+    global.setImmediate(callback);
+  },
 
+
+  /**
+   * Ensures that a value is of a certain instance type.
+   *
+   * @param {*} value
+   *   The value to check.
+   * @param {String|Function} constructor
+   *   The constructor object to test against. This can be a string value that
+   *   will "require" it. If it cannot find the exported module, then it should
+   *   be required beforehand and the constructor passed instead.
+   * @param {Boolean} [throwError=true]
+   *   Flag indicating whether or not to throw an error.
+   *
+   * @return {Boolean}
+   *   True or thrown error or false if error argument is false.
+   *
+   * @throws {SyntaxError|ReferenceError|TypeError}
+   *   Throws an error if the value does not pass the check.
+   */
+  typeCheck: function typeCheck(value, constructor) {
+    var throwError = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+
+    var error;
+    var original = constructor;
+
+    if (!error && !Utility.isFunction(constructor)) {
+      error = new SyntaxError('The "constructor" passed must be a function: ' + constructor);
+    } else if (!error && !(value instanceof constructor)) {
+      error = new TypeError('The value passed must be an instance of ' + (typeof original === 'string' ? original : original.name) + '.');
+    }
+
+    if (error && throwError) {
+      throw error;
+    }
+
+    return !error;
+  }
 };
 
-exports.default = DreditorUtility;
+exports.default = Utility;
 
-},{"./DreditorElement":16,"array-uniq":1,"async-foreach":2,"extend":3,"indexof":4,"is-function":6,"is-plain-object":7,"isarray":9,"isobject":10,"url-regex":11}],29:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./Element":30,"array-uniq":1,"extend":2,"html-parse-stringify2":3,"indexof":7,"is-function":9,"is-plain-object":10,"is-undefined":12,"isarray":13,"isobject":14,"node-qs-serialization":15,"url-regex":24}],45:[function(require,module,exports){
+require('setimmediate');
+
 var _Dreditor = require('./Dreditor');
 
 var _Dreditor2 = _interopRequireDefault(_Dreditor);
 
-var _DreditorAttributes = require('./DreditorAttributes');
+var _Attributes = require('./Attributes');
 
-var _DreditorAttributes2 = _interopRequireDefault(_DreditorAttributes);
+var _Attributes2 = _interopRequireDefault(_Attributes);
 
-var _DreditorBase = require('./DreditorBase');
+var _Base = require('./Base');
 
-var _DreditorBase2 = _interopRequireDefault(_DreditorBase);
+var _Base2 = _interopRequireDefault(_Base);
 
-var _DreditorDiff = require('./DreditorDiff');
+var _Diff = require('./Diff');
 
-var _DreditorDiff2 = _interopRequireDefault(_DreditorDiff);
+var _Diff2 = _interopRequireDefault(_Diff);
 
-var _DreditorElement = require('./DreditorElement');
+var _Element = require('./Element');
 
-var _DreditorElement2 = _interopRequireDefault(_DreditorElement);
+var _Element2 = _interopRequireDefault(_Element);
 
-var _DreditorEmitter = require('./DreditorEmitter');
+var _Emitter = require('./Emitter');
 
-var _DreditorEmitter2 = _interopRequireDefault(_DreditorEmitter);
+var _Emitter2 = _interopRequireDefault(_Emitter);
 
-var _DreditorEvent = require('./DreditorEvent');
+var _Event = require('./Event');
 
-var _DreditorEvent2 = _interopRequireDefault(_DreditorEvent);
+var _Event2 = _interopRequireDefault(_Event);
 
-var _DreditorFile = require('./DreditorFile');
+var _File = require('./File');
 
-var _DreditorFile2 = _interopRequireDefault(_DreditorFile);
+var _File2 = _interopRequireDefault(_File);
 
-var _DreditorHunk = require('./DreditorHunk');
+var _Hunk = require('./Hunk');
 
-var _DreditorHunk2 = _interopRequireDefault(_DreditorHunk);
+var _Hunk2 = _interopRequireDefault(_Hunk);
 
-var _DreditorLine = require('./DreditorLine');
+var _Line = require('./Line');
 
-var _DreditorLine2 = _interopRequireDefault(_DreditorLine);
+var _Line2 = _interopRequireDefault(_Line);
 
-var _DreditorLocaleBase = require('./DreditorLocaleBase');
+var _LocaleBase = require('./LocaleBase');
 
-var _DreditorLocaleBase2 = _interopRequireDefault(_DreditorLocaleBase);
+var _LocaleBase2 = _interopRequireDefault(_LocaleBase);
 
-var _DreditorParser = require('./DreditorParser');
+var _Parser = require('./Parser');
 
-var _DreditorParser2 = _interopRequireDefault(_DreditorParser);
+var _Parser2 = _interopRequireDefault(_Parser);
 
-var _DreditorPatch = require('./DreditorPatch');
+var _Patch = require('./Patch');
 
-var _DreditorPatch2 = _interopRequireDefault(_DreditorPatch);
+var _Patch2 = _interopRequireDefault(_Patch);
 
-var _DreditorProxy = require('./DreditorProxy');
+var _Proxy = require('./Proxy');
 
-var _DreditorProxy2 = _interopRequireDefault(_DreditorProxy);
+var _Proxy2 = _interopRequireDefault(_Proxy);
 
-var _DreditorRenderable = require('./DreditorRenderable');
+var _Renderable = require('./Renderable');
 
-var _DreditorRenderable2 = _interopRequireDefault(_DreditorRenderable);
+var _Renderable2 = _interopRequireDefault(_Renderable);
 
-var _DreditorUrl = require('./DreditorUrl');
+var _Url = require('./Url');
 
-var _DreditorUrl2 = _interopRequireDefault(_DreditorUrl);
+var _Url2 = _interopRequireDefault(_Url);
 
-var _DreditorUtility = require('./DreditorUtility');
+var _Utility = require('./Utility');
 
-var _DreditorUtility2 = _interopRequireDefault(_DreditorUtility);
+var _Utility2 = _interopRequireDefault(_Utility);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = function (options) {
   return new _Dreditor2.default(options);
@@ -4766,23 +6978,23 @@ module.exports = function (options) {
 
 module.exports.__version__ = _Dreditor2.default.__version__;
 module.exports.__defaultOptions__ = _Dreditor2.default.__defaultOptions__;
+module.exports.Attributes = _Attributes2.default;
+module.exports.Base = _Base2.default;
+module.exports.Diff = _Diff2.default;
 module.exports.Dreditor = _Dreditor2.default;
-module.exports.DreditorAttributes = _DreditorAttributes2.default;
-module.exports.DreditorBase = _DreditorBase2.default;
-module.exports.DreditorDiff = _DreditorDiff2.default;
-module.exports.DreditorElement = _DreditorElement2.default;
-module.exports.DreditorEmitter = _DreditorEmitter2.default;
-module.exports.DreditorEvent = _DreditorEvent2.default;
-module.exports.DreditorFile = _DreditorFile2.default;
-module.exports.DreditorHunk = _DreditorHunk2.default;
-module.exports.DreditorLine = _DreditorLine2.default;
-module.exports.DreditorLocaleBase = _DreditorLocaleBase2.default;
-module.exports.DreditorParser = _DreditorParser2.default;
-module.exports.DreditorPatch = _DreditorPatch2.default;
-module.exports.DreditorProxy = _DreditorProxy2.default;
-module.exports.DreditorRenderable = _DreditorRenderable2.default;
-module.exports.DreditorUrl = _DreditorUrl2.default;
-module.exports.DreditorUtility = _DreditorUtility2.default;
+module.exports.Element = _Element2.default;
+module.exports.Emitter = _Emitter2.default;
+module.exports.Event = _Event2.default;
+module.exports.File = _File2.default;
+module.exports.Hunk = _Hunk2.default;
+module.exports.Line = _Line2.default;
+module.exports.LocaleBase = _LocaleBase2.default;
+module.exports.Parser = _Parser2.default;
+module.exports.Patch = _Patch2.default;
+module.exports.Proxy = _Proxy2.default;
+module.exports.Renderable = _Renderable2.default;
+module.exports.Url = _Url2.default;
+module.exports.Utility = _Utility2.default;
 
-},{"./Dreditor":12,"./DreditorAttributes":13,"./DreditorBase":14,"./DreditorDiff":15,"./DreditorElement":16,"./DreditorEmitter":17,"./DreditorEvent":18,"./DreditorFile":19,"./DreditorHunk":20,"./DreditorLine":21,"./DreditorLocaleBase":22,"./DreditorParser":23,"./DreditorPatch":24,"./DreditorProxy":25,"./DreditorRenderable":26,"./DreditorUrl":27,"./DreditorUtility":28}]},{},[29])(29)
+},{"./Attributes":26,"./Base":27,"./Diff":28,"./Dreditor":29,"./Element":30,"./Emitter":31,"./Event":32,"./File":33,"./Hunk":34,"./Line":35,"./LocaleBase":36,"./Parser":37,"./Patch":38,"./Proxy":39,"./Renderable":40,"./Url":43,"./Utility":44,"setimmediate":23}]},{},[45])(45)
 });

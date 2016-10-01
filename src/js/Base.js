@@ -1,10 +1,10 @@
-import DreditorEmitter from './DreditorEmitter';
-import util from './DreditorUtility';
+import Emitter from './Emitter';
+import _ from './Utility';
 
-export default class DreditorBase extends DreditorEmitter {
+export default class Base extends Emitter {
 
   /**
-   * @class DreditorBase
+   * @class Base
    *
    * @param {Object} [options={}]
    *   Options to override defaults.
@@ -17,7 +17,28 @@ export default class DreditorBase extends DreditorEmitter {
      *
      * @type {Object}
      */
-    this.options = util.extend(true, {}, options);
+    this.options = _.extend(true, {}, options);
+  }
+
+  /**
+   * Emit an event.
+   *
+   * @param {String} type
+   *   A string representing the type of the event to emit.
+   * @param {...*} [args]
+   *   Any additional arguments to pass to the listener.
+   *
+   * @return {Promise}
+   *   A Promise object that will resolve if the emitted event succeeded or
+   *   reject if default was prevented.
+   */
+  emit(type, ...args) {
+    return this.promise((resolve, reject) => {
+      if (!super.emit(type, ...args)) {
+        return reject(this);
+      }
+      resolve(this);
+    });
   }
 
   /**
@@ -33,7 +54,7 @@ export default class DreditorBase extends DreditorEmitter {
    *   The option value or `null` if there is no option or it hasn't been set.
    */
   getOption(name, defaultValue = null) {
-    var ret = util.getProperty(name, this.options);
+    var ret = _.getProperty(name, this.options);
     return ret === null ? defaultValue : ret;
   }
 
@@ -52,6 +73,34 @@ export default class DreditorBase extends DreditorEmitter {
   promise(resolver) {
     var promise = this.getOption('promise');
     return new promise(resolver.bind(this));
+  }
+
+  /**
+   * Creates a new Promise that immediately rejects.
+   *
+   * @param {*} [value]
+   *   The value to reject with.
+   *
+   * @return {Promise}
+   *   A rejected Promise object.
+   */
+  reject(value) {
+    var promise = this.getOption('promise');
+    return promise.reject(value);
+  }
+
+  /**
+   * Creates a new Promise that immediately resolves.
+   *
+   * @param {*} [value]
+   *   The value to resolve.
+   *
+   * @return {Promise}
+   *   A resolved Promise object.
+   */
+  resolve(value) {
+    var promise = this.getOption('promise');
+    return promise.resolve(value);
   }
 
   /**
@@ -77,7 +126,7 @@ export default class DreditorBase extends DreditorEmitter {
 
     // Encode HTML entities.
     if (force || this.getOption('sanitize.encodeHtmlEntities')) {
-      string = util.encodeHtmlEntities(string);
+      string = _.encodeHtmlEntities(string);
     }
 
     // Remove SVN new files.
@@ -89,7 +138,7 @@ export default class DreditorBase extends DreditorEmitter {
   }
 
   /**
-   * Retrieves an option.
+   * Sets an option.
    *
    * @param {String} name
    *   The option name. It can also be a namespaced (using dot notation) key to
@@ -110,7 +159,7 @@ export default class DreditorBase extends DreditorEmitter {
     }
     try {
       var obj = p.reduce(function (obj, i) {
-        return !util.isPlainObject(obj[i]) ? obj : obj[i];
+        return !_.isPlainObject(obj[i]) ? obj : obj[i];
       }, this.options);
       obj[p[p.length - 1]] = value;
     }
@@ -118,6 +167,38 @@ export default class DreditorBase extends DreditorEmitter {
       // Intentionally left empty.
     }
     return this;
+  }
+
+  /**
+   * Ensures that a value is of a certain instance type.
+   *
+   * @param {*} value
+   *   The value to check.
+   * @param {Function} constructor
+   *   The constructor function to test against.
+   * @param {Boolean} [promise=true]
+   *   Whether or not to wrap the type check inside a promise.
+   *
+   * @return {Promise}
+   *   Returns a Promise object, if the parameter is set to true. Otherwise it
+   *   will return nothing and only an Error will be thrown, if any.
+   *
+   * @throws {SyntaxError|ReferenceError|TypeError}
+   *   Throws an error if the value does not pass the check.
+   */
+  typeCheck(value, constructor, promise = true) {
+    if (!promise) {
+      return _.typeCheck(value, constructor);
+    }
+    return this.promise((resolve, reject) => {
+      try {
+        _.typeCheck(value, constructor);
+        resolve(value);
+      }
+      catch (e) {
+        reject(e);
+      }
+    });
   }
 
 }

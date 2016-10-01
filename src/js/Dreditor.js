@@ -1,9 +1,14 @@
-import DreditorLocaleBase from './DreditorLocaleBase';
-import DreditorParser from './DreditorParser';
-import util from './DreditorUtility';
+// Global imports.
+import Promise from 'promise/setimmediate/es6-extensions';
+import 'promise/setimmediate/finally';
+require('promise/setimmediate/rejection-tracking').enable({allRejections: true});
 
+// Local imports.
+import LocaleBase from './LocaleBase';
+import Parser from './Parser';
+import _ from './Utility';
 
-export default class Dreditor extends DreditorLocaleBase {
+export default class Dreditor extends LocaleBase {
 
   /**
    * @class Dreditor
@@ -14,19 +19,42 @@ export default class Dreditor extends DreditorLocaleBase {
    * @constructor
    */
   constructor(options = {}) {
-    super(util.extend(true, {}, Dreditor.__defaultOptions__, options));
+    super(_.extend(true, {}, Dreditor.__defaultOptions__, options));
 
     // Ensure there is a valid Promise API available.
-    let promise = this.getOption('promise');
-    if (!(typeof promise !== 'function' || typeof promise !== 'object') || typeof (promise.then || (typeof promise === 'function' && new promise(util.noop))).then !== 'function') {
+    let Promise = this.getOption('promise');
+    if (!(typeof Promise !== 'function' || typeof Promise !== 'object') || typeof (Promise.then || (typeof Promise === 'function' && new Promise(_.noop))).then !== 'function') {
       throw new Error('Dreditor requires a valid Promise API. There are several polyfills or comprehensive libraries available to choose from.');
     }
 
-    // Bind a highlight method for hunks, if one exists.
+    // Bind the highlight method for hunks.
+    this.on('render.hunk.start', (e, hunk) => hunk.highlightCode());
+
+    // Wrap multi-line comments.
     var highlighter = this.getOption('highlighter');
-    if (highlighter) {
-      this.on('render.hunk.start', function (e, hunk) {
-        hunk.highlightCode();
+    var isPrism = this.getOption('highlight.isPrism', _.noop);
+    if (isPrism(highlighter)) {
+      highlighter.hooks.add('wrap', function (env) { // eslint-disable-line
+        if (env.type === 'comment') {
+          var lines = env.content.split(/\n/gm);
+          if (lines.length > 1) {
+            var attributes = '';
+            for (let name in env.attributes) {
+              if (env.attributes.hasOwnProperty(name)) {
+                attributes += (attributes ? ' ' : '') + name + '="' + (env.attributes[name] || '') + '"';
+              }
+            }
+            for (let i = 0, l = lines.length; i < l; i++) {
+              if (i !== 0) {
+                lines[i] = '<' + env.tag + ' class="' + env.classes.join(' ') + '"' + (attributes ? ' ' + attributes : '') + '>' + lines[i];
+              }
+              else if (i !== l) {
+                lines[i] += '</' + env.tag + '>';
+              }
+            }
+            env.content = lines.join('\n');
+          }
+        }
       });
     }
 
@@ -38,26 +66,34 @@ export default class Dreditor extends DreditorLocaleBase {
   }
 
   /**
-   * Parses a Diff string.
+   * Retrieves a Parser instances for a string.
+   *
+   * @param {String} string
+   *   The string to use for the parser.
+   * @param {Url|String} [url=null]
+   *   A URL to associate with the string.
+   *
+   * @return {Promise}
+   *   A promise.
+   */
+  getParser(string, url = null) {
+    return this.resolve(new Parser(this, string, url));
+  }
+
+  /**
+   * Parses a diff string.
    *
    * @param {String} string
    *   The string to parse.
-   * @param {DreditorUrl|String} [url=null]
+   * @param {Url|String} [url=null]
    *   A URL to associate with the string.
    *
    * @return {Promise}
    *   A promise.
    */
   parse(string, url = null) {
-    return this.promise(function (fulfill, reject) {
-      try {
-        var parser = new DreditorParser(this, string, url);
-        fulfill(parser.parse());
-      }
-      catch (e) {
-        reject(e);
-      }
-    });
+    return this.getParser(string, url)
+      .then((parser) => parser.parse());
   }
 
 }
@@ -87,97 +123,185 @@ Dreditor.__defaultOptions__ = {
   garbageCollect: true,
 
   /**
-   * A function that will highlight code found in the diff.
+   * A library function or object used to highlight code on a hunk level.
+   *
+   * By default, the code is attuned to look for and use PrismJS.
    *
    * @type {PrismJS|Object|Function}
    */
   highlighter: null,
 
   /**
-   * Helper function to highlight the code found in the diff.
-   *
-   * Note: This highlight function makes the assumption that the highlighter
-   * being used is PrismJS. If you choose to implement a different highlighter,
-   * you will likely need to override this function in the options provided to
-   * Dreditor.
-   *
-   * @param {String} string
-   *   The content to be highlighted.
-   *
-   * @return {String}
-   *   The string that was passed, modified if highlight was successful.
-   *
-   * @type {Function|false}
-   *
-   * @this {DreditorHunk}
-   */
-  highlightCode: function (string) {
-
-    /**
-     * The highlighter object or function.
-     *
-     * @type {Function|Object}
-     */
-    var highlighter = this.getOption('highlighter');
-
-    // See if the highlighter provided is PrismJS by checking the necessary
-    // functions and objects inside the passed highlighter.
-    if (highlighter && util.isFunction(highlighter.highlight) && util.isFunction(highlighter.Token) && util.isPlainObject(highlighter.languages) && util.isPlainObject(highlighter.languages.markup)) {
-      // Determine the correct language grammar object to use for Prism.
-      var prismLanguage = this.getOption('prismLanguage', util.noop);
-      var language = prismLanguage.call(this, highlighter) || 'markup';
-      // Highlight the string.
-      string = highlighter.highlight(string, highlighter.languages[language], language);
-    }
-    // Otherwise if the highlighter option provided is a function, see if it
-    // returns any output.
-    else if (util.isFunction(highlighter)) {
-      var ret = highlighter.apply(highlighter, string);
-      return ret || string;
-    }
-    return string;
-  },
-
-  /**
-   * Helper function to retrieve the language grammar object for Prism.
-   *
-   * @param {Function|Object} Prism
-   *   The PrismJS object, if it exists.
-   *
-   * @return {Object|void}
-   *   A grammar object for the language, based on the file extension, if any.
-   *
-   * @this {DreditorHunk}
-   */
-  prismLanguage(Prism) {
-    // Immediately return if an explicit language exists for the file extension.
-    if (util.isPlainObject(Prism.languages[this.file.extension])) {
-      return this.file.extension;
-    }
-
-    /** @type Object */
-    var map = this.getOption('prismExtensionLanguageMap', {});
-
-    // Otherwise, attempt to find the appropriate language based on extension.
-    util.forEach([].concat(map[this.file.extension] || []), (language) => {
-      if (util.isPlainObject(Prism.languages[language])) {
-        return language;
-      }
-    });
-  },
-
-  /**
-   * The PrismJS extension -> language map.
+   * Various options pertaining to highlighting code.
    *
    * @type {Object}
    */
-  prismExtensionLanguageMap: {
-    coffee: ['coffeescript', 'javascript'],
-    htaccess: 'apacheconf',
-    inc: 'php',
-    info: 'ini',
-    md: 'markdown',
-    yml: 'yaml'
+  highlight: {
+
+    /**
+     * Helper function to highlight the code found in the diff.
+     *
+     * Note: This highlight function makes the assumption that the highlighter
+     * being used is PrismJS. If you choose to implement a different highlighter,
+     * you will likely need to override this function in the options provided to
+     * Dreditor.
+     *
+     * @param {String} string
+     *   The content to be highlighted.
+     *
+     * @return {String}
+     *   The string that was passed, modified if highlight was successful.
+     *
+     * @type {Function|false}
+     *
+     * @this {Hunk}
+     */
+    callback(string) {
+
+      /**
+       * The highlighter object or function.
+       *
+       * @type {Function|Object}
+       */
+      var highlighter = this.getDreditorOption('highlighter');
+      var isPrism = this.getDreditorOption('highlight.isPrism', _.noop);
+
+      // See if the highlighter provided is PrismJS by checking the necessary
+      // functions and objects inside the passed highlighter.
+      if (highlighter && isPrism(highlighter)) {
+        // Determine the correct language grammar object to use for Prism.
+        var prismLanguage = this.getDreditorOption('highlight.prismLanguage', _.noop);
+        var language = prismLanguage.call(this, highlighter) || 'markup';
+        var cLike = _.indexOf(['coffeescript', 'css', 'js', 'less', 'php', 'sass', 'scss'], language) !== -1;
+        var before = false;
+        var after = false;
+
+        // Fix broken context line comments for C-like languages.
+        if (cLike) {
+          // Remove full comments from the string (for comparison).
+          var lines = string.replace(/(^|[^\\])(?:\/\*[\w\W]*?\*\/|\/\/.*)/gm, '').split('\n');
+          var commentStart = false;
+          var commentEnd = false;
+          for (let i = 0, l = lines.length; i < l; i++) {
+            if (commentEnd) {
+              break;
+            }
+            commentStart = commentStart || lines[i].match(/\/\*+/);
+            commentEnd = lines[i].match(/\*+\//);
+          }
+          if (!commentStart && commentEnd) {
+            before = true;
+            string = '/**\n' + string;
+          }
+
+          commentStart = false;
+          commentEnd = false;
+          for (let i = lines.length - 1; i >= 0; i--) {
+            if (commentStart) {
+              break;
+            }
+            commentEnd = commentEnd || lines[i].match(/\/\*+\//);
+            commentStart = lines[i].match(/\/\*+/);
+          }
+          if (commentStart && !commentEnd) {
+            after = true;
+            string += '\n*/';
+          }
+        }
+
+        // Highlight the string.
+        string = highlighter.highlight(string, highlighter.languages[language], language);
+
+        // Remove added comments lines.
+        if (before) {
+          string = string.split('\n').slice(1).join('\n');
+        }
+        if (after) {
+          let lines = string.split('\n');
+          string = lines.slice(0, lines.length - 1).join('\n');
+        }
+      }
+      // Otherwise if the highlighter option provided is a function, see if it
+      // returns any output.
+      else if (_.isFunction(highlighter)) {
+        var ret = highlighter.apply(highlighter, string);
+        return ret || string;
+      }
+
+      return string;
+
+    },
+
+    /**
+     * Determines if the provided highlighter object is Prism.
+     *
+     * @param {Object|Prism} highlighter
+     *   The highlighter object.
+     *
+     * @return {Boolean}
+     *   True or false.
+     */
+    isPrism(highlighter = this.getDreditorOption('highlighter')) {
+      return !!(highlighter && _.isFunction(highlighter.highlight) && _.isFunction(highlighter.Token) && _.isPlainObject(highlighter.languages) && _.isPlainObject(highlighter.languages.markup));
+    },
+
+    /**
+     * A Prism extension -> language map.
+     *
+     * @type {Object}
+     */
+    prismExtensionLanguageMap: {
+      coffee: ['coffeescript', 'javascript'],
+      htaccess: 'apacheconf',
+      inc: 'php',
+      info: 'ini',
+      md: 'markdown',
+      yml: 'yaml'
+    },
+
+    /**
+     * Helper function to retrieve the language grammar object for Prism.
+     *
+     * @param {Function|Object} Prism
+     *   The PrismJS object, if it exists.
+     *
+     * @return {Object|void}
+     *   A grammar object for the language, based on the file extension, if any.
+     *
+     * @this {Hunk}
+     */
+    prismLanguage(Prism) {
+      // Immediately return if an explicit language exists for the file extension.
+      if (_.isPlainObject(Prism.languages[this.__parent__.extension])) {
+        return this.__parent__.extension;
+      }
+
+      /** @type Object */
+      var map = this.getDreditorOption('highlight.prismExtensionLanguageMap', {});
+      var languages = [].concat(map[this.__parent__.extension] || []);
+
+      // Otherwise, attempt to find the appropriate language based on extension.
+      for (let i = 0, l = languages.length; i < l; i++) {
+        if (_.isPlainObject(Prism.languages[languages[i]])) {
+          return languages[i];
+        }
+      }
+    },
+
+    /**
+     * Flag indicating whether tabs should be highlighted.
+     *
+     * @type {Boolean}
+     */
+    tabs: true,
+
+    /**
+     * Flag indicating whether trailing whitespace should be highlighted.
+     *
+     * @type {Boolean}
+     */
+    trailingWhitespace: true
+
   },
 
   /**
@@ -185,17 +309,17 @@ Dreditor.__defaultOptions__ = {
    *
    * @type {Promise}
    */
-  promise: global.Promise,
+  promise: Promise,
 
   /**
    * Flag indicating whether or not to render to a string.
    *
    * By default, the rendered output of any Dreditor object will be an instance
-   * of DreditorElement. This allows for further manipulation of the elements,
+   * of Element. This allows for further manipulation of the elements,
    * in an OO way, before they're ultimately converted into a string.
    *
    * When the object is joined with a string, it will automatically render the
-   * DreditorElement instance (and its children) into strings using the magic
+   * Element instance (and its children) into strings using the magic
    * `toString` method.
    *
    * If you have an object or method that does different things based on
@@ -208,7 +332,7 @@ Dreditor.__defaultOptions__ = {
    * ```
    *
    * If you find that ugly or have absolutely no need for further manipulation
-   * of the DreditorElement object, you can set this option to `true` to
+   * of the Element object, you can set this option to `true` to
    * enforce that any render method will always return a string.
    *
    * @type {Boolean}

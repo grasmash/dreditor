@@ -1,10 +1,10 @@
-import DreditorBase from './DreditorBase';
-import util from './DreditorUtility';
+import Base from './Base';
+import _ from './Utility';
 
-export default class DreditorLocaleBase extends DreditorBase {
+export default class LocaleBase extends Base {
 
   constructor(options = {}) {
-    super(util.extend(true, {}, DreditorLocaleBase.__defaultOptions__, options));
+    super(_.extend(true, {}, LocaleBase.__defaultOptions__, options));
 
     /**
      * The current language code.
@@ -41,6 +41,6 @@ export default class DreditorLocaleBase extends DreditorBase {
 
 }
 
-DreditorLocaleBase.__defaultOptions__ = {
+LocaleBase.__defaultOptions__ = {
   locale: {}
 };

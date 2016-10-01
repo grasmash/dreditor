@@ -2,14 +2,12 @@
 @import "base/mixins";
 @import "base/reset";
 
-// Import the components inside .dreditor-wrapper to override .dreditor-reset.
 .dreditor-wrapper {
   padding: 30px;
-
-  @import "components/file";
-  @import "components/file-table";
-  @import "components/menu";
-  @import "components/patch";
-  @import "components/stats";
-
 }
+
+@import "components/file";
+@import "components/file-table";
+@import "components/menu";
+@import "components/patch";
+@import "components/stats";
