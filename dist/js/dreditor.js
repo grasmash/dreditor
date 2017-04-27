@@ -1,6 +1,6 @@
 /*!
  * Dreditor v2.0.0 (https://dreditor.org)
- * Copyright (c) 2016 Mark Carver (https://www.drupal.org/u/markcarver)
+ * Copyright (c) 2016-2017 Mark Carver (https://www.drupal.org/u/markcarver)
  * Licensed under MIT (https://github.com/unicorn-fail/dreditor/blob/2.x/LICENSE-MIT)
  */
 
@@ -11,7 +11,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
@@ -207,7 +207,7 @@ module.exports = function (tag) {
     return res;
 };
 
-},{"void-elements":25}],5:[function(require,module,exports){
+},{"void-elements":24}],5:[function(require,module,exports){
 /*jshint -W030 */
 var tagRE = /(?:<!--[\S\s]*?-->|<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>)/g;
 var parseTag = require('./parse-tag');
@@ -460,13 +460,6 @@ module.exports = function (input) {
   return input === u;
 };
 },{}],13:[function(require,module,exports){
-var toString = {}.toString;
-
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
-};
-
-},{}],14:[function(require,module,exports){
 /*!
  * isobject <https://github.com/jonschlinkert/isobject>
  *
@@ -476,17 +469,15 @@ module.exports = Array.isArray || function (arr) {
 
 'use strict';
 
-var isArray = require('isarray');
-
 module.exports = function isObject(val) {
-  return val != null && typeof val === 'object' && isArray(val) === false;
+  return val != null && typeof val === 'object' && Array.isArray(val) === false;
 };
 
-},{"isarray":13}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports.param = require('./lib/param.js').param;
 module.exports.deparam = require('./lib/deparam.js').deparam;
 
-},{"./lib/deparam.js":16,"./lib/param.js":17}],16:[function(require,module,exports){
+},{"./lib/deparam.js":15,"./lib/param.js":16}],15:[function(require,module,exports){
 /* global unescape */
 'use strict';
 exports.deparam = function(params, coerce) {
@@ -597,7 +588,7 @@ exports.deparam = function(params, coerce) {
   return obj;
 };
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 module.exports.param = function(sourceObject) {
@@ -653,7 +644,7 @@ module.exports.param = function(sourceObject) {
   return querystring.join('&').replace(r20, '+');
 };
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -824,6 +815,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -835,7 +830,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 
@@ -1050,7 +1045,7 @@ function doResolve(fn, promise) {
   }
 }
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 //This file contains the ES6 extensions to the core Promises/A+ API
@@ -1159,7 +1154,7 @@ Promise.prototype['catch'] = function (onRejected) {
   return this.then(null, onRejected);
 };
 
-},{"./core.js":19}],21:[function(require,module,exports){
+},{"./core.js":18}],20:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js');
@@ -1177,7 +1172,7 @@ Promise.prototype['finally'] = function (f) {
   });
 };
 
-},{"./core.js":19}],22:[function(require,module,exports){
+},{"./core.js":18}],21:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core');
@@ -1291,7 +1286,7 @@ function matchWhitelist(error, list) {
     return error instanceof cls;
   });
 }
-},{"./core":19}],23:[function(require,module,exports){
+},{"./core":18}],22:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -1481,7 +1476,7 @@ function matchWhitelist(error, list) {
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":18}],24:[function(require,module,exports){
+},{"_process":17}],23:[function(require,module,exports){
 'use strict';
 var ipRegex = require('ip-regex');
 
@@ -1505,7 +1500,7 @@ module.exports = function (opts) {
 						new RegExp(regex, 'ig');
 };
 
-},{"ip-regex":8}],25:[function(require,module,exports){
+},{"ip-regex":8}],24:[function(require,module,exports){
 /**
  * This file automatically generated from `pre-publish.js`.
  * Do not manually edit.
@@ -1530,7 +1525,7 @@ module.exports = {
   "wbr": true
 };
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -1554,7 +1549,7 @@ var Attributes = function () {
    * @constructor
    */
   function Attributes() {
-    var attributes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var attributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, Attributes);
 
@@ -1584,8 +1579,8 @@ var Attributes = function () {
     key: 'toString',
     value: function toString() {
       var output = '';
-      var name;
-      var value;
+      var name = void 0;
+      var value = void 0;
       for (name in this.data) {
         if (!this.data.hasOwnProperty(name)) {
           continue;
@@ -1866,7 +1861,7 @@ var Attributes = function () {
 
 exports.default = Attributes;
 
-},{"./Utility":44}],27:[function(require,module,exports){
+},{"./Utility":43}],26:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -1895,7 +1890,7 @@ var Base = function (_Emitter) {
    *   Options to override defaults.
    */
   function Base() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, Base);
 
@@ -1959,7 +1954,7 @@ var Base = function (_Emitter) {
   }, {
     key: 'getOption',
     value: function getOption(name) {
-      var defaultValue = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       var ret = _Utility2.default.getProperty(name, this.options);
       return ret === null ? defaultValue : ret;
@@ -2034,7 +2029,7 @@ var Base = function (_Emitter) {
   }, {
     key: 'sanitize',
     value: function sanitize(string) {
-      var force = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       // Always replace CRLF and CR characters with LF. This is necessary for
       // the parser to function properly, which assumes that everything is a LF.
@@ -2076,7 +2071,7 @@ var Base = function (_Emitter) {
   }, {
     key: 'setOption',
     value: function setOption(name) {
-      var value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       var p = name && name.split('.') || [];
       if (p.length === 1) {
@@ -2115,7 +2110,7 @@ var Base = function (_Emitter) {
   }, {
     key: 'typeCheck',
     value: function typeCheck(value, constructor) {
-      var promise = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+      var promise = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
       if (!promise) {
         return _Utility2.default.typeCheck(value, constructor);
@@ -2136,7 +2131,7 @@ var Base = function (_Emitter) {
 
 exports.default = Base;
 
-},{"./Emitter":31,"./Utility":44}],28:[function(require,module,exports){
+},{"./Emitter":30,"./Utility":43}],27:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -2181,12 +2176,12 @@ var Diff = function (_Proxy) {
    * @constructor
    */
   function Diff(name, string) {
-    var parent = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
-    var constructor = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+    var parent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var constructor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
     _classCallCheck(this, Diff);
 
-    var dreditor;
+    var dreditor = void 0;
     if (_Utility2.default.isType(parent, _Dreditor2.default)) {
       dreditor = parent;
       parent = null;
@@ -2338,7 +2333,7 @@ var Diff = function (_Proxy) {
   }, {
     key: 'garbageCollect',
     value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
 
       var collect = _get(Diff.prototype.__proto__ || Object.getPrototypeOf(Diff.prototype), 'garbageCollect', this).call(this, type);
       if (collect) {
@@ -2375,7 +2370,7 @@ var Diff = function (_Proxy) {
   }, {
     key: 'increaseAddition',
     value: function increaseAddition() {
-      var bubble = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+      var bubble = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
       this.additions++;
       if (bubble && this.__parent__) {
@@ -2394,7 +2389,7 @@ var Diff = function (_Proxy) {
   }, {
     key: 'increaseDeletion',
     value: function increaseDeletion() {
-      var bubble = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+      var bubble = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
       this.deletions++;
       if (bubble && this.__parent__) {
@@ -2431,7 +2426,7 @@ var Diff = function (_Proxy) {
   }, {
     key: 'renderDiffStats',
     value: function renderDiffStats() {
-      var object = arguments.length <= 0 || arguments[0] === undefined ? this : arguments[0];
+      var object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this;
 
       if (!(object instanceof Diff)) {
         throw new Error('The "object" argument passed is not an instance of Diff: ' + object);
@@ -2445,7 +2440,7 @@ var Diff = function (_Proxy) {
 
 exports.default = Diff;
 
-},{"./Dreditor":29,"./Proxy":39,"./Utility":44}],29:[function(require,module,exports){
+},{"./Dreditor":28,"./Proxy":38,"./Utility":43}],28:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -2491,7 +2486,7 @@ var Dreditor = function (_LocaleBase) {
    * @constructor
    */
   function Dreditor() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, Dreditor);
 
@@ -2560,7 +2555,7 @@ var Dreditor = function (_LocaleBase) {
   _createClass(Dreditor, [{
     key: 'getParser',
     value: function getParser(string) {
-      var url = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       return this.resolve(new _Parser2.default(this, string, url));
     }
@@ -2580,7 +2575,7 @@ var Dreditor = function (_LocaleBase) {
   }, {
     key: 'parse',
     value: function parse(string) {
-      var url = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       return this.getParser(string, url).then(function (parser) {
         return parser.parse();
@@ -2738,7 +2733,7 @@ Dreditor.__defaultOptions__ = {
      *   True or false.
      */
     isPrism: function isPrism() {
-      var highlighter = arguments.length <= 0 || arguments[0] === undefined ? this.getDreditorOption('highlighter') : arguments[0];
+      var highlighter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.getDreditorOption('highlighter');
 
       return !!(highlighter && _Utility2.default.isFunction(highlighter.highlight) && _Utility2.default.isFunction(highlighter.Token) && _Utility2.default.isPlainObject(highlighter.languages) && _Utility2.default.isPlainObject(highlighter.languages.markup));
     },
@@ -2878,7 +2873,7 @@ Dreditor.__defaultOptions__ = {
 
 };
 
-},{"./LocaleBase":36,"./Parser":37,"./Utility":44,"promise/setimmediate/es6-extensions":20,"promise/setimmediate/finally":21,"promise/setimmediate/rejection-tracking":22}],30:[function(require,module,exports){
+},{"./LocaleBase":35,"./Parser":36,"./Utility":43,"promise/setimmediate/es6-extensions":19,"promise/setimmediate/finally":20,"promise/setimmediate/rejection-tracking":21}],29:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -2913,7 +2908,7 @@ var Element = function () {
    * @constructor
    */
   function Element() {
-    var tag = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+    var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
     _classCallCheck(this, Element);
 
@@ -3034,8 +3029,8 @@ var Element = function () {
   }, {
     key: 'append',
     value: function append() {
-      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-      var raw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var raw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       var elements = raw ? new Element({
         type: 'text',
@@ -3210,8 +3205,8 @@ var Element = function () {
   }, {
     key: 'html',
     value: function html() {
-      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-      var raw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var raw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       // If any argument was provided, then it's in "set" mode.
       if (!_Utility2.default.isUndefined(content)) {
@@ -3250,8 +3245,8 @@ var Element = function () {
   }, {
     key: 'prepend',
     value: function prepend() {
-      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-      var raw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var raw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       var elements = raw ? new Element({
         type: 'text',
@@ -3435,7 +3430,7 @@ var Element = function () {
   }, {
     key: 'toString',
     value: function toString() {
-      var reset = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+      var reset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
       // Immediately return with the rendered output if set.
       if (!reset && this.rendered !== null) {
@@ -3482,7 +3477,7 @@ var Element = function () {
 
 exports.default = Element;
 Element.create = function create() {
-  var content = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+  var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
   // Immediately return if content is already an Element instance.
   if (content instanceof Element) {
@@ -3496,7 +3491,7 @@ Element.create = function create() {
   return elements.length === 1 ? elements[0] : elements;
 };
 
-},{"./Attributes":26,"./Utility":44,"void-elements":25}],31:[function(require,module,exports){
+},{"./Attributes":25,"./Utility":43,"void-elements":24}],30:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -3696,7 +3691,7 @@ var Emitter = function () {
 
 exports.default = Emitter;
 
-},{"./Event":32}],32:[function(require,module,exports){
+},{"./Event":31}],31:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -3749,7 +3744,7 @@ function Event(type) {
 
 exports.default = Event;
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4029,7 +4024,7 @@ var File = function (_Renderable) {
 
 exports.default = File;
 
-},{"./Hunk":34,"./Patch":38,"./Renderable":40,"./Table":41,"./Utility":44}],34:[function(require,module,exports){
+},{"./Hunk":33,"./Patch":37,"./Renderable":39,"./Table":40,"./Utility":43}],33:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4211,8 +4206,8 @@ var Hunk = function (_Renderable) {
             _this2.header = parts[1];
           }
 
-          var source;
-          var target;
+          var source = void 0;
+          var target = void 0;
           var ranges = parts[0].split(' ');
           if (ranges[0][0] === '-') {
             source = ranges[0].substr(1).split(',');
@@ -4292,7 +4287,7 @@ var Hunk = function (_Renderable) {
 
 exports.default = Hunk;
 
-},{"./File":33,"./Line":35,"./Renderable":40,"./Utility":44}],35:[function(require,module,exports){
+},{"./File":32,"./Line":34,"./Renderable":39,"./Utility":43}],34:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4486,7 +4481,7 @@ var Line = function (_Renderable) {
 
 exports.default = Line;
 
-},{"./Hunk":34,"./Renderable":40,"./Utility":44}],36:[function(require,module,exports){
+},{"./Hunk":33,"./Renderable":39,"./Utility":43}],35:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4508,7 +4503,7 @@ var LocaleBase = function (_Base) {
   _inherits(LocaleBase, _Base);
 
   function LocaleBase() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, LocaleBase);
 
@@ -4546,7 +4541,7 @@ var LocaleBase = function (_Base) {
   _createClass(LocaleBase, [{
     key: 't',
     value: function t(text) {
-      var langCode = arguments.length <= 1 || arguments[1] === undefined ? this.langCode : arguments[1];
+      var langCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.langCode;
 
       if (this.locale[langCode] && this.locale[langCode].hasOwnProperty(text)) {
         return this.locale[langCode][text];
@@ -4565,7 +4560,7 @@ LocaleBase.__defaultOptions__ = {
   locale: {}
 };
 
-},{"./Base":27,"./Utility":44}],37:[function(require,module,exports){
+},{"./Base":26,"./Utility":43}],36:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4612,7 +4607,7 @@ var Parser = function (_Renderable) {
    * @constructor
    */
   function Parser(dreditor, string) {
-    var url = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+    var url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     _classCallCheck(this, Parser);
 
@@ -4668,7 +4663,7 @@ var Parser = function (_Renderable) {
   _createClass(Parser, [{
     key: 'garbageCollect',
     value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
 
       var collect = _get(Parser.prototype.__proto__ || Object.getPrototypeOf(Parser.prototype), 'garbageCollect', this).call(this, type);
       if (collect && type === 'parse') {
@@ -4733,7 +4728,7 @@ var Parser = function (_Renderable) {
 
 exports.default = Parser;
 
-},{"./Dreditor":29,"./Patch":38,"./Renderable":40,"./Url":43,"./Utility":44}],38:[function(require,module,exports){
+},{"./Dreditor":28,"./Patch":37,"./Renderable":39,"./Url":42,"./Utility":43}],37:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4868,7 +4863,7 @@ var Patch = function (_Renderable) {
 
         // Parse any meta information as "email header fields" per RFC 2822.
         // https://tools.ietf.org/html/rfc2822#section-2.2
-        var previousKey;
+        var previousKey = void 0;
         for (var i = 0, l = headers.length; i < l; i++) {
           var header = headers[i];
           var parts = header.match(/^([\w\d\-_]+):\s(.*)/);
@@ -5000,7 +4995,7 @@ var Patch = function (_Renderable) {
 
 exports.default = Patch;
 
-},{"./File":33,"./Parser":37,"./Renderable":40,"./Utility":44}],39:[function(require,module,exports){
+},{"./File":32,"./Parser":36,"./Renderable":39,"./Utility":43}],38:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5031,7 +5026,7 @@ var Proxy = function () {
    * @constructor
    */
   function Proxy(dreditor) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     _classCallCheck(this, Proxy);
 
@@ -5172,7 +5167,7 @@ var Proxy = function () {
   }, {
     key: 'garbageCollect',
     value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
 
       var collect = !!this.getDreditorOption('garbageCollect');
       // if (collect && type === 'render') {
@@ -5197,7 +5192,7 @@ var Proxy = function () {
   }, {
     key: 'getDreditorOption',
     value: function getDreditorOption(name) {
-      var defaultValue = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       return this.proxy('getOption', arguments);
     }
@@ -5218,7 +5213,7 @@ var Proxy = function () {
   }, {
     key: 'getOption',
     value: function getOption(name) {
-      var defaultValue = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       return this.dreditor.getOption.apply(this, arguments);
     }
@@ -5399,7 +5394,7 @@ var Proxy = function () {
   }, {
     key: 'sanitize',
     value: function sanitize(string) {
-      var force = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       return this.proxy('sanitize', arguments);
     }
@@ -5422,7 +5417,7 @@ var Proxy = function () {
   }, {
     key: 'setDreditorOption',
     value: function setDreditorOption(name) {
-      var value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       return this.proxy('setOption', arguments);
     }
@@ -5445,7 +5440,7 @@ var Proxy = function () {
   }, {
     key: 'setOption',
     value: function setOption(name) {
-      var value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       return this.dreditor.setOption.apply(this, arguments);
     }
@@ -5465,7 +5460,7 @@ var Proxy = function () {
   }, {
     key: 't',
     value: function t(text) {
-      var langCode = arguments.length <= 1 || arguments[1] === undefined ? this.langCode : arguments[1];
+      var langCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.langCode;
 
       return this.proxy('t', arguments);
     }
@@ -5491,7 +5486,7 @@ var Proxy = function () {
   }, {
     key: 'typeCheck',
     value: function typeCheck(value, constructor) {
-      var promise = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+      var promise = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
       return this.proxy('typeCheck', arguments);
     }
@@ -5502,7 +5497,7 @@ var Proxy = function () {
 
 exports.default = Proxy;
 
-},{"./Dreditor":29,"./Utility":44}],40:[function(require,module,exports){
+},{"./Dreditor":28,"./Utility":43}],39:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5548,7 +5543,7 @@ var Renderable = function (_Diff) {
    * @constructor
    */
   function Renderable(parent, string) {
-    var constructor = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+    var constructor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     _classCallCheck(this, Renderable);
 
@@ -5635,7 +5630,7 @@ var Renderable = function (_Diff) {
     value: function doRender() {
       var _this2 = this;
 
-      var name = arguments.length <= 0 || arguments[0] === undefined ? 'rendered' : arguments[0];
+      var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'rendered';
       var callback = arguments[1];
 
       if (this.rendered) {
@@ -5685,7 +5680,7 @@ var Renderable = function (_Diff) {
   }, {
     key: 'garbageCollect',
     value: function garbageCollect() {
-      var type = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
 
       var collect = _get(Renderable.prototype.__proto__ || Object.getPrototypeOf(Renderable.prototype), 'garbageCollect', this).call(this, type);
       if (collect && type === 'render') {
@@ -5709,7 +5704,7 @@ var Renderable = function (_Diff) {
   }, {
     key: 'outerHeight',
     value: function outerHeight() {
-      var includeMargin = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+      var includeMargin = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
       var height = this.height;
       this.border = _Utility2.default.normalizeDimension('border', this.border);
@@ -5737,7 +5732,7 @@ var Renderable = function (_Diff) {
   }, {
     key: 'outerWidth',
     value: function outerWidth() {
-      var includeMargin = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+      var includeMargin = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
       var width = this.width;
       this.border = _Utility2.default.normalizeDimension('border', this.border);
@@ -5779,7 +5774,7 @@ var Renderable = function (_Diff) {
   }, {
     key: 'renderContainer',
     value: function renderContainer() {
-      var tag = arguments.length <= 0 || arguments[0] === undefined ? 'div' : arguments[0];
+      var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
 
       this.container = _Utility2.default.createElement('<' + tag + '>').setAttributes(this.attributes).addClass('dreditor-' + this.name);
       return this.container;
@@ -5808,7 +5803,7 @@ var Renderable = function (_Diff) {
 
 exports.default = Renderable;
 
-},{"./Attributes":26,"./Diff":28,"./Element":30,"./Utility":44}],41:[function(require,module,exports){
+},{"./Attributes":25,"./Diff":27,"./Element":29,"./Utility":43}],40:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5841,8 +5836,8 @@ var Table = function (_Element) {
    * @constructor
    */
   function Table() {
-    var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-    var wrapper = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+    var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var wrapper = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     _classCallCheck(this, Table);
 
@@ -5920,7 +5915,7 @@ var Table = function (_Element) {
   _createClass(Table, [{
     key: 'addRow',
     value: function addRow() {
-      var to = arguments.length <= 0 || arguments[0] === undefined ? 'body' : arguments[0];
+      var to = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
 
       var row = new _TableRow2.default(this.id, to === 'header' ? 'th' : 'td');
       return row.appendTo(this[to]);
@@ -5936,7 +5931,7 @@ var Table = function (_Element) {
   }, {
     key: 'appendToBody',
     value: function appendToBody() {
-      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       if (content) {
         this.body.append(content);
@@ -5953,7 +5948,7 @@ var Table = function (_Element) {
   }, {
     key: 'appendToFooter',
     value: function appendToFooter() {
-      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       if (content) {
         this.footer.append(content);
@@ -5970,7 +5965,7 @@ var Table = function (_Element) {
   }, {
     key: 'appendToHeader',
     value: function appendToHeader() {
-      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       if (content) {
         this.header.append(content);
@@ -5991,7 +5986,7 @@ var Table = function (_Element) {
   }, {
     key: 'toString',
     value: function toString() {
-      var reset = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+      var reset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
       // Disable the following elements if they have no children.
       if (!this.body.children.length) {
@@ -6012,7 +6007,7 @@ var Table = function (_Element) {
 
 exports.default = Table;
 
-},{"./Element":30,"./TableRow":42}],42:[function(require,module,exports){
+},{"./Element":29,"./TableRow":41}],41:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -6040,8 +6035,8 @@ var TableRow = function (_Element) {
    * @constructor
    */
   function TableRow() {
-    var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-    var cellType = arguments.length <= 1 || arguments[1] === undefined ? 'td' : arguments[1];
+    var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var cellType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'td';
 
     _classCallCheck(this, TableRow);
 
@@ -6076,7 +6071,7 @@ var TableRow = function (_Element) {
   _createClass(TableRow, [{
     key: 'addCell',
     value: function addCell() {
-      var content = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       var cell = _Element3.default.create('<' + this.cellType + '/>').appendTo(this);
       if (content) {
@@ -6091,7 +6086,7 @@ var TableRow = function (_Element) {
 
 exports.default = TableRow;
 
-},{"./Element":30}],43:[function(require,module,exports){
+},{"./Element":29}],42:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -6249,7 +6244,7 @@ Url.create = function create(url) {
   return url instanceof Url ? url : new Url(url);
 };
 
-},{"./Utility":44}],44:[function(require,module,exports){
+},{"./Utility":43}],43:[function(require,module,exports){
 (function (global){
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -6276,10 +6271,6 @@ var _htmlParseStringify2 = _interopRequireDefault(_htmlParseStringify);
 var _indexof = require('indexof');
 
 var _indexof2 = _interopRequireDefault(_indexof);
-
-var _isarray = require('isarray');
-
-var _isarray2 = _interopRequireDefault(_isarray);
 
 var _isFunction2 = require('is-function');
 
@@ -6474,7 +6465,7 @@ var Utility = {
    *   True or false.
    */
   isArray: function isArray(value) {
-    return (0, _isarray2.default)(value);
+    return Array.isArray(value);
   },
 
 
@@ -6581,7 +6572,7 @@ var Utility = {
    * @see https://www.npmjs.com/package/url-regex
    */
   isUrl: function isUrl(string) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? { exact: true } : arguments[1];
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { exact: true };
 
     // Immediately return false if there is more than one line in the string.
     return string.search(/(\n|\r\n|\r)/gm) !== -1 ? false : (0, _urlRegex2.default)(options).test(string);
@@ -6627,7 +6618,7 @@ var Utility = {
       throw new TypeError('Unknown dimension: ' + dimension + '. Only the following dimensions are allowed: ' + allowed.join(', '));
     }
     var defaultValues = function defaultValues() {
-      var value = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       return {
         bottom: value,
@@ -6673,7 +6664,7 @@ var Utility = {
    *   An AST object representation of the HTML passed.
    */
   parseHtml: function parseHtml(html) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? { ignoreWhitespace: false } : arguments[1];
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { ignoreWhitespace: false };
 
     return _htmlParseStringify2.default.parse(html, options);
   },
@@ -6725,15 +6716,23 @@ var Utility = {
     };
     var _cvtHex = function _cvtHex(val) {
       var str = '',
-          i,
-          v;
+          i = void 0,
+          v = void 0;
       for (i = 7; i >= 0; i--) {
         v = val >>> i * 4 & 0x0f;
         str += v.toString(16);
       }
       return str;
     };
-    var blockstart, i, j, A, B, C, D, E, temp;
+    var blockstart = void 0,
+        i = void 0,
+        j = void 0,
+        A = void 0,
+        B = void 0,
+        C = void 0,
+        D = void 0,
+        E = void 0,
+        temp = void 0;
     var W = new Array(80),
         H0 = 0x67452301,
         H1 = 0xEFCDAB89,
@@ -6843,8 +6842,8 @@ var Utility = {
    *   A string representation of the template with data replaced.
    */
   template: function template(_template) {
-    var data = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-    var remove = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var remove = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
     return _template.replace(/[{][{] ([\w._-]+) [}][}]/gmi, function (token, name) {
       var value = Utility.getProperty(name, data);
@@ -6878,9 +6877,9 @@ var Utility = {
    *   Throws an error if the value does not pass the check.
    */
   typeCheck: function typeCheck(value, constructor) {
-    var throwError = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+    var throwError = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-    var error;
+    var error = void 0;
     var original = constructor;
 
     if (!error && !Utility.isFunction(constructor)) {
@@ -6900,7 +6899,7 @@ var Utility = {
 exports.default = Utility;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./Element":30,"array-uniq":1,"extend":2,"html-parse-stringify2":3,"indexof":7,"is-function":9,"is-plain-object":10,"is-undefined":12,"isarray":13,"isobject":14,"node-qs-serialization":15,"url-regex":24}],45:[function(require,module,exports){
+},{"./Element":29,"array-uniq":1,"extend":2,"html-parse-stringify2":3,"indexof":7,"is-function":9,"is-plain-object":10,"is-undefined":12,"isobject":13,"node-qs-serialization":14,"url-regex":23}],44:[function(require,module,exports){
 require('setimmediate');
 
 var _Dreditor = require('./Dreditor');
@@ -6996,5 +6995,5 @@ module.exports.Renderable = _Renderable2.default;
 module.exports.Url = _Url2.default;
 module.exports.Utility = _Utility2.default;
 
-},{"./Attributes":26,"./Base":27,"./Diff":28,"./Dreditor":29,"./Element":30,"./Emitter":31,"./Event":32,"./File":33,"./Hunk":34,"./Line":35,"./LocaleBase":36,"./Parser":37,"./Patch":38,"./Proxy":39,"./Renderable":40,"./Url":43,"./Utility":44,"setimmediate":23}]},{},[45])(45)
+},{"./Attributes":25,"./Base":26,"./Diff":27,"./Dreditor":28,"./Element":29,"./Emitter":30,"./Event":31,"./File":32,"./Hunk":33,"./Line":34,"./LocaleBase":35,"./Parser":36,"./Patch":37,"./Proxy":38,"./Renderable":39,"./Url":42,"./Utility":43,"setimmediate":22}]},{},[44])(44)
 });
