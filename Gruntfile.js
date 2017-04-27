@@ -41,6 +41,19 @@ module.exports = function (grunt) {
       css: ['dist/css/'],
       js: ['dist/js/']
     },
+    compress: {
+      dist: {
+        options: {
+          level: 9,
+          mode: 'gzip',
+          pretty: true
+        },
+        files: [{
+          src: 'dist/js/<%= pkg.name %>.min.js',
+          dest: 'dist/js/<%= pkg.name %>.min.js.gz'
+        }]
+      }
+    },
     cssmin: {
       options: {
         roundingPrecision: -1
@@ -114,7 +127,7 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.registerTask('css', ['clean:css', 'sass', 'autoprefixer', 'cssmin']);
-  grunt.registerTask('js', ['eslint', 'clean:js', 'browserify', 'babelHelpers', 'uglify', 'remove_usestrict']);
+  grunt.registerTask('js', ['eslint', 'clean:js', 'browserify', 'babelHelpers', 'uglify', 'remove_usestrict', 'compress']);
 
   // Default task(s).
   grunt.registerTask('default', ['css', 'js']);

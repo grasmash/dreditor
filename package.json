@@ -45,6 +45,7 @@
     "grunt-babel-helpers": "^1.0.0",
     "grunt-browserify": "^5.0.0",
     "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-compress": "^1.4.1",
     "grunt-contrib-cssmin": "^2.1.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
