@@ -39,7 +39,7 @@ export default class TableRow extends Element {
    *   The cell element added.
    */
   addCell(content = null) {
-    var cell = Element.create(`<${this.cellType}/>`).appendTo(this);
+    let cell = Element.create(`<${this.cellType}/>`).appendTo(this);
     if (content) {
       cell.html(content);
     }

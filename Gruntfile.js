@@ -84,7 +84,7 @@ module.exports = function (grunt) {
     uglify: {
       options: {
         preserveComments: function (node, comment) {
-          var special = /^!|@preserve|@license|@cc_on/i.test(comment.value);
+          let special = /^!|@preserve|@license|@cc_on/i.test(comment.value);
           if (special) {
             // Remove new lines from the special comments.
             comment.value = comment.value.replace(/(\n|\r|\r\n)/gm, '');

@@ -33,10 +33,10 @@ export default class Patch extends Renderable {
     this.meta = null;
 
     // Split into separate files, delimited by lines starting with "diff".
-    var files = this.raw.split(/^diff\s[^\n]+\n/gm);
+    let files = this.raw.split(/^diff\s[^\n]+\n/gm);
 
     // Extract any meta information from the first array item.
-    var meta = files.shift();
+    let meta = files.shift();
 
     // Remove any lingering empty array items.
     files = files.filter(Boolean);
@@ -78,16 +78,16 @@ export default class Patch extends Renderable {
     if (this.meta) {
       return;
     }
-    var meta = {};
+    let meta = {};
 
     if (info.length) {
-      var headers = info.split('\n').filter(Boolean);
+      let headers = info.split('\n').filter(Boolean);
 
       // Determine position of the "first blank line", if any.
-      var blank = _.indexOf(headers, '');
+      let blank = _.indexOf(headers, '');
 
       // Determine position of the "scissor", if any.
-      var scissor = _.indexOf(headers, '-- >8 --');
+      let scissor = _.indexOf(headers, '-- >8 --');
 
       // Join the headers and any subsequent headers from the "body" after the
       // first blank line and/or "scissor" delimiters.
@@ -101,12 +101,12 @@ export default class Patch extends Renderable {
 
       // Parse any meta information as "email header fields" per RFC 2822.
       // https://tools.ietf.org/html/rfc2822#section-2.2
-      var previousKey;
+      let previousKey;
       for (let i = 0, l = headers.length; i < l; i++) {
         let header = headers[i];
-        var parts = header.match(/^([\w\d\-_]+):\s(.*)/);
-        var key = parts && parts[1] && _.machineName(parts[1]);
-        var value = parts && parts[2];
+        let parts = header.match(/^([\w\d\-_]+):\s(.*)/);
+        let key = parts && parts[1] && _.machineName(parts[1]);
+        let value = parts && parts[2];
         if (key && value) {
           // Convert to a date object.
           if (/^date/i.test(key)) {
@@ -133,8 +133,8 @@ export default class Patch extends Renderable {
 
       // Finally, extract any signature and remove it from the last file.
       if (files && files.length) {
-        var lastFile = files[files.length - 1];
-        var signaturePosition = lastFile.search(/^--\s*\n(.|\n)*$/m);
+        let lastFile = files[files.length - 1];
+        let signaturePosition = lastFile.search(/^--\s*\n(.|\n)*$/m);
         if (signaturePosition !== -1) {
           meta.signature = lastFile.substr(signaturePosition).replace(/^--\s*\n/, '') || null;
           if (meta.signature) {
@@ -172,8 +172,8 @@ export default class Patch extends Renderable {
    */
   renderMenuItem() {
     return this.doRender('patch.menu.item', () => {
-      var item = _.createElement('<li>').addClass('patch-item');
-      var patch = this.index + 1;
+      let item = _.createElement('<li>').addClass('patch-item');
+      let patch = this.index + 1;
       return _.createElement('<a>')
         .setAttribute('href', '#')
         .setAttribute('data-patch', patch)
@@ -188,15 +188,15 @@ export default class Patch extends Renderable {
    */
   renderMeta() {
     return this.promise((resolve, reject) => {
-      var meta = _.createElement('<div>').addClass('dreditor-patch-meta');
+      let meta = _.createElement('<div>').addClass('dreditor-patch-meta');
       if (Object.keys(this.meta).length) {
-        var table = _.createElement('<table>').appendTo(meta);
-        var body = _.createElement('<tbody>').appendTo(table);
-        for (var p in this.meta) {
+        let table = _.createElement('<table>').appendTo(meta);
+        let body = _.createElement('<tbody>').appendTo(table);
+        for (let p in this.meta) {
           if (this.meta.hasOwnProperty(p)) {
-            var value = this.meta[p];
+            let value = this.meta[p];
             if (value instanceof Date) {
-              var iso = typeof value.toISOString === 'function' ? value.toISOString() : false;
+              let iso = typeof value.toISOString === 'function' ? value.toISOString() : false;
               value = typeof value.toLocaleString === 'function' ? value.toLocaleString() : value.toString();
               if (iso) {
                 value = `<time datetime="${iso}">${value}</time>`;

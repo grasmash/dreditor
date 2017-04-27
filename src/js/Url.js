@@ -81,7 +81,7 @@ export default class Url extends String {
     this.fragment = '';
 
     // Parse the fragment from the URL.
-    var fragment = this.url.search(/#/);
+    let fragment = this.url.search(/#/);
     if (fragment !== -1) {
       this.fragment = this.url.substr(fragment + 1);
       this.url = this.url.substr(0, fragment);
@@ -94,7 +94,7 @@ export default class Url extends String {
      */
     this.query = {};
 
-    var query = this.url.search(/\?/);
+    let query = this.url.search(/\?/);
     if (query !== -1) {
       this.query = this.url.substr(query + 1);
       this.url = this.url.substr(0, query);

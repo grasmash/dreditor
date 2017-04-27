@@ -56,7 +56,7 @@ export default class Proxy {
    */
   all(array) {
     // Don't proxy the entire method since "this" needs to be bound correctly.
-    var promise = this.getDreditorOption('promise');
+    let promise = this.getDreditorOption('promise');
     return promise.all(array);
   }
 
@@ -129,7 +129,7 @@ export default class Proxy {
    *   Flag indicating whether an object's properties should be collected.
    */
   garbageCollect(type = 'default') {
-    var collect = !!this.getDreditorOption('garbageCollect');
+    let collect = !!this.getDreditorOption('garbageCollect');
     // if (collect && type === 'render') {
     //   this.dreditor = null;
     // }
@@ -258,7 +258,7 @@ export default class Proxy {
    */
   promise(resolver) {
     // Don't proxy the entire method since "this" needs to be bound correctly.
-    var promise = this.getDreditorOption('promise');
+    let promise = this.getDreditorOption('promise');
     return new promise(resolver.bind(this));
   }
 

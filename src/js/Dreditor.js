@@ -31,14 +31,14 @@ export default class Dreditor extends LocaleBase {
     this.on('render.hunk.start', (e, hunk) => hunk.highlightCode());
 
     // Wrap multi-line comments.
-    var highlighter = this.getOption('highlighter');
-    var isPrism = this.getOption('highlight.isPrism', _.noop);
+    let highlighter = this.getOption('highlighter');
+    let isPrism = this.getOption('highlight.isPrism', _.noop);
     if (isPrism(highlighter)) {
       highlighter.hooks.add('wrap', function (env) { // eslint-disable-line
         if (env.type === 'comment') {
-          var lines = env.content.split(/\n/gm);
+          let lines = env.content.split(/\n/gm);
           if (lines.length > 1) {
-            var attributes = '';
+            let attributes = '';
             for (let name in env.attributes) {
               if (env.attributes.hasOwnProperty(name)) {
                 attributes += (attributes ? ' ' : '') + name + '="' + (env.attributes[name] || '') + '"';
@@ -163,25 +163,25 @@ Dreditor.__defaultOptions__ = {
        *
        * @type {Function|Object}
        */
-      var highlighter = this.getDreditorOption('highlighter');
-      var isPrism = this.getDreditorOption('highlight.isPrism', _.noop);
+      let highlighter = this.getDreditorOption('highlighter');
+      let isPrism = this.getDreditorOption('highlight.isPrism', _.noop);
 
       // See if the highlighter provided is PrismJS by checking the necessary
       // functions and objects inside the passed highlighter.
       if (highlighter && isPrism(highlighter)) {
         // Determine the correct language grammar object to use for Prism.
-        var prismLanguage = this.getDreditorOption('highlight.prismLanguage', _.noop);
-        var language = prismLanguage.call(this, highlighter) || 'markup';
-        var cLike = _.indexOf(['coffeescript', 'css', 'js', 'less', 'php', 'sass', 'scss'], language) !== -1;
-        var before = false;
-        var after = false;
+        let prismLanguage = this.getDreditorOption('highlight.prismLanguage', _.noop);
+        let language = prismLanguage.call(this, highlighter) || 'markup';
+        let cLike = _.indexOf(['coffeescript', 'css', 'js', 'less', 'php', 'sass', 'scss'], language) !== -1;
+        let before = false;
+        let after = false;
 
         // Fix broken context line comments for C-like languages.
         if (cLike) {
           // Remove full comments from the string (for comparison).
-          var lines = string.replace(/(^|[^\\])(?:\/\*[\w\W]*?\*\/|\/\/.*)/gm, '').split('\n');
-          var commentStart = false;
-          var commentEnd = false;
+          let lines = string.replace(/(^|[^\\])(?:\/\*[\w\W]*?\*\/|\/\/.*)/gm, '').split('\n');
+          let commentStart = false;
+          let commentEnd = false;
           for (let i = 0, l = lines.length; i < l; i++) {
             if (commentEnd) {
               break;
@@ -224,7 +224,7 @@ Dreditor.__defaultOptions__ = {
       // Otherwise if the highlighter option provided is a function, see if it
       // returns any output.
       else if (_.isFunction(highlighter)) {
-        var ret = highlighter.apply(highlighter, string);
+        let ret = highlighter.apply(highlighter, string);
         return ret || string;
       }
 
@@ -277,8 +277,8 @@ Dreditor.__defaultOptions__ = {
       }
 
       /** @type Object */
-      var map = this.getDreditorOption('highlight.prismExtensionLanguageMap', {});
-      var languages = [].concat(map[this.__parent__.extension] || []);
+      let map = this.getDreditorOption('highlight.prismExtensionLanguageMap', {});
+      let languages = [].concat(map[this.__parent__.extension] || []);
 
       // Otherwise, attempt to find the appropriate language based on extension.
       for (let i = 0, l = languages.length; i < l; i++) {

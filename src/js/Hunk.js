@@ -57,7 +57,7 @@ export default class Hunk extends Renderable {
      */
     this.target = {start: 0, total: 0};
 
-    var lines = string.split(/\n/);
+    let lines = string.split(/\n/);
     this.meta = lines.shift();
 
     // Filter out completely empty lines, not lines with just whitespace.
@@ -87,13 +87,13 @@ export default class Hunk extends Renderable {
    */
   highlightCode() {
     // Join each line value to simulate the hunk in its entirety.
-    var string = '';
+    let string = '';
     for (let i = 0, l = this.lines.length; i < l; i++) {
       string += this.lines[i].value + (i !== l - 1 ? '\n' : '');
     }
 
-    var highlighter = this.getDreditorOption('highlighter');
-    var callback = this.getDreditorOption('highlight.callback', _.noop);
+    let highlighter = this.getDreditorOption('highlighter');
+    let callback = this.getDreditorOption('highlight.callback', _.noop);
 
     // Highlight the hunk code.
     if (highlighter && _.isFunction(callback)) {
@@ -111,7 +111,7 @@ export default class Hunk extends Renderable {
     }
 
     // Iterate over the highlighted lines and set the corresponding line value.
-    var lines = string.split('\n');
+    let lines = string.split('\n');
     for (let i = 0, l = lines.length; i < l; i++) {
       // Skip "no-new-line".
       if (this.lines[i].status === 'no-new-line') {
@@ -133,17 +133,17 @@ export default class Hunk extends Renderable {
       if (this.meta.length) {
         // Extract the "at" separator, and prepend it to the meta information.
         // This was removed from the hunk split in File.
-        var at = this.meta.match(/\s?(@@+)\s?/);
+        let at = this.meta.match(/\s?(@@+)\s?/);
         this.meta = (at && at[1] && at[1] + ' ' || '') + this.meta;
 
-        var parts = this.meta.split(/\s?@@+\s?/).filter(Boolean);
+        let parts = this.meta.split(/\s?@@+\s?/).filter(Boolean);
         if (parts[1]) {
           this.header = parts[1];
         }
 
-        var source;
-        var target;
-        var ranges = parts[0].split(' ');
+        let source;
+        let target;
+        let ranges = parts[0].split(' ');
         if (ranges[0][0] === '-') {
           source = ranges[0].substr(1).split(',');
           target = ranges[1].substr(1).split(',');
@@ -158,8 +158,8 @@ export default class Hunk extends Renderable {
         this.target.total = parseInt(target[1] || 0, 10);
       }
 
-      var sourceStart = this.source.start;
-      var targetStart = this.target.start;
+      let sourceStart = this.source.start;
+      let targetStart = this.target.start;
 
       // Parse lines.
       return this.each(this.lines, line => {
@@ -197,7 +197,7 @@ export default class Hunk extends Renderable {
       this.rendered = _.createElement();
 
       if (this.meta) {
-        var row = table.addRow().setAttributes(this.attributes).addClass(['dreditor-line', 'dreditor-line--hunk']);
+        let row = table.addRow().setAttributes(this.attributes).addClass(['dreditor-line', 'dreditor-line--hunk']);
         row.addCell().setAttribute('data-line-number', '...').addClass('dreditor-line-number');
         row.addCell().setAttribute('data-line-number', '...').addClass('dreditor-line-number');
         row.addCell().setAttribute('data-hunk-meta', this.meta).addClass('dreditor-hunk-meta');

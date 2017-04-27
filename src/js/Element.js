@@ -16,7 +16,7 @@ export default class Element {
    * @constructor
    */
   constructor(tag = null) {
-    var ast = _.isObject(tag) ? tag : {
+    let ast = _.isObject(tag) ? tag : {
       type: 'tag',
       name: tag,
       voidElement: !!voidElements[tag],
@@ -126,7 +126,7 @@ export default class Element {
    *   The Element instance.
    */
   append(content = null, raw = false) {
-    var elements = raw ? new Element({
+    let elements = raw ? new Element({
       type: 'text',
       content: content.toString()
     }) : Element.create(content);
@@ -167,11 +167,11 @@ export default class Element {
    * @chainable
    */
   clone() {
-    var clone = new Element(this.name).setAttributes(this.attributes.getData());
+    let clone = new Element(this.name).setAttributes(this.attributes.getData());
     if (this.content) {
       clone.content = this.content;
     }
-    for (var i = 0, l = this.children.length; i < l; i++) {
+    for (let i = 0, l = this.children.length; i < l; i++) {
       clone.children.push(this.children[i].clone());
     }
     return clone;
@@ -285,8 +285,8 @@ export default class Element {
       return this;
     }
     else {
-      var output = '';
-      for (var i = 0, l = this.children; i < l; i++) {
+      let output = '';
+      for (let i = 0, l = this.children; i < l; i++) {
         output += this.children[i].toString();
       }
       return output;
@@ -308,7 +308,7 @@ export default class Element {
    *   The Element instance.
    */
   prepend(content = null, raw = false) {
-    var elements = raw ? new Element({
+    let elements = raw ? new Element({
       type: 'text',
       content: content.toString()
     }) : Element.create(content);
@@ -447,7 +447,7 @@ export default class Element {
       return this;
     }
     else {
-      var text = this.type === 'text' && this.content || '';
+      let text = this.type === 'text' && this.content || '';
       for (let i = 0, l = this.children.length; i < l; i++) {
         if (this.children[i].type === 'text' && this.children[i].content) {
           text += this.children[i].text();
@@ -484,7 +484,7 @@ export default class Element {
       // Only render children and close tag if this isn't a void element.
       if (this.name && !this.voidElement) {
         // Render any value or children.
-        for (var i = 0, l = this.children.length; i < l; i++) {
+        for (let i = 0, l = this.children.length; i < l; i++) {
           this.rendered += this.children[i].toString(reset);
         }
         this.rendered += `</${this.name}>`;
@@ -513,9 +513,9 @@ Element.create = function create(content = '') {
   if (content instanceof Element) {
     return content;
   }
-  var elements = [];
-  var ast = _.parseHtml(content);
-  for (var i = 0, l = ast.length; i < l; i++) {
+  let elements = [];
+  let ast = _.parseHtml(content);
+  for (let i = 0, l = ast.length; i < l; i++) {
     elements[i] = new Element(ast[i]);
   }
   return elements.length === 1 ? elements[0] : elements;

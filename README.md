@@ -4,10 +4,10 @@
 
 ```js
 // Get a patch from somewhere on the file system.
-var string = require('fs').readFileSync('./some-unified-diff.patch', 'utf8');
+let string = require('fs').readFileSync('./some-unified-diff.patch', 'utf8');
 
 // Create a new Dreditor instance.
-var dreditor = require('dreditor')();
+let dreditor = require('dreditor')();
 
 dreditor
   // Parse the data.

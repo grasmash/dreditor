@@ -23,7 +23,7 @@ export default class Diff extends Proxy {
    * @constructor
    */
   constructor(name, string, parent = null, constructor = null) {
-    var dreditor;
+    let dreditor;
     if (_.isType(parent, Dreditor)) {
       dreditor = parent;
       parent = null;
@@ -170,7 +170,7 @@ export default class Diff extends Proxy {
    *   True or false.
    */
   garbageCollect(type = 'default') {
-    var collect = super.garbageCollect(type);
+    let collect = super.garbageCollect(type);
     if (collect) {
       if (type === 'parse') {
         this.raw = null;

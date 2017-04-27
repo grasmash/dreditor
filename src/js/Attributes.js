@@ -34,9 +34,9 @@ export default class Attributes {
    *   into a DOM element.
    */
   toString() {
-    var output = '';
-    var name;
-    var value;
+    let output = '';
+    let name;
+    let value;
     for (name in this.data) {
       if (!this.data.hasOwnProperty(name)) {
         continue;
@@ -46,8 +46,8 @@ export default class Attributes {
         value = value.call(this);
       }
       if (_.isObject(value)) {
-        var values = [];
-        for (var i in value) {
+        let values = [];
+        for (let i in value) {
           if (value.hasOwnProperty(i)) {
             values.push(value[i]);
           }
@@ -78,9 +78,9 @@ export default class Attributes {
    * @chainable
    */
   addClass(value) {
-    var args = Array.prototype.slice.call(arguments);
-    var classes = [];
-    for (var i = 0, l = args.length; i < l; i++) {
+    let args = Array.prototype.slice.call(arguments);
+    let classes = [];
+    for (let i = 0, l = args.length; i < l; i++) {
       classes = classes.concat(_.sanitizeClasses(args[i]));
     }
     this.data['class'] = _.arrayUniq(this.data['class'].concat(classes));
@@ -149,8 +149,8 @@ export default class Attributes {
    */
   hasClass(className) {
     className = _.sanitizeClasses(className);
-    var classes = this.getClasses();
-    for (var i = 0, l = className.length; i < l; i++) {
+    let classes = this.getClasses();
+    for (let i = 0, l = className.length; i < l; i++) {
       // If one of the classes fails, immediately return false.
       if (_.indexOf(classes, className[i]) === -1) {
         return false;
@@ -224,13 +224,13 @@ export default class Attributes {
    * @chainable
    */
   removeClass(value) {
-    var args = Array.prototype.slice.apply(arguments);
-    var classes = this.getClasses();
-    var values = [];
-    for (var i = 0, l = args.length; i < l; i++) {
+    let args = Array.prototype.slice.apply(arguments);
+    let classes = this.getClasses();
+    let values = [];
+    for (let i = 0, l = args.length; i < l; i++) {
       values = values.concat(_.sanitizeClasses(args[i]));
-      for (var ii = 0, ll = values.length; ii < ll; ii++) {
-        var index = _.indexOf(classes, values[ii]);
+      for (let ii = 0, ll = values.length; ii < ll; ii++) {
+        let index = _.indexOf(classes, values[ii]);
         if (index !== -1) {
           classes.slice(index, 1);
         }
@@ -253,8 +253,8 @@ export default class Attributes {
    * @chainable
    */
   replaceClass(oldValue, newValue) {
-    var classes = this.getClasses();
-    var i = _.indexOf(classes, oldValue);
+    let classes = this.getClasses();
+    let i = _.indexOf(classes, oldValue);
     if (i !== -1) {
       classes[i] = newValue;
     }

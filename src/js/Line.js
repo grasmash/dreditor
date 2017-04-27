@@ -116,15 +116,15 @@ export default class Line extends Renderable {
    */
   render(row) {
     return this.doRender('line', () => {
-      var file = this.getHunk().getFile();
-      var id = `file-${file.sha1}`;
+      let file = this.getHunk().getFile();
+      let id = `file-${file.sha1}`;
 
       row.setAttributes(this.attributes).addClass(['dreditor-line', `dreditor-line--${this.status}`]);
 
       // Don't show line numbers for "no-new-line" status.
       if (this.status !== 'no-new-line') {
         // Source line number.
-        var source = row.addCell().addClass('dreditor-line-number');
+        let source = row.addCell().addClass('dreditor-line-number');
         if (this.lineNumbers.source) {
           source
             .setAttribute('id', `${id}-S${this.lineNumbers.source}`)
@@ -132,7 +132,7 @@ export default class Line extends Renderable {
         }
 
         // Target line number.
-        var target = row.addCell().addClass('dreditor-line-number');
+        let target = row.addCell().addClass('dreditor-line-number');
         if (this.lineNumbers.target) {
           target
             .setAttribute('id', `${id}-T${this.lineNumbers.target}`)
@@ -141,7 +141,7 @@ export default class Line extends Renderable {
       }
 
       // Source code.
-      var code = row.addCell().addClass('dreditor-line-code');
+      let code = row.addCell().addClass('dreditor-line-code');
 
       // Ensure "no-new-line" status spans the line number columns.
       if (this.status === 'no-new-line') {

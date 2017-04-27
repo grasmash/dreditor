@@ -118,7 +118,7 @@ export default class Renderable extends Diff {
       // Cleanup and normalizing of positional objects.
       .finally(element => {
         this.garbageCollect('render');
-        var dimensions = ['border', 'margin', 'padding'];
+        let dimensions = ['border', 'margin', 'padding'];
         for (let i = 0, l = dimensions.length; i < l; i++) {
           this[dimensions[i]] = _.normalizeDimension(dimensions[i], this[dimensions[i]]);
         }
@@ -136,7 +136,7 @@ export default class Renderable extends Diff {
    *   True or false.
    */
   garbageCollect(type = 'default') {
-    var collect = super.garbageCollect(type);
+    let collect = super.garbageCollect(type);
     if (collect && type === 'render') {
       this.attributes = null;
     }
@@ -155,7 +155,7 @@ export default class Renderable extends Diff {
    *   A number (without "px") representation of the value.
    */
   outerHeight(includeMargin = false) {
-    var height = this.height;
+    let height = this.height;
     this.border = _.normalizeDimension('border', this.border);
     this.padding = _.normalizeDimension('padding', this.padding);
     height += this.border.bottom + this.border.top + this.padding.bottom + this.padding.top;
@@ -178,7 +178,7 @@ export default class Renderable extends Diff {
    *   A number (without "px") representation of the value.
    */
   outerWidth(includeMargin = false) {
-    var width = this.width;
+    let width = this.width;
     this.border = _.normalizeDimension('border', this.border);
     this.padding = _.normalizeDimension('padding', this.padding);
     width += this.border.left + this.border.right + this.padding.left + this.padding.right;

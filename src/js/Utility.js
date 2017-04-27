@@ -39,8 +39,8 @@ const Utility = {
   basename(path, suffix) {
     /*eslint-disable*/
     /*! PHP's basename in JavaScript (https://github.com/kvz/locutus/blob/master/src/php/filesystem/basename.js) * Copyright (c) 2007-2016 Kevin van Zonneveld (http://kvz.io) and Contributors (http://locutus.io/authors) * Licensed under MIT (https://github.com/kvz/locutus/blob/master/LICENSE) */
-    var b = path;
-    var lastChar = b.charAt(b.length - 1);
+    let b = path;
+    let lastChar = b.charAt(b.length - 1);
     if (lastChar === '/' || lastChar === '\\') {
       b = b.slice(0, -1);
     }
@@ -306,11 +306,11 @@ const Utility = {
    *   The normalized dimension object.
    */
   normalizeDimension(dimension, value) {
-    var allowed = ['border', 'margin', 'padding'];
+    let allowed = ['border', 'margin', 'padding'];
     if (indexOf(allowed, dimension) === -1) {
       throw new TypeError(`Unknown dimension: ${dimension}. Only the following dimensions are allowed: ${allowed.join(', ')}`);
     }
-    var defaultValues = (value = 0) => {
+    let defaultValues = (value = 0) => {
       return {
         bottom: value,
         left: value,
@@ -368,9 +368,9 @@ const Utility = {
    *   A sanitized array of classes.
    */
   sanitizeClasses(...classes) {
-    var sanitized = [];
+    let sanitized = [];
     for (let i = 0, l = classes.length; i < l; i++) {
-      var values = classes[i] instanceof Array && classes[i] || typeof classes[i] === 'string' && classes[i].split(' ') || [];
+      let values = classes[i] instanceof Array && classes[i] || typeof classes[i] === 'string' && classes[i].split(' ') || [];
       if (values.length) {
         for (let i = 0, l = values.length; i < l; i++) {
           sanitized.push(values[i]);
@@ -392,23 +392,23 @@ const Utility = {
   sha1(str) {
     /*eslint-disable*/
     /*! PHP's sha1 in JavaScript (https://github.com/kvz/locutus/blob/master/src/php/strings/sha1.js) * Copyright (c) 2007-2016 Kevin van Zonneveld (http://kvz.io) and Contributors (http://locutus.io/authors) Licensed under MIT (https://github.com/kvz/locutus/blob/master/LICENSE) */
-    var _rotLeft = function (n, s) {
-      var t4 = (n << s) | (n >>> (32 - s));
+    let _rotLeft = function (n, s) {
+      let t4 = (n << s) | (n >>> (32 - s));
       return t4;
     };
-    var _cvtHex = function (val) {
-      var str = '', i, v;
+    let _cvtHex = function (val) {
+      let str = '', i, v;
       for (i = 7; i >= 0; i--) {
         v = (val >>> (i * 4)) & 0x0f;
         str += v.toString(16);
       }
       return str;
     };
-    var blockstart, i, j, A, B, C, D, E, temp;
-    var W = new Array(80), H0 = 0x67452301, H1 = 0xEFCDAB89, H2 = 0x98BADCFE, H3 = 0x10325476, H4 = 0xC3D2E1F0;
+    let blockstart, i, j, A, B, C, D, E, temp;
+    let W = new Array(80), H0 = 0x67452301, H1 = 0xEFCDAB89, H2 = 0x98BADCFE, H3 = 0x10325476, H4 = 0xC3D2E1F0;
     str = unescape(encodeURIComponent(str));
-    var strLen = str.length;
-    var wordArray = [];
+    let strLen = str.length;
+    let wordArray = [];
     for (i = 0; i < strLen - 3; i += 4) {
       j = str.charCodeAt(i) << 24 | str.charCodeAt(i + 1) << 16 | str.charCodeAt(i + 2) << 8 | str.charCodeAt(i + 3);
       wordArray.push(j);
@@ -509,7 +509,7 @@ const Utility = {
    */
   template(template, data = {}, remove = true) {
     return template.replace(/[{][{] ([\w._-]+) [}][}]/gmi, function (token, name) {
-      var value = Utility.getProperty(name, data);
+      let value = Utility.getProperty(name, data);
       if (value !== null) {
         return value;
       }
@@ -540,8 +540,8 @@ const Utility = {
    *   Throws an error if the value does not pass the check.
    */
   typeCheck(value, constructor, throwError = true) {
-    var error;
-    var original = constructor;
+    let error;
+    let original = constructor;
 
     if (!error && !Utility.isFunction(constructor)) {
       error = new SyntaxError(`The "constructor" passed must be a function: ${constructor}`);

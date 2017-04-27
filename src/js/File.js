@@ -90,7 +90,7 @@ export default class File extends Renderable {
     this.target = null;
 
     // Separate file into hunks.
-    var hunks = this.raw.split(/^@@+\s/gm).filter(Boolean);
+    let hunks = this.raw.split(/^@@+\s/gm).filter(Boolean);
 
     this.meta = hunks.shift().split(/\n/);
 
@@ -184,7 +184,7 @@ export default class File extends Renderable {
   }
 
   renderPlaceholder() {
-    var header = _.createElement('<div>').addClass('dreditor-file-header');
+    let header = _.createElement('<div>').addClass('dreditor-file-header');
     _.createElement('<div>').addClass('dreditor-file-info')
       .append(this.getDreditorOption('throbber').replace('dreditor-throbber', 'dreditor-throbber xs in'))
       .append(this.renderStatus())
@@ -212,7 +212,7 @@ export default class File extends Renderable {
    *   a string value or manually invoked using the toString method.
    */
   renderStatus() {
-    var status = '?';
+    let status = '?';
     if (this.status === 'added') {
       status = 'A';
     }

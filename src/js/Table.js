@@ -81,7 +81,7 @@ export default class Table extends Element {
    *   The row element added.
    */
   addRow(to = 'body') {
-    var row = new TableRow(this.id, to === 'header' ? 'th' : 'td');
+    let row = new TableRow(this.id, to === 'header' ? 'th' : 'td');
     return row.appendTo(this[to]);
   }
 

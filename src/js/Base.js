@@ -54,7 +54,7 @@ export default class Base extends Emitter {
    *   The option value or `null` if there is no option or it hasn't been set.
    */
   getOption(name, defaultValue = null) {
-    var ret = _.getProperty(name, this.options);
+    let ret = _.getProperty(name, this.options);
     return ret === null ? defaultValue : ret;
   }
 
@@ -71,7 +71,7 @@ export default class Base extends Emitter {
    * @see Dreditor.promise
    */
   promise(resolver) {
-    var promise = this.getOption('promise');
+    let promise = this.getOption('promise');
     return new promise(resolver.bind(this));
   }
 
@@ -85,7 +85,7 @@ export default class Base extends Emitter {
    *   A rejected Promise object.
    */
   reject(value) {
-    var promise = this.getOption('promise');
+    let promise = this.getOption('promise');
     return promise.reject(value);
   }
 
@@ -99,7 +99,7 @@ export default class Base extends Emitter {
    *   A resolved Promise object.
    */
   resolve(value) {
-    var promise = this.getOption('promise');
+    let promise = this.getOption('promise');
     return promise.resolve(value);
   }
 
@@ -152,13 +152,13 @@ export default class Base extends Emitter {
    *   The class instance that invoked this method.
    */
   setOption(name, value = null) {
-    var p = name && name.split('.') || [];
+    let p = name && name.split('.') || [];
     if (p.length === 1) {
       this.options[p[0]] = value;
       return this;
     }
     try {
-      var obj = p.reduce(function (obj, i) {
+      let obj = p.reduce(function (obj, i) {
         return !_.isPlainObject(obj[i]) ? obj : obj[i];
       }, this.options);
       obj[p[p.length - 1]] = value;

@@ -46,7 +46,7 @@ export default class Emitter {
 
     // Retrieve any listeners. Attempt to use any defined "dreditor" property
     // first before attempting to use any defined "listeners" property.
-    var listeners = [];
+    let listeners = [];
 
     // Find all potential listeners that match the event type.
     for (let name in this.listeners) {
@@ -61,7 +61,7 @@ export default class Emitter {
     }
 
     // Create an event object.
-    var event = new Event(type);
+    let event = new Event(type);
 
     // Set the object that emitted the event.
     event.setTarget(this);
@@ -157,7 +157,7 @@ export default class Emitter {
    *   The Diff instance.
    */
   once(type, listener) {
-    var once = function () {
+    let once = function () {
       this.off(type, once);
       listener.apply(this, arguments);
     };
