@@ -4,7 +4,6 @@ import {deparam, param} from 'node-qs-serialization';
 import extend from 'extend';
 import HTML from 'html-parse-stringify2';
 import indexOf from 'indexof';
-import isArray from 'isarray';
 import isFunction from 'is-function';
 import isObject from 'isobject';
 import isPlainObject from 'is-plain-object';
@@ -171,7 +170,7 @@ const Utility = {
    *   True or false.
    */
   isArray(value) {
-    return isArray(value);
+    return Array.isArray(value);
   },
 
   /**
