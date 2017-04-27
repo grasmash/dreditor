@@ -4,7 +4,7 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
     banner: '/*!\n' +
     ' * <%= pkg.title || pkg.name %> v<%= pkg.version %><%= pkg.homepage ? " (" + pkg.homepage + ")" : "" %>\n' +
-    ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> (<%= pkg.author.url %>)\n' +
+    ' * Copyright (c) 2016-<%= grunt.template.today("yyyy") %> <%= pkg.author.name %> (<%= pkg.author.url %>)\n' +
     ' * Licensed under <%= pkg.licenses[0].type %> (<%= pkg.licenses[0].url %>)\n' +
     ' */\n',
     autoprefixer: {
